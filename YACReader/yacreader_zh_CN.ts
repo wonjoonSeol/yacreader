@@ -581,6 +581,11 @@ If none is active, Escape does nothing.</source>
         <translation>Lanczos（质量更好）</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="304"/>
+        <source>Bicubic</source>
+        <translation>双三次（Bicubic）</translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="334"/>
         <source>Page Flow</source>
         <translation>页面流</translation>
