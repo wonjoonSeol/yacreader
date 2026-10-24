@@ -9,6 +9,8 @@
 #include <QTemporaryDir>
 #include <QTest>
 
+using YACReader::OpenComicsAt;
+
 class ComicStartPageTest : public QObject
 {
     Q_OBJECT
@@ -56,26 +58,28 @@ void ComicStartPageTest::startPage_data()
 {
     QTest::addColumn<int>("requestedPage");
     QTest::addColumn<int>("savedPage");
-    QTest::addColumn<bool>("openFinishedFromFirstPage");
+    QTest::addColumn<OpenComicsAt>("openComicsAt");
     QTest::addColumn<int>("expectedPage");
 
-    QTest::newRow("saved on the last page, setting off") << savedProgress << lastPage << false << lastPage;
-    QTest::newRow("saved on the last page, setting on") << savedProgress << lastPage << true << 0;
-    QTest::newRow("saved on the second to last page, setting on") << savedProgress << lastPage - 1 << true << lastPage - 1;
-    QTest::newRow("saved before the first page") << savedProgress << -1 << false << 0;
-    QTest::newRow("requested last page, setting on") << lastPage << 2 << true << lastPage;
-    QTest::newRow("requested page past the end") << pageCount << 2 << false << 0;
+    QTest::newRow("saved on the last page, last page read") << savedProgress << lastPage << OpenComicsAt::LastPageRead << lastPage;
+    QTest::newRow("saved on the last page, first page if finished") << savedProgress << lastPage << OpenComicsAt::FirstPageIfFinished << 0;
+    QTest::newRow("saved on the second to last page, first page if finished") << savedProgress << lastPage - 1 << OpenComicsAt::FirstPageIfFinished << lastPage - 1;
+    QTest::newRow("saved on a middle page, always the first page") << savedProgress << 2 << OpenComicsAt::FirstPage << 0;
+    QTest::newRow("saved before the first page") << savedProgress << -1 << OpenComicsAt::LastPageRead << 0;
+    QTest::newRow("requested last page, first page if finished") << lastPage << 2 << OpenComicsAt::FirstPageIfFinished << lastPage;
+    QTest::newRow("requested middle page, always the first page") << 2 << 3 << OpenComicsAt::FirstPage << 2;
+    QTest::newRow("requested page past the end") << pageCount << 2 << OpenComicsAt::LastPageRead << 0;
 }
 
 void ComicStartPageTest::startPage()
 {
     QFETCH(int, requestedPage);
     QFETCH(int, savedPage);
-    QFETCH(bool, openFinishedFromFirstPage);
+    QFETCH(OpenComicsAt, openComicsAt);
     QFETCH(int, expectedPage);
 
     FolderComic comic;
-    comic.setOpenFinishedFromFirstPage(openFinishedFromFirstPage);
+    comic.setOpenComicsAt(openComicsAt);
     comic.load(comicFolder.path(), requestedPage);
     comic.bm->setLastPage(savedPage, QImage());
     QSignalSpy openAt(&comic, &Comic::openAt);

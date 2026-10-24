@@ -295,7 +295,9 @@ void Comic::resolveStartPage()
 {
     if (_firstPage == -1) {
         _firstPage = bm->getLastPage();
-        if (_openFinishedFromFirstPage && _firstPage == _pages.length() - 1) {
+
+        const bool finished = _firstPage == _pages.length() - 1;
+        if (_openComicsAt == YACReader::OpenComicsAt::FirstPage || (_openComicsAt == YACReader::OpenComicsAt::FirstPageIfFinished && finished)) {
             _firstPage = 0;
         }
     }

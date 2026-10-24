@@ -768,7 +768,7 @@ void Render::createComic(const QString &path)
         return;
     }
 
-    comic->setOpenFinishedFromFirstPage(Configuration::getConfiguration().getOpenFinishedComicsFromFirstPage());
+    comic->setOpenComicsAt(Configuration::getConfiguration().getOpenComicsAt());
 
     connect(comic, QOverload<>::of(&Comic::errorOpening), this, QOverload<>::of(&Render::errorOpening), Qt::QueuedConnection);
     connect(comic, QOverload<QString>::of(&Comic::errorOpening), this, QOverload<QString>::of(&Render::errorOpening), Qt::QueuedConnection);

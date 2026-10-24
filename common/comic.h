@@ -2,6 +2,7 @@
 #define __COMIC_H
 #include "bookmarks.h"
 #include "extract_delegate.h"
+#include "yacreader_global.h"
 
 #include <QByteArray>
 #include <QImage>
@@ -35,7 +36,7 @@ protected:
 
     // open the comic at this point, -1 opens it at the saved reading progress
     int _firstPage = -1;
-    bool _openFinishedFromFirstPage = false;
+    YACReader::OpenComicsAt _openComicsAt = YACReader::OpenComicsAt::LastPageRead;
 
     bool _isPDF;
 
@@ -61,8 +62,8 @@ public:
     // Load pages from file
     virtual bool load(const QString &path, int atPage = -1) = 0;
     virtual bool load(const QString &path, const ComicDB &comic);
-    // a comic whose saved reading progress is its last page opens at the first page instead
-    void setOpenFinishedFromFirstPage(bool enabled) { _openFinishedFromFirstPage = enabled; }
+    // where a comic opened at its saved reading progress starts
+    void setOpenComicsAt(YACReader::OpenComicsAt openComicsAt) { _openComicsAt = openComicsAt; }
 
     /*void loadFromFile(const QString & pathFile);
                 void loadFromDir(const QString & pathDir);
