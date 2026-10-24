@@ -1080,8 +1080,8 @@ double edgeRamp(double u) // u = |normalized cursor offset from center|, in [0, 
 }
 
 // The edge easing is canceled on an axis only once the page is letterboxed by at least this
-// fraction of its own size on that axis. Below it — a thin margin, an exact fit, or a page
-// that overflows the viewport — the curve still applies, so the effect stays visible for
+// fraction of its own size on that axis. Below it - a thin margin, an exact fit, or a page
+// that overflows the viewport - the curve still applies, so the effect stays visible for
 // pages that nearly fill the view instead of vanishing the instant the page is a hair smaller
 // than the viewport. Above it the background beside the page is wide enough that easing would
 // mostly reveal that background, so the axis is left at 1:1.
@@ -1120,7 +1120,7 @@ QPoint Viewer::easeViewerPos(const QPoint &viewerPos, const QSize &glassSize, bo
         const double pageH = w->height();
         if (continuousScroll && w == continuousWidget && continuousViewModel != nullptr) {
             // The continuous widget fills the viewport width with each page centered inside it,
-            // so the page under the cursor — not the widget — is the horizontal extent. The
+            // so the page under the cursor - not the widget - is the horizontal extent. The
             // document is contiguous vertically, so the widget height is the vertical extent.
             const int cwY = viewerPos.y() + verticalScrollBar()->sliderPosition();
             const int idx = qBound(0, continuousViewModel->pageAtY(cwY), continuousViewModel->numPages() - 1);
