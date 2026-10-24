@@ -94,7 +94,6 @@ private:
     //! State
     bool fullscreen;
     bool toolbars;
-    bool toolBarOverPage = false;
     bool fromMaximized;
 
     QString currentDirectory;
@@ -179,9 +178,13 @@ private:
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
     void setFullScreenToolBarActionsVisible(bool visible);
-    void updateToolBarOverPage(const QPoint &viewerPosition, Qt::MouseButtons buttons);
-    void showToolBarOverPage();
     void hideToolBarOverPage();
+#ifndef Y_MAC_UI
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    void updateToolBarOverPage(const QMouseEvent *event);
+    void showToolBarOverPage();
+    bool toolBarIsOverPage() const;
+#endif
     void refreshRecentFilesActionList();
     void clearRecentFiles();
     void getSiblingComics(QString path, QString currentComic);

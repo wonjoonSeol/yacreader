@@ -97,7 +97,6 @@ void YACReader::MouseHandler::mouseMoveEvent(QMouseEvent *event)
     viewer->hideCursorTimer->start(2500);
 
     auto position = event->position();
-    emit viewer->mouseMoved(position.toPoint(), event->buttons());
 
     if (viewer->magnifyingGlassShown)
         // Route through updateImage so the loupe uses the same eased content center and

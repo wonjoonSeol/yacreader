@@ -12,10 +12,9 @@ struct ToolBarOverPageState {
     bool mouseButtonPressed;
 };
 
-// as tall as the band at the bottom of the screen that shows the go to flow
 constexpr int toolBarOverPageActivationHeight = 15;
 
-constexpr bool showsToolBarOverPage(const ToolBarOverPageState &state)
+constexpr bool shouldShowToolBarOverPage(const ToolBarOverPageState &state)
 {
     if (state.shown)
         return state.mouseY < state.toolBarHeight;

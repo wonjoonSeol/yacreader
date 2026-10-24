@@ -305,7 +305,6 @@ signals:
     void openPreviousComic();
     void zoomUpdated(int);
     void magnifyingGlassVisibilityChanged(bool visible);
-    void mouseMoved(const QPoint &position, Qt::MouseButtons buttons);
 
     // The following signals are emitted by users of this class and propagated to mglass.
     void magnifyingGlassSizeUp();
