@@ -298,11 +298,13 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingLayout = new QHBoxLayout();
     scalingLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"));
-    scalingMethodCombo->addItem(tr("Bilinear"));
-    scalingMethodCombo->addItem(tr("Lanczos (better quality)"));
-    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(index));
+    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"), static_cast<int>(ScaleMethod::Nearest));
+    scalingMethodCombo->addItem(tr("Bilinear"), static_cast<int>(ScaleMethod::Bilinear));
+    scalingMethodCombo->addItem(tr("Lanczos4 (more detail, more halos)"), static_cast<int>(ScaleMethod::Lanczos4));
+    scalingMethodCombo->addItem(tr("Lanczos3 (balanced)"), static_cast<int>(ScaleMethod::Lanczos3));
+    scalingMethodCombo->addItem(tr("Lanczos2 (fewer halos, less detail)"), static_cast<int>(ScaleMethod::Lanczos2));
+    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this] {
+        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentData().toInt()));
         emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
@@ -430,7 +432,7 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentIndex()));
+    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentData().toInt()));
     emit changedImageOptions();
 
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
@@ -512,7 +514,10 @@ void OptionsDialog::restoreOptions(QSettings *settings)
 
     {
         QSignalBlocker blocker(scalingMethodCombo);
-        scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
+        int scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
+        if (scalingMethodIndex < 0)
+            scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(defaultScaleMethod));
+        scalingMethodCombo->setCurrentIndex(scalingMethodIndex);
     }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();

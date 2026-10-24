@@ -323,11 +323,21 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (bessere Qualität)</translation>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="304"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Image adjustment</source>
         <translation>Bildanpassung</translation>
     </message>
@@ -352,12 +362,12 @@
         <translation>Kontrast</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Appearance</source>
         <translation>Aussehen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="354"/>
         <source>Options</source>
         <translation>Optionen</translation>
     </message>
@@ -382,7 +392,7 @@
         <translation>Löschen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="370"/>
         <source>Comics directory</source>
         <translation>Comics-Verzeichnis</translation>
     </message>
@@ -392,12 +402,12 @@
         <translation>Hintergrundfarbe</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Page Flow</source>
         <translation>Seitenfluss</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
@@ -407,7 +417,7 @@
         <translation>Helligkeit</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="345"/>
         <source>Restart is needed</source>
         <translation>Neustart erforderlich</translation>
     </message>

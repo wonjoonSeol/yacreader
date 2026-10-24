@@ -139,7 +139,12 @@ public:
     EscapeKeyBehavior getEscapeKeyBehavior() { return static_cast<EscapeKeyBehavior>(settings->value(ESCAPE_KEY_BEHAVIOR, EscapeKeyBehavior::EscapeQuits).toInt()); }
     void setEscapeKeyBehavior(EscapeKeyBehavior behavior) { settings->setValue(ESCAPE_KEY_BEHAVIOR, static_cast<int>(behavior)); }
 
-    ScaleMethod getScalingMethod() { return static_cast<ScaleMethod>(settings->value(SCALING_METHOD, static_cast<int>(ScaleMethod::Lanczos)).toInt()); }
+    ScaleMethod getScalingMethod()
+    {
+        bool ok = false;
+        const int method = settings->value(SCALING_METHOD).toInt(&ok);
+        return ok && isKnownScaleMethod(method) ? static_cast<ScaleMethod>(method) : defaultScaleMethod;
+    }
     void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
 };
 

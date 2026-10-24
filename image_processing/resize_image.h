@@ -4,16 +4,23 @@
 #include <QImage>
 #include <QPixmap>
 
+// The values are stored in settings and must not be renumbered. 3 is kept for upstream's Bicubic.
 enum class ScaleMethod {
     Nearest = 0,
     Bilinear = 1,
-    Lanczos = 2
+    Lanczos4 = 2,
+    Lanczos3 = 4,
+    Lanczos2 = 5
 };
 
-// Base scaling API — callers are responsible for supplying the correct target dimensions.
+constexpr ScaleMethod defaultScaleMethod = ScaleMethod::Lanczos4;
 
-QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod method = ScaleMethod::Lanczos);
+bool isKnownScaleMethod(int value);
 
-QImage scaleImage(const QImage &image, int width, int height, ScaleMethod method = ScaleMethod::Lanczos);
+// Base scaling API - callers are responsible for supplying the correct target dimensions.
+
+QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod method = defaultScaleMethod);
+
+QImage scaleImage(const QImage &image, int width, int height, ScaleMethod method = defaultScaleMethod);
 
 #endif // RESIZE_IMAGE_H

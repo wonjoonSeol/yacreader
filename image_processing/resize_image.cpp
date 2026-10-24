@@ -2,7 +2,7 @@
 
 #include "lancir.h"
 
-static QImage scaleImageLancir(const QImage &image, int width, int height)
+static QImage scaleImageLancir(const QImage &image, int width, int height, double lobes)
 {
     QImage src = (image.format() == QImage::Format_ARGB32)
             ? image
@@ -13,7 +13,7 @@ static QImage scaleImageLancir(const QImage &image, int width, int height)
     // SrcSSize / NewSSize are in elements; for uint8_t that equals bytes,
     // so bytesPerLine() covers any Qt row-alignment padding correctly.
     avir::CLancIRParams params(src.bytesPerLine(), dst.bytesPerLine());
-    params.la = 4.0; // Lanczos4
+    params.la = lobes;
 
     avir::CLancIR lancir;
     lancir.resizeImage<uint8_t, uint8_t>(
@@ -21,6 +21,19 @@ static QImage scaleImageLancir(const QImage &image, int width, int height)
             dst.bits(), width, height, 4, &params);
 
     return dst;
+}
+
+bool isKnownScaleMethod(int value)
+{
+    switch (static_cast<ScaleMethod>(value)) {
+    case ScaleMethod::Nearest:
+    case ScaleMethod::Bilinear:
+    case ScaleMethod::Lanczos4:
+    case ScaleMethod::Lanczos3:
+    case ScaleMethod::Lanczos2:
+        return true;
+    }
+    return false;
 }
 
 // ---- QPixmap API ------------------------------------------------------------
@@ -35,8 +48,10 @@ QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod me
         return pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     case ScaleMethod::Bilinear:
         return pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    case ScaleMethod::Lanczos:
-        return QPixmap::fromImage(scaleImageLancir(pixmap.toImage(), width, height));
+    case ScaleMethod::Lanczos4:
+    case ScaleMethod::Lanczos3:
+    case ScaleMethod::Lanczos2:
+        return QPixmap::fromImage(scaleImage(pixmap.toImage(), width, height, method));
     }
     return pixmap;
 }
@@ -53,8 +68,12 @@ QImage scaleImage(const QImage &image, int width, int height, ScaleMethod method
         return image.scaled(width, height, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     case ScaleMethod::Bilinear:
         return image.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    case ScaleMethod::Lanczos:
-        return scaleImageLancir(image, width, height);
+    case ScaleMethod::Lanczos4:
+        return scaleImageLancir(image, width, height, 4.0);
+    case ScaleMethod::Lanczos3:
+        return scaleImageLancir(image, width, height, 3.0);
+    case ScaleMethod::Lanczos2:
+        return scaleImageLancir(image, width, height, 2.0);
     }
     return image;
 }

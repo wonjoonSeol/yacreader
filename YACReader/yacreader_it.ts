@@ -287,7 +287,7 @@
         <translation>Percorso dei miei fumetti</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Image adjustment</source>
         <translation>Correzioni immagine</translation>
     </message>
@@ -312,12 +312,12 @@
         <translation>Contrasto</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Appearance</source>
         <translation>Aspetto</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="354"/>
         <source>Options</source>
         <translation>Opzioni</translation>
     </message>
@@ -352,7 +352,7 @@
         <translation>Cancella</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="370"/>
         <source>Comics directory</source>
         <translation>Cartella Fumetti</translation>
     </message>
@@ -553,16 +553,26 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (qualità migliore)</translation>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="304"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Page Flow</source>
         <translation>Flusso pagine</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>General</source>
         <translation>Generale</translation>
     </message>
@@ -572,7 +582,7 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <translation>Luminosità</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="345"/>
         <source>Restart is needed</source>
         <translation>Riavvio Necessario</translation>
     </message>
