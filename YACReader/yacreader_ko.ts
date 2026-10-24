@@ -302,17 +302,17 @@
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>General</source>
         <translation>일반</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Appearance</source>
         <translation>외관</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="354"/>
         <source>Options</source>
         <translation>환경설정</translation>
     </message>
@@ -573,26 +573,36 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos (better quality)</source>
-        <translation>고화질 모드 (더 좋은 화질)</translation>
+        <source>Lanczos4 (better quality)</source>
+        <translation>Lanczos4 (더 좋은 화질)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="304"/>
+        <source>Lanczos3</source>
+        <translation>Lanczos3</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos2 (fewer halos around lines)</source>
+        <translation>Lanczos2 (선 주변 테두리 번짐 적음)</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Page Flow</source>
         <translation>페이지 플로우</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Image adjustment</source>
         <translation>이미지 조정</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="345"/>
         <source>Restart is needed</source>
         <translation>재시작이 필요합니다</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="370"/>
         <source>Comics directory</source>
         <translation>만화 폴더</translation>
     </message>
