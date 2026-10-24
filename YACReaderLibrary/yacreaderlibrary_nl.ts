@@ -519,7 +519,7 @@
 <context>
     <name>DBHelper</name>
     <message>
-        <location filename="db_helper.cpp" line="1451"/>
+        <location filename="db_helper.cpp" line="1365"/>
         <source>The folder entry could not be found in the library database.</source>
         <translation>De mapvermelding is niet gevonden in de database van de bibliotheek.</translation>
     </message>
@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="604"/>
+        <location filename="../common/comic.cpp" line="615"/>
         <source>7z not found</source>
         <translation>7Z Archiefbestand niet gevonden</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="490"/>
+        <location filename="../common/comic.cpp" line="501"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>CRC-fout op pagina (%1): sommige pagina&apos;s worden niet correct weergegeven</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="497"/>
+        <location filename="../common/comic.cpp" line="508"/>
         <source>Unknown error opening the file</source>
         <translation>Onbekende fout bij het openen van het bestand</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="610"/>
-        <location filename="../common/comic.cpp" line="626"/>
+        <location filename="../common/comic.cpp" line="621"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>Format not supported</source>
         <translation>Formaat niet ondersteund</translation>
     </message>

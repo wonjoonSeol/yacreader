@@ -61,6 +61,13 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     displayLayout->addWidget(showTimeInInformationLabel);
     displayBox->setLayout(displayLayout);
 
+    auto readingProgressBox = new QGroupBox(tr("Reading progress"));
+    auto readingProgressLayout = new QHBoxLayout();
+    openFinishedComicsFromFirstPage = new QCheckBox(tr("Open finished comics from the first page"));
+    openFinishedComicsFromFirstPage->setToolTip(tr("A comic is finished when it was closed on its last page."));
+    readingProgressLayout->addWidget(openFinishedComicsFromFirstPage);
+    readingProgressBox->setLayout(readingProgressLayout);
+
     QGroupBox *magnifyingGlassBox = new QGroupBox(tr("Magnifying glass"));
     auto magnifyingGlassLayout = new QVBoxLayout();
     circularMagnifyingGlass = new QCheckBox(tr("Circular magnifying glass"));
@@ -160,6 +167,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutGeneral->addWidget(pathBox);
     layoutGeneral->addWidget(languageBox);
     layoutGeneral->addWidget(displayBox);
+    layoutGeneral->addWidget(readingProgressBox);
     layoutGeneral->addWidget(magnifyingGlassBox);
     // layoutGeneral->addWidget(fitBox);
     layoutGeneral->addWidget(scrollBox);
@@ -363,6 +371,7 @@ void OptionsDialog::saveOptions()
     settings->setValue(PATH, pathEdit->text());
 
     Configuration::getConfiguration().setShowTimeInInformation(showTimeInInformationLabel->isChecked());
+    Configuration::getConfiguration().setOpenFinishedComicsFromFirstPage(openFinishedComicsFromFirstPage->isChecked());
 
     Configuration::getConfiguration().setMagnifyingGlassCircular(circularMagnifyingGlass->isChecked());
     Configuration::getConfiguration().setMagnifyingGlassRing(magnifyingGlassRing->isChecked());
@@ -424,6 +433,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     languageCombo->setCurrentIndex(languageIndex);
 
     showTimeInInformationLabel->setChecked(Configuration::getConfiguration().getShowTimeInInformation());
+    openFinishedComicsFromFirstPage->setChecked(Configuration::getConfiguration().getOpenFinishedComicsFromFirstPage());
 
     circularMagnifyingGlass->setChecked(Configuration::getConfiguration().getMagnifyingGlassCircular());
     magnifyingGlassRing->setChecked(Configuration::getConfiguration().getMagnifyingGlassRing());

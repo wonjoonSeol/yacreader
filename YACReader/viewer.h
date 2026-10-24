@@ -250,6 +250,8 @@ private:
     // this is used lazily (on save / leaving continuous mode) to keep Render
     // state correct. It can block briefly, so it is kept off the scroll path.
     void syncRenderToContinuousPage();
+    // The reading progress, starting in 1. A spread that ends the comic counts as read up to the last page.
+    int lastReadPage();
     void onNumPagesReady(unsigned int numPages);
     void onRenderPageChanged(int page);
     void setActiveWidget(QWidget *w);

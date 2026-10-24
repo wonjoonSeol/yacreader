@@ -35,12 +35,15 @@ protected:
 
     // open the comic at this point
     int _firstPage;
+    bool _openFinishedFromFirstPage = false;
 
     bool _isPDF;
 
     bool _invalidated;
 
     bool _errorOpening;
+
+    void resolveFirstPage();
 
 public:
     static const QStringList imageExtensions;
@@ -58,6 +61,8 @@ public:
     // Load pages from file
     virtual bool load(const QString &path, int atPage = -1) = 0;
     virtual bool load(const QString &path, const ComicDB &comic);
+    // a comic that would open at its last page opens at the first one instead
+    void setOpenFinishedFromFirstPage(bool enabled) { _openFinishedFromFirstPage = enabled; }
 
     /*void loadFromFile(const QString & pathFile);
                 void loadFromDir(const QString & pathDir);
@@ -89,7 +94,7 @@ public slots:
     void loadFinished();
     void setBookmark(int index);
     void removeBookmark(int index);
-    void saveBookmarks();
+    void saveBookmarks(int lastPage);
     void checkIsBookmark(int index);
     void updateBookmarkImage(int);
     void setPageLoaded(int page);

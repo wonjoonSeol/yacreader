@@ -520,7 +520,7 @@
 <context>
     <name>DBHelper</name>
     <message>
-        <location filename="db_helper.cpp" line="1451"/>
+        <location filename="db_helper.cpp" line="1365"/>
         <source>The folder entry could not be found in the library database.</source>
         <translation>在庫資料庫中找不到該檔夾的記錄。</translation>
     </message>
@@ -688,23 +688,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="490"/>
+        <location filename="../common/comic.cpp" line="501"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 頁 CRC 校驗失敗: 部分頁面將無法正確顯示</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="497"/>
+        <location filename="../common/comic.cpp" line="508"/>
         <source>Unknown error opening the file</source>
         <translation>打開檔時出現未知錯誤</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="604"/>
+        <location filename="../common/comic.cpp" line="615"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="610"/>
-        <location filename="../common/comic.cpp" line="626"/>
+        <location filename="../common/comic.cpp" line="621"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>Format not supported</source>
         <translation>不支持的檔格式</translation>
     </message>

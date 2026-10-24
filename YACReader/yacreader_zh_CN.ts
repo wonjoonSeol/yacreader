@@ -188,18 +188,18 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="610"/>
-        <location filename="../common/comic.cpp" line="626"/>
+        <location filename="../common/comic.cpp" line="621"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>Format not supported</source>
         <translation>不支持的文件格式</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="604"/>
+        <location filename="../common/comic.cpp" line="615"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="497"/>
+        <location filename="../common/comic.cpp" line="508"/>
         <source>Unknown error opening the file</source>
         <translation>打开文件时出现未知错误</translation>
     </message>
@@ -208,7 +208,7 @@
         <translation type="vanished">不支持的 EPUB 格式：%1</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="490"/>
+        <location filename="../common/comic.cpp" line="501"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 页 CRC 校验失败: 部分页面将无法正确显示</translation>
     </message>
@@ -276,27 +276,27 @@
 <context>
     <name>OptionsDialog</name>
     <message>
-        <location filename="options_dialog.cpp" line="225"/>
+        <location filename="options_dialog.cpp" line="233"/>
         <source>Gamma</source>
         <translation>Gamma值</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="229"/>
+        <location filename="options_dialog.cpp" line="237"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="240"/>
+        <location filename="options_dialog.cpp" line="248"/>
         <source>Enlarge images to fit width/height</source>
         <translation>放大图片以适应宽度/高度</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="111"/>
+        <location filename="options_dialog.cpp" line="118"/>
         <source>Disable scroll animations and smooth scrolling</source>
         <translation>禁用滚动动画和平滑滚动</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="113"/>
+        <location filename="options_dialog.cpp" line="120"/>
         <source>Use single scroll step to turn page</source>
         <translation>使用单滚动步骤翻页</translation>
     </message>
@@ -306,37 +306,37 @@
         <translation>我的漫画路径</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="309"/>
+        <location filename="options_dialog.cpp" line="317"/>
         <source>Image adjustment</source>
         <translation>图像调整</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="78"/>
+        <location filename="options_dialog.cpp" line="85"/>
         <source>&quot;Go to flow&quot; size</source>
         <translation>“转到页面流”大小</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="99"/>
+        <location filename="options_dialog.cpp" line="106"/>
         <source>Choose</source>
         <translation>选择</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="253"/>
+        <location filename="options_dialog.cpp" line="261"/>
         <source>Show covers as single page</source>
         <translation>显示封面为单页</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="112"/>
+        <location filename="options_dialog.cpp" line="119"/>
         <source>Do not turn page using scroll</source>
         <translation>滚动时不翻页</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="238"/>
+        <location filename="options_dialog.cpp" line="246"/>
         <source>Fit options</source>
         <translation>适应项</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="234"/>
+        <location filename="options_dialog.cpp" line="242"/>
         <source>Image options</source>
         <translation>图片选项</translation>
     </message>
@@ -352,66 +352,81 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="64"/>
+        <source>Reading progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="66"/>
+        <source>Open finished comics from the first page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="67"/>
+        <source>A comic is finished when it was closed on its last page.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="71"/>
         <source>Magnifying glass</source>
         <translation>放大镜</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="66"/>
+        <location filename="options_dialog.cpp" line="73"/>
         <source>Circular magnifying glass</source>
         <translation>圆形放大镜</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="67"/>
+        <location filename="options_dialog.cpp" line="74"/>
         <source>Draw a ring around the circular magnifying glass</source>
         <translation>在圆形放大镜周围绘制边框</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="70"/>
+        <location filename="options_dialog.cpp" line="77"/>
         <source>Ease cursor movement toward the edges</source>
         <translation>平滑光标移向边缘的移动</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="121"/>
+        <location filename="options_dialog.cpp" line="128"/>
         <source>Mouse mode</source>
         <translation>鼠标模式</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="124"/>
+        <location filename="options_dialog.cpp" line="131"/>
         <source>Only Back/Forward buttons can turn pages</source>
         <translation>只有后退/前进按钮可以翻页</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="125"/>
+        <location filename="options_dialog.cpp" line="132"/>
         <source>Use the Left/Right buttons to turn pages.</source>
         <translation>使用向左/向右按钮翻页。</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="126"/>
+        <location filename="options_dialog.cpp" line="133"/>
         <source>Click left or right half of the screen to turn pages.</source>
         <translation>单击屏幕的左半部分或右半部分即可翻页。</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="134"/>
+        <location filename="options_dialog.cpp" line="141"/>
         <source>Escape key</source>
         <translation>Esc 键</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="137"/>
+        <location filename="options_dialog.cpp" line="144"/>
         <source>Quit the reader</source>
         <translation>退出阅读器</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="138"/>
+        <location filename="options_dialog.cpp" line="145"/>
         <source>Cancel the active mode</source>
         <translation>取消当前模式</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="140"/>
+        <location filename="options_dialog.cpp" line="147"/>
         <source>Escape closes the reader, even while a mode is active.</source>
         <translation>即使有模式处于活动状态，按 Esc 键也会关闭阅读器。</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="145"/>
+        <location filename="options_dialog.cpp" line="152"/>
         <source>Escape cancels the first of these that is active:
 
 1. Magnifying glass
@@ -431,32 +446,32 @@ If none is active, Escape does nothing.</source>
 如果没有活动模式，按 Esc 键不会执行任何操作。</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="176"/>
+        <location filename="options_dialog.cpp" line="184"/>
         <source>Use software-rendered &quot;go to flow&quot; (requires restart)</source>
         <translation>使用软件渲染的“转到页面流”（需要重启）</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="177"/>
+        <location filename="options_dialog.cpp" line="185"/>
         <source>Use a simple horizontal list of page thumbnails instead of the GPU-rendered 3D flow. Enable this if reading is not smooth on your system.</source>
         <translation>使用简单的水平页面缩略图列表，代替 GPU 渲染的 3D 页面流。如果您的系统阅读体验不流畅，请启用此选项。</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="224"/>
+        <location filename="options_dialog.cpp" line="232"/>
         <source>Contrast</source>
         <translation>对比度</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="259"/>
+        <location filename="options_dialog.cpp" line="267"/>
         <source>Show book fold shadow</source>
         <translation>显示书页折叠阴影</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="310"/>
+        <location filename="options_dialog.cpp" line="318"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="326"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Options</source>
         <translation>选项</translation>
     </message>
@@ -476,82 +491,82 @@ If none is active, Escape does nothing.</source>
         <translation>系统默认</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="100"/>
+        <location filename="options_dialog.cpp" line="107"/>
         <source>Clear</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="342"/>
+        <location filename="options_dialog.cpp" line="350"/>
         <source>Comics directory</source>
         <translation>漫画目录</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="180"/>
+        <location filename="options_dialog.cpp" line="188"/>
         <source>Quick Navigation Mode</source>
         <translation>快速导航模式</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="96"/>
+        <location filename="options_dialog.cpp" line="103"/>
         <source>Background color</source>
         <translation>背景颜色</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="251"/>
+        <location filename="options_dialog.cpp" line="259"/>
         <source>Double Page options</source>
         <translation>双页选项</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="108"/>
+        <location filename="options_dialog.cpp" line="115"/>
         <source>Scroll behaviour</source>
         <translation>滚动效果</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="181"/>
+        <location filename="options_dialog.cpp" line="189"/>
         <source>Disable mouse over activation</source>
         <translation>禁用鼠标激活</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="271"/>
+        <location filename="options_dialog.cpp" line="279"/>
         <source>Scaling</source>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="273"/>
+        <location filename="options_dialog.cpp" line="281"/>
         <source>Scaling method</source>
         <translation>缩放方法</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="275"/>
+        <location filename="options_dialog.cpp" line="283"/>
         <source>Nearest (fast, low quality)</source>
         <translation>最近（快速，低质量）</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="276"/>
+        <location filename="options_dialog.cpp" line="284"/>
         <source>Bilinear</source>
         <translation>双线性</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="277"/>
+        <location filename="options_dialog.cpp" line="285"/>
         <source>Lanczos (better quality)</source>
         <translation>Lanczos（质量更好）</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="308"/>
+        <location filename="options_dialog.cpp" line="316"/>
         <source>Page Flow</source>
         <translation>页面流</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="307"/>
+        <location filename="options_dialog.cpp" line="315"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="223"/>
+        <location filename="options_dialog.cpp" line="231"/>
         <source>Brightness</source>
         <translation>亮度</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="317"/>
+        <location filename="options_dialog.cpp" line="325"/>
         <source>Restart is needed</source>
         <translation>需要重启</translation>
     </message>

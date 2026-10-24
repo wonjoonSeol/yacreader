@@ -32,6 +32,7 @@ private:
     QComboBox *languageCombo;
 
     QCheckBox *showTimeInInformationLabel;
+    QCheckBox *openFinishedComicsFromFirstPage;
 
     QCheckBox *circularMagnifyingGlass;
     QCheckBox *magnifyingGlassRing;

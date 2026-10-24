@@ -1554,7 +1554,7 @@ void Viewer::save()
         // Render's current page lags the scroll position in continuous mode;
         // bring it in line before persisting reading progress.
         syncRenderToContinuousPage();
-        render->save();
+        render->save(qBound(0, lastReadPage() - 1, static_cast<int>(render->numPages()) - 1));
     }
 }
 
@@ -2219,21 +2219,21 @@ int Viewer::getCurrentPageNumber()
     return render->getIndex();
 }
 
+int Viewer::lastReadPage()
+{
+    if (continuousScroll && continuousViewModel->numPages() > 0) {
+        return getCurrentPageNumber() + 1;
+    }
+    if (doublePage && render->currentPageIsDoublePage() && render->getIndex() + 2 >= render->numPages()) {
+        return render->numPages();
+    }
+    return render->getIndex() + 1;
+}
+
 void Viewer::updateComic(ComicDB &comic)
 {
     if (render->hasLoadedComic()) {
-        // set currentPage
-        if (continuousScroll && continuousViewModel->numPages() > 0) {
-            comic.info.currentPage = getCurrentPageNumber() + 1;
-        } else if (!doublePage || (doublePage && render->currentPageIsDoublePage() == false)) {
-            comic.info.currentPage = render->getIndex() + 1;
-        } else {
-            if (doublePage && render->currentPageIsDoublePage() && (render->getIndex() + 2 >= render->numPages())) {
-                comic.info.currentPage = std::min(render->numPages(), render->getIndex() + 2);
-            } else {
-                comic.info.currentPage = std::min(render->numPages(), render->getIndex() + 1);
-            }
-        }
+        comic.info.currentPage = lastReadPage();
         // set bookmarks
         Bookmarks *boomarks = render->getBookmarks();
         QList<int> boomarksList = boomarks->getBookmarkPages();

@@ -98,6 +98,8 @@ public:
     void setContinuousScroll(bool b) { settings->setValue(CONTINUOUS_SCROLL, b); }
     bool getEnlargeImages() { return settings->value(ENLARGE_IMAGES, true).toBool(); }
     void setEnlargeImages(bool b) { settings->setValue(ENLARGE_IMAGES, b); }
+    bool getOpenFinishedComicsFromFirstPage() { return settings->value(OPEN_FINISHED_COMICS_FROM_FIRST_PAGE, false).toBool(); }
+    void setOpenFinishedComicsFromFirstPage(bool b) { settings->setValue(OPEN_FINISHED_COMICS_FROM_FIRST_PAGE, b); }
 
     QColor getBackgroundColor(const QColor &color) { return settings->value(BACKGROUND_COLOR, color).value<QColor>(); }
     void setBackgroundColor(const QColor &color) { settings->setValue(BACKGROUND_COLOR, color); }

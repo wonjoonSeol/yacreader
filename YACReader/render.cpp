@@ -709,6 +709,8 @@ void Render::load(const QString &path, int atPage)
 {
     createComic(path);
     if (comic != nullptr) {
+        // an explicit page is never replaced, only the saved reading progress
+        comic->setOpenFinishedFromFirstPage(atPage == -1 && Configuration::getConfiguration().getOpenFinishedComicsFromFirstPage());
         loadComic(path, atPage);
         startLoad();
     }
@@ -741,6 +743,7 @@ void Render::load(const QString &path, const ComicDB &comicDB)
     }
     createComic(path);
     if (comic != nullptr) {
+        comic->setOpenFinishedFromFirstPage(Configuration::getConfiguration().getOpenFinishedComicsFromFirstPage());
         loadComic(path, comicDB);
         startLoad();
     }
@@ -1181,9 +1184,9 @@ void Render::removeBookmark(int page)
     comic->removeBookmark(page);
 }
 
-void Render::save()
+void Render::save(int lastPage)
 {
-    comic->saveBookmarks();
+    comic->saveBookmarks(lastPage);
 }
 
 Bookmarks *Render::getBookmarks()
