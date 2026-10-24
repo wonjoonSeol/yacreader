@@ -188,23 +188,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="621"/>
-        <location filename="../common/comic.cpp" line="637"/>
+        <location filename="../common/comic.cpp" line="630"/>
+        <location filename="../common/comic.cpp" line="646"/>
         <source>Format not supported</source>
         <translation>Формат не поддерживается</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="615"/>
+        <location filename="../common/comic.cpp" line="624"/>
         <source>7z not found</source>
         <translation>7z не найден</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="508"/>
+        <location filename="../common/comic.cpp" line="517"/>
         <source>Unknown error opening the file</source>
         <translation>Неизвестная ошибка при открытии файла</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="501"/>
+        <location filename="../common/comic.cpp" line="510"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Ошибка контрольной суммы CRC на странице (%1): некоторые страницы будут отображаться неправильно</translation>
     </message>
@@ -272,12 +272,12 @@
 <context>
     <name>OptionsDialog</name>
     <message>
-        <location filename="options_dialog.cpp" line="233"/>
+        <location filename="options_dialog.cpp" line="237"/>
         <source>Gamma</source>
         <translation>Гамма</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="237"/>
+        <location filename="options_dialog.cpp" line="241"/>
         <source>Reset</source>
         <translation>Вернуть к первоначальным значениям</translation>
     </message>
@@ -287,37 +287,37 @@
         <translation>Папка комиксов</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="317"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Image adjustment</source>
         <translation>Настройка изображения</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="85"/>
+        <location filename="options_dialog.cpp" line="89"/>
         <source>&quot;Go to flow&quot; size</source>
         <translation>Размер &quot;Перейти к Comic Flow&quot;</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="106"/>
+        <location filename="options_dialog.cpp" line="110"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="242"/>
+        <location filename="options_dialog.cpp" line="246"/>
         <source>Image options</source>
         <translation>Настройки изображения</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="232"/>
+        <location filename="options_dialog.cpp" line="236"/>
         <source>Contrast</source>
         <translation>Контраст</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="318"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Appearance</source>
         <translation>Появление</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Options</source>
         <translation>Настройки</translation>
     </message>
@@ -337,17 +337,27 @@
         <translation>Системный по умолчанию</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="107"/>
+        <location filename="options_dialog.cpp" line="64"/>
+        <source>Open comics at</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="66"/>
+        <source>The last page read</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="111"/>
         <source>Clear</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="350"/>
+        <location filename="options_dialog.cpp" line="368"/>
         <source>Comics directory</source>
         <translation>Папка комиксов</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="188"/>
+        <location filename="options_dialog.cpp" line="192"/>
         <source>Quick Navigation Mode</source>
         <translation>Ползунок для быстрой навигации по страницам</translation>
     </message>
@@ -362,107 +372,107 @@
         <translation>Показывать время в информационной метке текущей страницы</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="64"/>
-        <source>Reading progress</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="options_dialog.cpp" line="66"/>
-        <source>Open finished comics from the first page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="options_dialog.cpp" line="67"/>
-        <source>A comic is finished when it was closed on its last page.</source>
+        <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="71"/>
+        <location filename="options_dialog.cpp" line="68"/>
+        <source>A comic counts as finished when its reading progress is on the last page.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="69"/>
+        <source>Always the first page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="75"/>
         <source>Magnifying glass</source>
         <translation>Увеличительное стекло</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="73"/>
+        <location filename="options_dialog.cpp" line="77"/>
         <source>Circular magnifying glass</source>
         <translation>Круглое увеличительное стекло</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="74"/>
+        <location filename="options_dialog.cpp" line="78"/>
         <source>Draw a ring around the circular magnifying glass</source>
         <translation>Рисовать ободок вокруг круглого увеличительного стекла</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="77"/>
+        <location filename="options_dialog.cpp" line="81"/>
         <source>Ease cursor movement toward the edges</source>
         <translation>Сглаживать движение курсора к краям</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="103"/>
+        <location filename="options_dialog.cpp" line="107"/>
         <source>Background color</source>
         <translation>Фоновый цвет</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="115"/>
+        <location filename="options_dialog.cpp" line="119"/>
         <source>Scroll behaviour</source>
         <translation>Поведение прокрутки</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="118"/>
+        <location filename="options_dialog.cpp" line="122"/>
         <source>Disable scroll animations and smooth scrolling</source>
         <translation>Отключить анимацию прокрутки и плавную прокрутку</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="119"/>
+        <location filename="options_dialog.cpp" line="123"/>
         <source>Do not turn page using scroll</source>
         <translation>Не переворачивайте страницу с помощью прокрутки</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="120"/>
+        <location filename="options_dialog.cpp" line="124"/>
         <source>Use single scroll step to turn page</source>
         <translation>Используйте один шаг прокрутки, чтобы перевернуть страницу</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="128"/>
+        <location filename="options_dialog.cpp" line="132"/>
         <source>Mouse mode</source>
         <translation>Режим мыши</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="131"/>
+        <location filename="options_dialog.cpp" line="135"/>
         <source>Only Back/Forward buttons can turn pages</source>
         <translation>Только кнопки «Назад/Вперед» могут перелистывать страницы.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="132"/>
+        <location filename="options_dialog.cpp" line="136"/>
         <source>Use the Left/Right buttons to turn pages.</source>
         <translation>Используйте кнопки «Влево/Вправо», чтобы перелистывать страницы.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="133"/>
+        <location filename="options_dialog.cpp" line="137"/>
         <source>Click left or right half of the screen to turn pages.</source>
         <translation>Нажмите левую или правую половину экрана, чтобы перелистывать страницы.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="141"/>
+        <location filename="options_dialog.cpp" line="145"/>
         <source>Escape key</source>
         <translation>Клавиша Esc</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="144"/>
+        <location filename="options_dialog.cpp" line="148"/>
         <source>Quit the reader</source>
         <translation>Выйти из программы чтения</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="145"/>
+        <location filename="options_dialog.cpp" line="149"/>
         <source>Cancel the active mode</source>
         <translation>Отменить активный режим</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="147"/>
+        <location filename="options_dialog.cpp" line="151"/>
         <source>Escape closes the reader, even while a mode is active.</source>
         <translation>Клавиша Esc закрывает программу чтения, даже если активен какой-либо режим.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="152"/>
+        <location filename="options_dialog.cpp" line="156"/>
         <source>Escape cancels the first of these that is active:
 
 1. Magnifying glass
@@ -482,87 +492,107 @@ If none is active, Escape does nothing.</source>
 Если ни один режим не активен, клавиша Esc ничего не делает.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="184"/>
+        <location filename="options_dialog.cpp" line="188"/>
         <source>Use software-rendered &quot;go to flow&quot; (requires restart)</source>
         <translation>Использовать программную отрисовку &quot;Перейти к Comic Flow&quot; (требуется перезапуск)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="185"/>
+        <location filename="options_dialog.cpp" line="189"/>
         <source>Use a simple horizontal list of page thumbnails instead of the GPU-rendered 3D flow. Enable this if reading is not smooth on your system.</source>
         <translation>Используйте простой горизонтальный список миниатюр страниц вместо 3D-потока, отрисовываемого с помощью GPU. Включите эту опцию, если чтение на вашей системе работает недостаточно плавно.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="189"/>
+        <location filename="options_dialog.cpp" line="193"/>
         <source>Disable mouse over activation</source>
         <translation>Отключить активацию потока при наведении мыши</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="263"/>
+        <source>Continuous scroll</source>
+        <translation type="unfinished">Непрерывная прокрутка</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="265"/>
+        <source>Fit pages to the width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="266"/>
+        <source>Fit pages to the height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="267"/>
+        <source>Pages that would be wider than the screen fit its width instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="285"/>
         <source>Show book fold shadow</source>
         <translation>Показывать тень на сгибе книги</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="279"/>
+        <location filename="options_dialog.cpp" line="297"/>
         <source>Scaling</source>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="281"/>
+        <location filename="options_dialog.cpp" line="299"/>
         <source>Scaling method</source>
         <translation>Метод масштабирования</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="283"/>
+        <location filename="options_dialog.cpp" line="301"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Ближайший (быстро, низкое качество)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="284"/>
+        <location filename="options_dialog.cpp" line="302"/>
         <source>Bilinear</source>
         <translation>Билинейный</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="285"/>
+        <location filename="options_dialog.cpp" line="303"/>
         <source>Lanczos (better quality)</source>
         <translation>Ланцос (лучшее качество)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="316"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Page Flow</source>
         <translation>Поток Страниц</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="315"/>
+        <location filename="options_dialog.cpp" line="333"/>
         <source>General</source>
         <translation>Общие</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="231"/>
+        <location filename="options_dialog.cpp" line="235"/>
         <source>Brightness</source>
         <translation>Яркость</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="325"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Restart is needed</source>
         <translation>Требуется перезагрузка</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="246"/>
+        <location filename="options_dialog.cpp" line="250"/>
         <source>Fit options</source>
         <translation>Варианты подгонки</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="248"/>
+        <location filename="options_dialog.cpp" line="252"/>
         <source>Enlarge images to fit width/height</source>
         <translation>Увеличьте изображения по ширине/высоте</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="259"/>
+        <location filename="options_dialog.cpp" line="277"/>
         <source>Double Page options</source>
         <translation>Параметры двойной страницы</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="261"/>
+        <location filename="options_dialog.cpp" line="279"/>
         <source>Show covers as single page</source>
         <translation>Показывать обложки на одной странице</translation>
     </message>
@@ -800,48 +830,48 @@ If none is active, Escape does nothing.</source>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1843"/>
+        <location filename="viewer.cpp" line="1873"/>
         <source>Page not available!</source>
         <translation>Страница недоступна!</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1815"/>
+        <location filename="viewer.cpp" line="1845"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Нажмите &quot;O&quot; чтобы открыть комикс.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="378"/>
+        <location filename="viewer.cpp" line="379"/>
         <source>Error opening comic</source>
         <translation>Ошибка открытия комикса</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2181"/>
+        <location filename="viewer.cpp" line="2211"/>
         <source>Cover!</source>
         <translation>Начало!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="384"/>
+        <location filename="viewer.cpp" line="385"/>
         <source>CRC Error</source>
         <translation>Ошибка CRC</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="372"/>
+        <location filename="viewer.cpp" line="373"/>
         <source>Comic not found</source>
         <translation>Комикс не найден</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="372"/>
+        <location filename="viewer.cpp" line="373"/>
         <source>Not found</source>
         <translation>Не найдено</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2195"/>
+        <location filename="viewer.cpp" line="2225"/>
         <source>Last page!</source>
         <translation>Конец!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1832"/>
+        <location filename="viewer.cpp" line="1862"/>
         <source>Loading...please wait!</source>
         <translation>Загрузка... Пожалуйста подождите!</translation>
     </message>
@@ -1045,8 +1075,8 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="389"/>
-        <location filename="main_window_viewer.cpp" line="1915"/>
-        <location filename="main_window_viewer.cpp" line="1919"/>
+        <location filename="main_window_viewer.cpp" line="1928"/>
+        <location filename="main_window_viewer.cpp" line="1932"/>
         <source>Open previous comic</source>
         <translation>Открыть предыдуший комикс</translation>
     </message>
@@ -1057,8 +1087,8 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="395"/>
-        <location filename="main_window_viewer.cpp" line="1914"/>
-        <location filename="main_window_viewer.cpp" line="1920"/>
+        <location filename="main_window_viewer.cpp" line="1927"/>
+        <location filename="main_window_viewer.cpp" line="1933"/>
         <source>Open next comic</source>
         <translation>Открыть следующий комикс</translation>
     </message>
@@ -1069,8 +1099,8 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="402"/>
-        <location filename="main_window_viewer.cpp" line="1917"/>
-        <location filename="main_window_viewer.cpp" line="1921"/>
+        <location filename="main_window_viewer.cpp" line="1930"/>
+        <location filename="main_window_viewer.cpp" line="1934"/>
         <source>Go to previous page</source>
         <translation>Перейти к предыдущей странице</translation>
     </message>
@@ -1081,8 +1111,8 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="409"/>
-        <location filename="main_window_viewer.cpp" line="1916"/>
-        <location filename="main_window_viewer.cpp" line="1922"/>
+        <location filename="main_window_viewer.cpp" line="1929"/>
+        <location filename="main_window_viewer.cpp" line="1935"/>
         <source>Go to next page</source>
         <translation>Перейти к следующей странице</translation>
     </message>
@@ -1509,27 +1539,47 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1355"/>
-        <location filename="main_window_viewer.cpp" line="1508"/>
+        <location filename="main_window_viewer.cpp" line="1521"/>
         <source>Reading</source>
         <translation>Чтение</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1557"/>
+        <location filename="main_window_viewer.cpp" line="1493"/>
+        <source>Go 5 pages to the left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="1495"/>
+        <source>Go 5 pages to the right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="1497"/>
+        <source>Go 10 pages to the left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="1499"/>
+        <source>Go 10 pages to the right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="1570"/>
         <source>There is a new version available</source>
         <translation>Доступна новая версия</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1558"/>
+        <location filename="main_window_viewer.cpp" line="1571"/>
         <source>Do you want to download the new version?</source>
         <translation>Хотите загрузить новую версию ?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1561"/>
+        <location filename="main_window_viewer.cpp" line="1574"/>
         <source>Remind me in 14 days</source>
         <translation>Напомнить через 14 дней</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1562"/>
+        <location filename="main_window_viewer.cpp" line="1575"/>
         <source>Not now</source>
         <translation>Не сейчас</translation>
     </message>

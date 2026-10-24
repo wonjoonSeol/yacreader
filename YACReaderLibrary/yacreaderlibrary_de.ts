@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="621"/>
-        <location filename="../common/comic.cpp" line="637"/>
+        <location filename="../common/comic.cpp" line="630"/>
+        <location filename="../common/comic.cpp" line="646"/>
         <source>Format not supported</source>
         <translation>Format nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="615"/>
+        <location filename="../common/comic.cpp" line="624"/>
         <source>7z not found</source>
         <translation>7z nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="508"/>
+        <location filename="../common/comic.cpp" line="517"/>
         <source>Unknown error opening the file</source>
         <translation>Unbekannter Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="501"/>
+        <location filename="../common/comic.cpp" line="510"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>CRC Fehler auf Seite (%1): einige Seiten werden nicht korrekt dargestellt</translation>
     </message>
