@@ -133,10 +133,10 @@ static QImage scaleImageBicubic(const QImage &image, int width, int height)
                     a += int32_t(tap.weight * qAlpha(px));
                 }
                 int16_t *out = &outRow[size_t(x) * 4];
-                out[0] = clampIntermediate((b + (1 << 15)) >> 16 << 6);
-                out[1] = clampIntermediate((g + (1 << 15)) >> 16 << 6);
-                out[2] = clampIntermediate((r + (1 << 15)) >> 16 << 6);
-                out[3] = clampIntermediate((a + (1 << 15)) >> 16 << 6);
+                out[0] = clampIntermediate((b + (1 << 9)) >> 10);
+                out[1] = clampIntermediate((g + (1 << 9)) >> 10);
+                out[2] = clampIntermediate((r + (1 << 9)) >> 10);
+                out[3] = clampIntermediate((a + (1 << 9)) >> 10);
             }
         }
     };
