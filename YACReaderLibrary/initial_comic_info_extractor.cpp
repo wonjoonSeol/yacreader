@@ -32,6 +32,10 @@ void InitialComicInfoExtractor::extract()
         QLOG_WARN() << "Extracting cover: file not found " << _fileSource;
         return;
     }
+    if (fi.isDir()) {
+        extractFromFolder();
+        return;
+    }
 #ifndef NO_PDF
     if (fi.suffix().compare("pdf", Qt::CaseInsensitive) == 0) {
 #if defined Q_OS_MACOS && defined USE_PDFKIT
@@ -177,6 +181,50 @@ void InitialComicInfoExtractor::extract()
                 // p.save(_target);
             }
         }
+    }
+}
+
+void InitialComicInfoExtractor::extractFromFolder()
+{
+    if (getXMLMetadata) {
+        const QFileInfoList comicInfoFiles = QDir(_fileSource).entryInfoList({ QStringLiteral("ComicInfo.xml") }, QDir::Files);
+        if (!comicInfoFiles.isEmpty()) {
+            QFile comicInfo(comicInfoFiles.first().absoluteFilePath());
+            if (comicInfo.open(QIODevice::ReadOnly)) {
+                _xmlInfoData = comicInfo.readAll();
+            }
+        }
+    }
+
+    if (_target == "None") {
+        return;
+    }
+
+    const QFileInfoList pages = FolderComic::pageFiles(_fileSource);
+    _numPages = pages.size();
+    if (_numPages == 0) {
+        // a folder without pages is not a comic, so it leaves no cover behind either
+        _fileSupported = false;
+        _cover.load(":/images/notCover.png");
+        return;
+    }
+
+    if (_coverPage > _numPages) {
+        _coverPage = 1;
+    }
+
+    QImage cover;
+    if (!cover.load(pages.at(_coverPage - 1).absoluteFilePath())) {
+        QLOG_WARN() << "Extracting cover: unable to load image from extracted cover " << _fileSource;
+        _cover.load(":/images/notCover.png");
+        return;
+    }
+
+    _cover = cover;
+    _coverSize = QPair<int, int>(cover.width(), cover.height());
+    _coverExtracted = true;
+    if (_target != "") {
+        saveCover(_target, cover);
     }
 }
 

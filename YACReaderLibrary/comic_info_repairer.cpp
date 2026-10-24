@@ -1,6 +1,7 @@
 #include "comic_info_repairer.h"
 
 #include "QsLog.h"
+#include "comic.h"
 #include "comic_db.h"
 #include "cover_utils.h"
 #include "data_base_management.h"
@@ -172,7 +173,7 @@ QString existingComicPath(const QString &source, const QStringList &relativePath
     for (const auto &path : relativePaths) {
         const auto absolutePath = QDir::cleanPath(source + path);
         const QFileInfo fileInfo(absolutePath);
-        if (fileInfo.exists() && fileInfo.isFile()) {
+        if (fileInfo.isFile() || Comic::folderIsComic(absolutePath)) {
             relativePath = path;
             return absolutePath;
         }

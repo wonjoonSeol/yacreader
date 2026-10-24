@@ -24,6 +24,8 @@ private slots:
     void choosesTheStartPage();
     void choosesTheStartPageOfLibraryComics_data();
     void choosesTheStartPageOfLibraryComics();
+    void opensLibraryFolderComicsAtTheSavedPage_data();
+    void opensLibraryFolderComicsAtTheSavedPage();
     void reopenedComicStartsFromTheSavedProgress_data();
     void reopenedComicStartsFromTheSavedProgress();
     void saveBookmarksRecordsTheLastReadPageAndItsImage();
@@ -157,6 +159,31 @@ void ComicStartPageTest::choosesTheStartPageOfLibraryComics()
     comic.resolveStartPage();
 
     QCOMPARE(comic.startPage(), expectedPage);
+}
+
+void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage_data()
+{
+    QTest::addColumn<int>("currentPage");
+    QTest::addColumn<int>("expectedPage");
+
+    QTest::newRow("on a middle page") << 3 << 2;
+    QTest::newRow("never opened") << 0 << 0;
+}
+
+void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage()
+{
+    QFETCH(int, currentPage);
+    QFETCH(int, expectedPage);
+
+    ComicDB comicDB;
+    comicDB.info.currentPage = currentPage;
+
+    FolderComic comic;
+    QVERIFY(comic.load(comicFolder.path(), comicDB));
+
+    QCOMPARE(startPageOf(comic), expectedPage);
+    QVERIFY(!comic.hasBeenAnErrorOpening());
+    QCOMPARE(comic.numPages(), static_cast<unsigned int>(pageCount));
 }
 
 void ComicStartPageTest::reopenedComicStartsFromTheSavedProgress_data()
