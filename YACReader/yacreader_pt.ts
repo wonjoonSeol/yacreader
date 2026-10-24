@@ -188,23 +188,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>7z não encontrado</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Erro CRC na página (%1): algumas páginas não serão exibidas corretamente</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>Erro desconhecido ao abrir o arquivo</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>Formato não suportado</translation>
     </message>
@@ -282,12 +282,12 @@
         <translation>Tamanho de &quot;Ir para Comic Flow&quot;</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="339"/>
         <source>Appearance</source>
         <translation>Aparência</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="354"/>
+        <location filename="options_dialog.cpp" line="355"/>
         <source>Options</source>
         <translation>Opções</translation>
     </message>
@@ -322,12 +322,12 @@
         <translation>Claro</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="370"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Comics directory</source>
         <translation>Diretório de quadrinhos</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="345"/>
+        <location filename="options_dialog.cpp" line="346"/>
         <source>Restart is needed</source>
         <translation>Reiniciar é necessário</translation>
     </message>
@@ -578,31 +578,36 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos4 (more detail, more halos)</source>
+        <source>Bicubic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3 (balanced)</source>
+        <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>General</source>
         <translation>Em geral</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Page Flow</source>
         <translation>Fluxo de página</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Image adjustment</source>
         <translation>Ajuste de imagem</translation>
     </message>

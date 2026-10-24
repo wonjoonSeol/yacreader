@@ -188,18 +188,18 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>不支持的文件格式</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>打开文件时出现未知错误</translation>
     </message>
@@ -208,7 +208,7 @@
         <translation type="vanished">不支持的 EPUB 格式：%1</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 页 CRC 校验失败: 部分页面将无法正确显示</translation>
     </message>
@@ -306,7 +306,7 @@
         <translation>我的漫画路径</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Image adjustment</source>
         <translation>图像调整</translation>
     </message>
@@ -486,22 +486,27 @@ If none is active, Escape does nothing.</source>
         <translation>显示书页折叠阴影</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
+        <location filename="options_dialog.cpp" line="303"/>
+        <source>Bicubic</source>
+        <translation>双三次（Bicubic）</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="305"/>
         <source>Lanczos3 (balanced)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="305"/>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="339"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="354"/>
+        <location filename="options_dialog.cpp" line="355"/>
         <source>Options</source>
         <translation>选项</translation>
     </message>
@@ -526,7 +531,7 @@ If none is active, Escape does nothing.</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="370"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Comics directory</source>
         <translation>漫画目录</translation>
     </message>
@@ -586,17 +591,17 @@ If none is active, Escape does nothing.</source>
         <translation>双线性</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
+        <location filename="options_dialog.cpp" line="304"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Page Flow</source>
         <translation>页面流</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
@@ -606,7 +611,7 @@ If none is active, Escape does nothing.</source>
         <translation>亮度</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="345"/>
+        <location filename="options_dialog.cpp" line="346"/>
         <source>Restart is needed</source>
         <translation>需要重启</translation>
     </message>

@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>Formato non supportato</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>7z non trovato</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>Errore sconosciuto all&apos;apertura del file</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Errore CRC alla pagina (%1): alcune pagine potrebbero non essere visualizzate correttamente</translation>
     </message>
@@ -2531,58 +2531,58 @@ Per interrompere un aggiornamento automatico, tocca l&apos;indicatore di caricam
 <context>
     <name>OrganizeFilesCoordinator</name>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="175"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="145"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="177"/>
         <source>Organize files</source>
         <translation>Organizza i file</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="145"/>
         <source>This folder does not contain any comics.</source>
         <translation>Questa cartella non contiene fumetti.</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="176"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="178"/>
         <source>This library is busy: %1</source>
         <translation>Questa libreria è occupata: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="219"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="221"/>
         <source>the library database could not be opened</source>
         <translation>non è stato possibile aprire il database della libreria</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="226"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="228"/>
         <source>the library database could not be locked for writing</source>
         <translation>non è stato possibile bloccare il database della libreria per la scrittura</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="235"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="237"/>
         <source>a folder entry could not be restored</source>
         <translation>non è stato possibile ripristinare una voce di cartella</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="246"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="248"/>
         <source>a comic entry could not be updated</source>
         <translation>non è stato possibile aggiornare una voce di fumetto</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="265"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="267"/>
         <source>the library database could not be saved: %1</source>
         <translation>non è stato possibile salvare il database della libreria: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="310"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="312"/>
         <source>the record of the last organize run could not be read</source>
         <translation>non è stato possibile leggere il registro dell&apos;ultima organizzazione</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="335"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="337"/>
         <source>the folder %1 could not be created</source>
         <translation>non è stato possibile creare la cartella %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="organize_files/organize_files_coordinator.cpp" line="383"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="385"/>
         <source>%n file(s) could not be moved back</source>
         <translation>
             <numerusform>non è stato possibile riportare indietro %n file</numerusform>

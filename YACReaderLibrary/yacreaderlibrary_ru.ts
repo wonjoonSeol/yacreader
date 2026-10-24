@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>Формат не поддерживается</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>7z не найден</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>Неизвестная ошибка при открытии файла</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Ошибка контрольной суммы CRC на странице (%1): некоторые страницы будут отображаться неправильно</translation>
     </message>
@@ -2531,58 +2531,58 @@ To stop an automatic update tap on the loading indicator next to the Libraries t
 <context>
     <name>OrganizeFilesCoordinator</name>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="175"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="145"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="177"/>
         <source>Organize files</source>
         <translation>Упорядочить файлы</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="145"/>
         <source>This folder does not contain any comics.</source>
         <translation>В этой папке нет комиксов.</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="176"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="178"/>
         <source>This library is busy: %1</source>
         <translation>Эта библиотека занята: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="219"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="221"/>
         <source>the library database could not be opened</source>
         <translation>не удалось открыть базу данных библиотеки</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="226"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="228"/>
         <source>the library database could not be locked for writing</source>
         <translation>не удалось заблокировать базу данных библиотеки для записи</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="235"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="237"/>
         <source>a folder entry could not be restored</source>
         <translation>не удалось восстановить запись о папке</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="246"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="248"/>
         <source>a comic entry could not be updated</source>
         <translation>не удалось обновить запись о комиксе</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="265"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="267"/>
         <source>the library database could not be saved: %1</source>
         <translation>не удалось сохранить базу данных библиотеки: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="310"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="312"/>
         <source>the record of the last organize run could not be read</source>
         <translation>не удалось прочитать запись о последней операции упорядочивания</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="335"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="337"/>
         <source>the folder %1 could not be created</source>
         <translation>не удалось создать папку %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="organize_files/organize_files_coordinator.cpp" line="383"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="385"/>
         <source>%n file(s) could not be moved back</source>
         <translation>
             <numerusform>не удалось вернуть на место %n файл</numerusform>

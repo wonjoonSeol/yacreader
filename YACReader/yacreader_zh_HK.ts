@@ -188,23 +188,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 頁 CRC 校驗失敗: 部分頁面將無法正確顯示</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>打開檔時出現未知錯誤</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>不支持的檔格式</translation>
     </message>
@@ -332,12 +332,12 @@
         <translation>雙線性</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
+        <location filename="options_dialog.cpp" line="304"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="345"/>
+        <location filename="options_dialog.cpp" line="346"/>
         <source>Restart is needed</source>
         <translation>需要重啟</translation>
     </message>
@@ -547,22 +547,27 @@ If none is active, Escape does nothing.</source>
         <translation>顯示書頁摺疊陰影</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3 (balanced)</source>
+        <location filename="options_dialog.cpp" line="303"/>
+        <source>Bicubic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>General</source>
         <translation>常規</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="339"/>
         <source>Appearance</source>
         <translation>外貌</translation>
     </message>
@@ -587,22 +592,22 @@ If none is active, Escape does nothing.</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Page Flow</source>
         <translation>頁面流</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Image adjustment</source>
         <translation>圖像調整</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="354"/>
+        <location filename="options_dialog.cpp" line="355"/>
         <source>Options</source>
         <translation>選項</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="370"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Comics directory</source>
         <translation>漫畫目錄</translation>
     </message>

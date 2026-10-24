@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>7Z Archiefbestand niet gevonden</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>CRC-fout op pagina (%1): sommige pagina&apos;s worden niet correct weergegeven</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>Onbekende fout bij het openen van het bestand</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>Formaat niet ondersteund</translation>
     </message>
@@ -2531,58 +2531,58 @@ Om een ​​automatische update te stoppen, tikt u op de laadindicator naast de
 <context>
     <name>OrganizeFilesCoordinator</name>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="175"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="145"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="177"/>
         <source>Organize files</source>
         <translation>Bestanden ordenen</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="145"/>
         <source>This folder does not contain any comics.</source>
         <translation>Deze map bevat geen strips.</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="176"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="178"/>
         <source>This library is busy: %1</source>
         <translation>Deze bibliotheek is bezig: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="219"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="221"/>
         <source>the library database could not be opened</source>
         <translation>de database van de bibliotheek kon niet worden geopend</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="226"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="228"/>
         <source>the library database could not be locked for writing</source>
         <translation>de database van de bibliotheek kon niet worden vergrendeld om te schrijven</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="235"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="237"/>
         <source>a folder entry could not be restored</source>
         <translation>een mapvermelding kon niet worden hersteld</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="246"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="248"/>
         <source>a comic entry could not be updated</source>
         <translation>een stripvermelding kon niet worden bijgewerkt</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="265"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="267"/>
         <source>the library database could not be saved: %1</source>
         <translation>de database van de bibliotheek kon niet worden opgeslagen: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="310"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="312"/>
         <source>the record of the last organize run could not be read</source>
         <translation>het verslag van de laatste ordening kon niet worden gelezen</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="335"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="337"/>
         <source>the folder %1 could not be created</source>
         <translation>de map %1 kon niet worden gemaakt</translation>
     </message>
     <message numerus="yes">
-        <location filename="organize_files/organize_files_coordinator.cpp" line="383"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="385"/>
         <source>%n file(s) could not be moved back</source>
         <translation>
             <numerusform>%n bestand kon niet worden teruggezet</numerusform>

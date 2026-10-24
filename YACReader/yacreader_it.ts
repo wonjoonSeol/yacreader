@@ -188,23 +188,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>Formato non supportato</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>7z non trovato</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>Errore sconosciuto aprendo il file</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Errore CRC alla pagina (%1): alcune pagine non saranno visualizzate correttamente</translation>
     </message>
@@ -287,7 +287,7 @@
         <translation>Percorso dei miei fumetti</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Image adjustment</source>
         <translation>Correzioni immagine</translation>
     </message>
@@ -312,12 +312,12 @@
         <translation>Contrasto</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="339"/>
         <source>Appearance</source>
         <translation>Aspetto</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="354"/>
+        <location filename="options_dialog.cpp" line="355"/>
         <source>Options</source>
         <translation>Opzioni</translation>
     </message>
@@ -352,7 +352,7 @@
         <translation>Cancella</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="370"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Comics directory</source>
         <translation>Cartella Fumetti</translation>
     </message>
@@ -553,26 +553,31 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos4 (more detail, more halos)</source>
+        <source>Bicubic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3 (balanced)</source>
+        <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Page Flow</source>
         <translation>Flusso pagine</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>General</source>
         <translation>Generale</translation>
     </message>
@@ -582,7 +587,7 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <translation>Luminosità</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="345"/>
+        <location filename="options_dialog.cpp" line="346"/>
         <source>Restart is needed</source>
         <translation>Riavvio Necessario</translation>
     </message>

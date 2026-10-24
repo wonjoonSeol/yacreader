@@ -188,23 +188,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="643"/>
+        <location filename="../common/comic.cpp" line="659"/>
         <source>Format not supported</source>
         <translation>Format non supporté</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="637"/>
         <source>7z not found</source>
         <translation>7z introuvable</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="530"/>
         <source>Unknown error opening the file</source>
         <translation>Erreur inconnue lors de l&apos;ouverture du fichier</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="523"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Erreur CRC sur la page (%1): certaines pages ne s&apos;afficheront pas correctement</translation>
     </message>
@@ -287,7 +287,7 @@
         <translation>Chemin de mes bandes dessinées</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Image adjustment</source>
         <translation>Ajustement de l&apos;image</translation>
     </message>
@@ -312,12 +312,12 @@
         <translation>Contraste</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="339"/>
         <source>Appearance</source>
         <translation>Apparence</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="354"/>
+        <location filename="options_dialog.cpp" line="355"/>
         <source>Options</source>
         <translation>Possibilités</translation>
     </message>
@@ -352,7 +352,7 @@
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="370"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Comics directory</source>
         <translation>Répertoire des bandes dessinées</translation>
     </message>
@@ -553,26 +553,31 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos4 (more detail, more halos)</source>
+        <source>Bicubic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3 (balanced)</source>
+        <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Page Flow</source>
         <translation>Flux des pages</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>General</source>
         <translation>Général</translation>
     </message>
@@ -582,7 +587,7 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Luminosité</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="345"/>
+        <location filename="options_dialog.cpp" line="346"/>
         <source>Restart is needed</source>
         <translation>Redémarrage nécessaire</translation>
     </message>
