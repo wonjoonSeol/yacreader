@@ -423,6 +423,44 @@ void Viewer::right()
     }
 }
 
+void Viewer::goPagesToTheLeft(int count)
+{
+    goToRelativePage(doubleMangaPage ? count : -count);
+}
+
+void Viewer::goPagesToTheRight(int count)
+{
+    goToRelativePage(doubleMangaPage ? -count : count);
+}
+
+void Viewer::goToRelativePage(int offset)
+{
+    const int lastPage = static_cast<int>(render->numPages()) - 1;
+    if (!render->hasLoadedComic() || lastPage < 0) {
+        return;
+    }
+
+    const int fromPage = getCurrentPageNumber();
+    if ((offset > 0 && lastReadPage() == lastPage) || (offset < 0 && fromPage == 0)) {
+        return;
+    }
+
+    int page = fromPage + offset;
+    // double page spreads stay paired as long as the page parity is kept
+    if (doublePage && !continuousScroll) {
+        if (offset % 2 != 0) {
+            page -= offset > 0 ? 1 : -1;
+        }
+        while (page > lastPage) {
+            page -= 2;
+        }
+    }
+
+    goTo(qBound(0, page, lastPage));
+    shouldOpenNext = false;
+    shouldOpenPrevious = false;
+}
+
 void Viewer::prev()
 {
     if (!render->hasLoadedComic()) {
@@ -456,6 +494,7 @@ void Viewer::goTo(unsigned int page)
         continuousViewModel->setAnchorPage(static_cast<int>(page));
         render->goTo(page);
         scrollToCurrentContinuousPage();
+        updateInformation();
         return;
     }
 
@@ -2215,6 +2254,17 @@ int Viewer::getCurrentPageNumber()
 {
     if (continuousScroll && continuousViewModel->numPages() > 0) {
         return continuousViewModel->readingProgressPage();
+    }
+    return render->getIndex();
+}
+
+int Viewer::lastReadPage()
+{
+    if (continuousScroll && continuousViewModel->numPages() > 0) {
+        return continuousViewModel->readingProgressPage();
+    }
+    if (doublePage && render->currentPageIsDoublePage() && render->getIndex() + 2 >= render->numPages()) {
+        return render->numPages() - 1;
     }
     return render->getIndex();
 }

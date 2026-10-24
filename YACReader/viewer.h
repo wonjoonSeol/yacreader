@@ -59,6 +59,8 @@ public slots:
     void next();
     void left();
     void right();
+    void goPagesToTheLeft(int count);
+    void goPagesToTheRight(int count);
     void showGoToDialog();
     void goToFirstPage();
     void goToLastPage();
@@ -255,6 +257,9 @@ private:
     void setActiveWidget(QWidget *w);
     void setContinuousScrollImpl(bool enabled, bool persistSettings);
     void setMangaModeImpl(bool manga, bool persistSettings);
+    void goToRelativePage(int offset);
+    // 0-based. A double page spread that ends the comic counts as read up to its last page.
+    int lastReadPage();
 
     //! Mouse handler
     std::unique_ptr<YACReader::MouseHandler> mouseHandler;

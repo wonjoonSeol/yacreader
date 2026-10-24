@@ -1490,6 +1490,21 @@ void MainWindowViewer::setUpShortcutsManagement()
     auto *const offsetDoublePageToTheRight = addActionWithShortcut(tr("Offset double page to the right"), OFFSET_DOUBLE_PAGE_TO_THE_RIGHT_Y);
     connect(offsetDoublePageToTheRight, &QAction::triggered, viewer, &Viewer::offsetDoublePageToTheRight);
 
+    const auto addGoPagesToTheLeftAction = [this](int count, const QString &shortcutKey) {
+        auto *const action = addActionWithShortcut(tr("Go %1 pages to the left").arg(count), shortcutKey);
+        connect(action, &QAction::triggered, viewer, [this, count] { viewer->goPagesToTheLeft(count); });
+        return action;
+    };
+    const auto addGoPagesToTheRightAction = [this](int count, const QString &shortcutKey) {
+        auto *const action = addActionWithShortcut(tr("Go %1 pages to the right").arg(count), shortcutKey);
+        connect(action, &QAction::triggered, viewer, [this, count] { viewer->goPagesToTheRight(count); });
+        return action;
+    };
+    auto *const go5PagesToTheLeftAction = addGoPagesToTheLeftAction(5, GO_5_PAGES_TO_THE_LEFT_ACTION_Y);
+    auto *const go5PagesToTheRightAction = addGoPagesToTheRightAction(5, GO_5_PAGES_TO_THE_RIGHT_ACTION_Y);
+    auto *const go10PagesToTheLeftAction = addGoPagesToTheLeftAction(10, GO_10_PAGES_TO_THE_LEFT_ACTION_Y);
+    auto *const go10PagesToTheRightAction = addGoPagesToTheRightAction(10, GO_10_PAGES_TO_THE_RIGHT_ACTION_Y);
+
     loadedComicActions = { autoScrollForwardAction,
                            autoScrollBackwardAction,
                            autoScrollForwardHorizontalFirstAction,
@@ -1503,7 +1518,11 @@ void MainWindowViewer::setUpShortcutsManagement()
                            goToFirstPageAction,
                            goToLastPageAction,
                            offsetDoublePageToTheLeft,
-                           offsetDoublePageToTheRight };
+                           offsetDoublePageToTheRight,
+                           go5PagesToTheLeftAction,
+                           go5PagesToTheRightAction,
+                           go10PagesToTheLeftAction,
+                           go10PagesToTheRightAction };
 
     editShortcutsDialog->addActionsGroup(tr("Reading"), theme.shortcutsIcons.readingIcon,
                                          tmpList = QList<QAction *>()
@@ -1517,6 +1536,13 @@ void MainWindowViewer::setUpShortcutsManagement()
     allActions << tmpList;
 
     ShortcutsManager::getShortcutsManager().registerActions(allActions);
+
+    // a default added after users could customize shortcuts must not take a key already bound to another action
+    for (auto *action : { go5PagesToTheLeftAction, go5PagesToTheRightAction, go10PagesToTheLeftAction, go10PagesToTheRightAction }) {
+        if (ShortcutsManager::getShortcutsManager().checkConflicts(action->shortcut(), action)) {
+            action->setShortcut(QKeySequence());
+        }
+    }
 }
 
 void MainWindowViewer::doubleMangaPageSwitch()

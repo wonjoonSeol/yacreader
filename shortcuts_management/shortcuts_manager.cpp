@@ -74,6 +74,10 @@ void ShortcutsManager::initDefaultShorcuts()
     defaultShorcuts.insert(GO_TO_LAST_PAGE_ACTION_Y, Qt::Key_End);
     defaultShorcuts.insert(OFFSET_DOUBLE_PAGE_TO_THE_LEFT_Y, Qt::CTRL | Qt::SHIFT | Qt::Key_Left);
     defaultShorcuts.insert(OFFSET_DOUBLE_PAGE_TO_THE_RIGHT_Y, Qt::CTRL | Qt::SHIFT | Qt::Key_Right);
+    defaultShorcuts.insert(GO_5_PAGES_TO_THE_LEFT_ACTION_Y, Qt::SHIFT | Qt::Key_Left);
+    defaultShorcuts.insert(GO_5_PAGES_TO_THE_RIGHT_ACTION_Y, Qt::SHIFT | Qt::Key_Right);
+    defaultShorcuts.insert(GO_10_PAGES_TO_THE_LEFT_ACTION_Y, Qt::ALT | Qt::Key_Left);
+    defaultShorcuts.insert(GO_10_PAGES_TO_THE_RIGHT_ACTION_Y, Qt::ALT | Qt::Key_Right);
     // mglass
     defaultShorcuts.insert(SIZE_UP_MGLASS_ACTION_Y, Qt::Key_BracketRight);
     defaultShorcuts.insert(SIZE_DOWN_MGLASS_ACTION_Y, Qt::Key_BracketLeft);

@@ -786,7 +786,7 @@ If none is active, Escape does nothing.</translation>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1815"/>
+        <location filename="viewer.cpp" line="1854"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Press &apos;O&apos; to open comic.</translation>
     </message>
@@ -811,22 +811,22 @@ If none is active, Escape does nothing.</translation>
         <translation>CRC Error</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1832"/>
+        <location filename="viewer.cpp" line="1871"/>
         <source>Loading...please wait!</source>
         <translation>Loading...please wait!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1843"/>
+        <location filename="viewer.cpp" line="1882"/>
         <source>Page not available!</source>
         <translation>Page not available!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2181"/>
+        <location filename="viewer.cpp" line="2220"/>
         <source>Cover!</source>
         <translation>Cover!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2195"/>
+        <location filename="viewer.cpp" line="2234"/>
         <source>Last page!</source>
         <translation>Last page!</translation>
     </message>
@@ -1030,8 +1030,8 @@ If none is active, Escape does nothing.</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="389"/>
-        <location filename="main_window_viewer.cpp" line="1915"/>
-        <location filename="main_window_viewer.cpp" line="1919"/>
+        <location filename="main_window_viewer.cpp" line="1941"/>
+        <location filename="main_window_viewer.cpp" line="1945"/>
         <source>Open previous comic</source>
         <translation>Open previous comic</translation>
     </message>
@@ -1042,8 +1042,8 @@ If none is active, Escape does nothing.</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="395"/>
-        <location filename="main_window_viewer.cpp" line="1914"/>
-        <location filename="main_window_viewer.cpp" line="1920"/>
+        <location filename="main_window_viewer.cpp" line="1940"/>
+        <location filename="main_window_viewer.cpp" line="1946"/>
         <source>Open next comic</source>
         <translation>Open next comic</translation>
     </message>
@@ -1054,8 +1054,8 @@ If none is active, Escape does nothing.</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="402"/>
-        <location filename="main_window_viewer.cpp" line="1917"/>
-        <location filename="main_window_viewer.cpp" line="1921"/>
+        <location filename="main_window_viewer.cpp" line="1943"/>
+        <location filename="main_window_viewer.cpp" line="1947"/>
         <source>Go to previous page</source>
         <translation>Go to previous page</translation>
     </message>
@@ -1066,8 +1066,8 @@ If none is active, Escape does nothing.</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="409"/>
-        <location filename="main_window_viewer.cpp" line="1916"/>
-        <location filename="main_window_viewer.cpp" line="1922"/>
+        <location filename="main_window_viewer.cpp" line="1942"/>
+        <location filename="main_window_viewer.cpp" line="1948"/>
         <source>Go to next page</source>
         <translation>Go to next page</translation>
     </message>
@@ -1494,27 +1494,37 @@ If none is active, Escape does nothing.</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1355"/>
-        <location filename="main_window_viewer.cpp" line="1508"/>
+        <location filename="main_window_viewer.cpp" line="1527"/>
         <source>Reading</source>
         <translation>Reading</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1557"/>
+        <location filename="main_window_viewer.cpp" line="1494"/>
+        <source>Go %1 pages to the left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="1499"/>
+        <source>Go %1 pages to the right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="1583"/>
         <source>There is a new version available</source>
         <translation>There is a new version available</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1558"/>
+        <location filename="main_window_viewer.cpp" line="1584"/>
         <source>Do you want to download the new version?</source>
         <translation>Do you want to download the new version?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1561"/>
+        <location filename="main_window_viewer.cpp" line="1587"/>
         <source>Remind me in 14 days</source>
         <translation>Remind me in 14 days</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1562"/>
+        <location filename="main_window_viewer.cpp" line="1588"/>
         <source>Not now</source>
         <translation>Not now</translation>
     </message>
