@@ -52,6 +52,25 @@ qint64 comicSize(const QFileInfo &fileInfo)
     return fileInfo.isDir() ? totalSize(FolderComic::pageFiles(fileInfo.absoluteFilePath())) : fileInfo.size();
 }
 
+// The update sorts and merges both lists with this one order. Merging with another order
+// takes items for missing, so they are removed and added again and lose their reading
+// lists and labels. Names the natural order finds equal, like "01" and "1", stay apart.
+int compareNames(const QString &left, const QString &right)
+{
+    const int natural = naturalCompare(left, right, Qt::CaseInsensitive);
+    return natural != 0 ? natural : QString::localeAwareCompare(left, right);
+}
+
+bool sourceLessThan(const QFileInfo &left, const QFileInfo &right)
+{
+    return compareNames(left.fileName(), right.fileName()) < 0;
+}
+
+bool libraryLessThan(const LibraryItem *left, const LibraryItem *right)
+{
+    return compareNames(left->name, right->name) < 0;
+}
+
 }
 
 Folder rootFolder(QSqlDatabase &db)
@@ -573,8 +592,8 @@ void LibraryCreator::update(QDir dirS)
         }
     }
 
-    std::sort(listSFolders.begin(), listSFolders.end(), naturalSortLessThanCIFileInfo);
-    std::sort(listSComics.begin(), listSComics.end(), naturalSortLessThanCIFileInfo);
+    std::sort(listSFolders.begin(), listSFolders.end(), sourceLessThan);
+    std::sort(listSComics.begin(), listSComics.end(), sourceLessThan);
 
     QFileInfoList listS;
     listS.append(listSFolders);
@@ -593,8 +612,8 @@ void LibraryCreator::update(QDir dirS)
     // QLOG_TRACE() << "END Getting info from DB" << dirS.absolutePath();
 
     QList<LibraryItem *> listD;
-    std::sort(folders.begin(), folders.end(), naturalSortLessThanCILibraryItem);
-    std::sort(comics.begin(), comics.end(), naturalSortLessThanCILibraryItem);
+    std::sort(folders.begin(), folders.end(), libraryLessThan);
+    std::sort(comics.begin(), comics.end(), libraryLessThan);
     listD.append(folders);
     listD.append(comics);
     // QLOG_DEBUG() << "---------------------------------------------------------";
@@ -675,10 +694,8 @@ void LibraryCreator::update(QDir dirS)
         if (!updated) {
             QFileInfo fileInfoS = listS.at(i);
             LibraryItem *fileInfoD = listD.at(j);
-            QString nameS = QDir::cleanPath(fileInfoS.absoluteFilePath()).remove(QDir::cleanPath(fileInfoS.absolutePath())); // remove source
-            QString nameD = "/" + fileInfoD->name;
 
-            int comparation = QString::localeAwareCompare(nameS, nameD);
+            int comparation = compareNames(fileInfoS.fileName(), fileInfoD->name);
             if (isFolderS(i) && fileInfoD->isDir())
                 if (comparation == 0) // same folder, update
                 {
@@ -689,7 +706,6 @@ void LibraryCreator::update(QDir dirS)
                     j++;
                 } else if (comparation < 0) // nameS doesn't exist on DB
                 {
-                // QLOG_WARN() << "dir source < dest" << nameS << nameD;
 #ifdef Q_OS_MACOS
                     QStringList src = _source.split("/");
                     QString filePath = fileInfoS.absoluteFilePath();
@@ -707,14 +723,12 @@ void LibraryCreator::update(QDir dirS)
                     i++;
                 } else // nameD no longer available on Source folder...
                 {
-                    // QLOG_WARN() << "dir source > dest" << nameS << nameD;
                     DBHelper::removeFromDB(fileInfoD, _database);
                     j++;
                 }
             else // one of them(or both) is a comic
                 if (isFolderS(i)) // this folder doesn't exist on library
                 {
-                    // QLOG_WARN() << "one of them(or both) is a file" << nameS << nameD;
 #ifdef Q_OS_MACOS
                     QStringList src = _source.split("/");
                     QString filePath = fileInfoS.absoluteFilePath();
@@ -736,8 +750,6 @@ void LibraryCreator::update(QDir dirS)
                     j++;
                 } else // both are comics  //BUG on windows (no case sensitive)
                 {
-                    // nameD.remove(nameD.size()-4,4);
-                    int comparation = QString::localeAwareCompare(nameS, nameD);
                     if (comparation < 0) // create new thumbnail
                     {
 #ifdef Q_OS_MACOS
