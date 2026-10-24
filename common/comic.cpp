@@ -330,6 +330,23 @@ bool Comic::fileIsComic(const QString &path)
     return literalComicExtensions.contains(info.suffix(), Qt::CaseInsensitive);
 }
 
+bool Comic::folderIsComic(const QString &path)
+{
+    const QFileInfo info(path);
+    if (!info.isDir() || info.fileName().startsWith('.')) {
+        return false;
+    }
+
+    // subfolders are listed whatever their names, files only when they are pages or comics
+    QDir folder(path);
+    folder.setNameFilters(comicExtensions + getSupportedImageFormats());
+    folder.setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+    const QFileInfoList entries = folder.entryInfoList();
+
+    const auto isPage = [](const QFileInfo &entry) { return entry.isFile() && !fileIsComic(entry.filePath()); };
+    return !entries.isEmpty() && std::all_of(entries.cbegin(), entries.cend(), isPage);
+}
+
 bool Comic::fileIsEpub(const QString &path)
 {
     return QFileInfo(path).suffix().compare(QStringLiteral("epub"), Qt::CaseInsensitive) == 0;
@@ -730,17 +747,33 @@ bool FolderComic::load(const QString &path, int atPage)
     return true;
 }
 
-void FolderComic::process()
+bool FolderComic::load(const QString &path, const ComicDB &comic)
 {
-    QDir d(_path);
+    _path = QDir::cleanPath(path);
+    QList<int> bookmarkIndexes;
+    bookmarkIndexes << comic.info.bookmark1 << comic.info.bookmark2 << comic.info.bookmark3;
+    if (bm->load(bookmarkIndexes, std::max(comic.info.currentPage - 1, 0))) {
+        emit bookmarksUpdated();
+    }
+    _firstPage = -1;
+    return true;
+}
 
-    d.setNameFilters(getSupportedImageFormats());
-    d.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    // d.setSorting(QDir::Name|QDir::IgnoreCase|QDir::LocaleAware);
-    QFileInfoList list = d.entryInfoList();
+QFileInfoList FolderComic::pageFiles(const QString &path)
+{
+    QDir folder(path);
+    folder.setNameFilters(getSupportedImageFormats());
+    folder.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    QFileInfoList pages = folder.entryInfoList();
 
     // don't fix double page files sorting, because the user can see how the SO sorts the files in the folder.
-    std::sort(list.begin(), list.end(), naturalSortLessThanCIFileInfo);
+    std::sort(pages.begin(), pages.end(), naturalSortLessThanCIFileInfo);
+    return pages;
+}
+
+void FolderComic::process()
+{
+    const QFileInfoList list = pageFiles(_path);
 
     int nPages = list.size();
     _pages.clear();

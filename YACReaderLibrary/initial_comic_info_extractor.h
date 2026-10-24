@@ -28,6 +28,7 @@ private:
     int getXMLMetadata;
     static bool crash;
     QByteArray _xmlInfoData;
+    void extractFromFolder();
     void saveCover(const QString &path, const QImage &cover);
 
 public slots:

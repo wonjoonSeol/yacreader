@@ -87,6 +87,8 @@ public:
     static QStringList getSupportedImageLiteralFormats();
 
     static bool fileIsComic(const QString &path);
+    // a folder with images and no subfolders or comic files, the library reads it as one comic
+    static bool folderIsComic(const QString &path);
     static bool fileIsEpub(const QString &path);
     static QList<QString> findValidComicFiles(const QList<QUrl> &list);
     static QList<QString> findValidComicFilesInFolder(const QString &path);
@@ -164,6 +166,8 @@ public:
     ~FolderComic();
 
     bool load(const QString &path, int atPage = -1);
+    bool load(const QString &path, const ComicDB &comic);
+    static QFileInfoList pageFiles(const QString &path);
 
 public slots:
 
