@@ -143,10 +143,14 @@ static QImage scaleImageBicubic(const QImage &image, int width, int height)
 
     // Vertical pass into the destination image (16.16 weights x 8.6 buffer = 22.6).
     QImage dst(width, height, QImage::Format_ARGB32);
+    // QImage::scanLine() detaches the image, which is not safe to call from
+    // several threads at once, so take the pixels once before splitting.
+    uchar *dstBits = dst.bits();
+    const qsizetype dstBytesPerLine = dst.bytesPerLine();
     const auto vWeights = bicubicContributions(sh, height);
     const auto vPass = [&](int yBegin, int yEnd) {
         for (int y = yBegin; y < yEnd; ++y) {
-            QRgb *row = reinterpret_cast<QRgb *>(dst.scanLine(y));
+            QRgb *row = reinterpret_cast<QRgb *>(dstBits + y * dstBytesPerLine);
             for (int x = 0; x < width; ++x) {
                 int64_t b = 0, g = 0, r = 0, a = 0;
                 for (const auto &tap : vWeights[y]) {
