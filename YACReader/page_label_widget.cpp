@@ -10,6 +10,9 @@
 PageLabelWidget::PageLabelWidget(QWidget *parent)
     : QWidget(parent)
 {
+    // the mouse reaches the page under the label, so the top right corner also shows the toolbar in full screen
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+
     animation = new QPropertyAnimation(this, "pos");
     animation->setDuration(150);
     animation->setEndValue(QPoint((parent->geometry().size().width() - this->width()), -this->height()));

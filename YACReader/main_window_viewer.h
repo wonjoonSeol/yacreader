@@ -94,6 +94,7 @@ private:
     //! State
     bool fullscreen;
     bool toolbars;
+    bool toolBarOverPage = false;
     bool fromMaximized;
 
     QString currentDirectory;
@@ -141,6 +142,7 @@ private:
     QAction *showInfoAction;
     QAction *closeAction; // owns the Escape key; dispatches quit vs. cancel-mode
     QAction *exitAction; // File▸Close menu command, always quits
+    QAction *toggleFullScreenAction;
 
     // Cancels the topmost active mode (magnifier, translator, go-to-flow, fullscreen).
     // Returns true if a mode was cancelled, false if none was active.
@@ -162,6 +164,7 @@ private:
 
     QList<QAction *> mglassActions;
     QList<QAction *> loadedComicActions;
+    QList<QAction *> fullScreenToolBarActions;
 
     QToolButton *openToolButton;
 
@@ -175,6 +178,10 @@ private:
     void createActions();
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
+    void setFullScreenToolBarActionsVisible(bool visible);
+    void updateToolBarOverPage(const QPoint &viewerPosition, Qt::MouseButtons buttons);
+    void showToolBarOverPage();
+    void hideToolBarOverPage();
     void refreshRecentFilesActionList();
     void clearRecentFiles();
     void getSiblingComics(QString path, QString currentComic);

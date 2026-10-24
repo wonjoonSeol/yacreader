@@ -160,6 +160,8 @@ Theme makeTheme(const ThemeParams &params)
     setToolbarIconPairT(theme.toolbar.showShorcutsAction, theme.toolbar.showShorcutsAction18x18, ":/images/viewer_toolbar/shortcuts.svg");
     setToolbarIconPairT(theme.toolbar.showInfoAction, theme.toolbar.showInfoAction18x18, ":/images/viewer_toolbar/info.svg");
     setToolbarIconPairT(theme.toolbar.closeAction, theme.toolbar.closeAction18x18, ":/images/viewer_toolbar/close.svg");
+    // the toolbar shows this action only in full screen, where it leaves full screen
+    setToolbarIconPairT(theme.toolbar.toggleFullScreenAction, theme.toolbar.toggleFullScreenAction18x18, ":/images/viewer_toolbar/exitFullScreen.svg");
     setToolbarIconPairT(theme.toolbar.showDictionaryAction, theme.toolbar.showDictionaryAction18x18, ":/images/viewer_toolbar/translator.svg");
     setToolbarIconPairT(theme.toolbar.adjustToFullSizeAction, theme.toolbar.adjustToFullSizeAction18x18, ":/images/viewer_toolbar/full.svg");
     setToolbarIconPairT(theme.toolbar.fitToPageAction, theme.toolbar.fitToPageAction18x18, ":/images/viewer_toolbar/fitToPage.svg");
