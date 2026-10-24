@@ -45,7 +45,7 @@ QSize pageSize(int page)
 }
 
 // pages with the same number look the same in comics made with the same seed, seeds go up to 14
-bool writePages(const QString &folder, int count, int seed)
+bool writePages(const QString &folder, int count, int seed, const QString &namePrefix = QString())
 {
     if (!QDir().mkpath(folder)) {
         return false;
@@ -53,7 +53,7 @@ bool writePages(const QString &folder, int count, int seed)
     for (int page = 1; page <= count; ++page) {
         QImage image(pageSize(page), QImage::Format_RGB32);
         image.fill(QColor::fromHsv(seed * 25, 60 + page * 15, 220));
-        if (!image.save(QDir(folder).filePath(QStringLiteral("%1.png").arg(page)))) {
+        if (!image.save(QDir(folder).filePath(QStringLiteral("%1%2.png").arg(namePrefix, QString::number(page))))) {
             return false;
         }
     }
@@ -139,14 +139,17 @@ struct PageFolder {
     QString path;
     int pageCount;
     int seed;
+    QString namePrefix;
 };
 
 bool buildLibrary(const QString &source)
 {
-    // Chapter 1 and Chapter 10 share their first pages, so only their page lists tell them apart
+    // Chapter 10 starts like Chapter 1 and Reprint has the pages of Chapter 1 under other
+    // names, so only their page lists tell these three apart
     const QList<PageFolder> pageFolders {
         { "/Solo", 3, 1 },
         { "/Series/Chapter 1", 2, 2 },
+        { "/Reprint", 2, 2, "p" },
         { "/Series/Chapter 2", 4, 3 },
         { "/Series/Chapter 10", 6, 2 },
         { "/Mixed", 2, 4 },
@@ -164,7 +167,7 @@ bool buildLibrary(const QString &source)
     };
 
     for (const PageFolder &folder : pageFolders) {
-        if (!writePages(source + folder.path, folder.pageCount, folder.seed)) {
+        if (!writePages(source + folder.path, folder.pageCount, folder.seed, folder.namePrefix)) {
             return false;
         }
     }
@@ -241,6 +244,7 @@ void LibraryImageFoldersTest::importsFoldersOfImagesAsComics()
         { "/Series/Chapter 1", 2 },
         { "/Series/Chapter 2", 4 },
         { "/Series/Chapter 10", 6 },
+        { "/Reprint", 2 },
         { "/Mixed/Extras", 5 },
         { "/Vol 2/Part", 1 },
         { "/Vol 10/Part", 2 },
@@ -278,6 +282,7 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
         { "/Series/Chapter 1", 3 },
         { "/Series/Chapter 3", 5 },
         { "/Series/Chapter 10", 6 },
+        { "/Reprint", 2 },
         { "/Mixed", 2 },
         { "/Vol 2/Part", 1 },
         { "/Vol 3/Part", 3 },
