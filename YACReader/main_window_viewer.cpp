@@ -128,6 +128,7 @@ void MainWindowViewer::applySavedReaderMode()
     const bool continuousScroll = config.getContinuousScroll();
     viewer->setMangaWithoutStoringSetting(manga);
     viewer->setContinuousScrollWithoutStoringSetting(continuousScroll);
+    viewer->setWebComic(false);
     syncModeActions(manga, continuousScroll);
 }
 
@@ -153,6 +154,7 @@ void MainWindowViewer::applyLibraryReaderMode(YACReader::FileType type)
 
     viewer->setMangaWithoutStoringSetting(manga);
     viewer->setContinuousScrollWithoutStoringSetting(continuousScroll);
+    viewer->setWebComic(type == YACReader::FileType::WebComic);
     syncModeActions(manga, continuousScroll);
 }
 

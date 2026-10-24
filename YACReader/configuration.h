@@ -96,6 +96,8 @@ public:
     void setDoublePageShadow(bool b) { settings->setValue(DOUBLE_PAGE_SHADOW, b); }
     bool getContinuousScroll() { return settings->value(CONTINUOUS_SCROLL, false).toBool(); }
     void setContinuousScroll(bool b) { settings->setValue(CONTINUOUS_SCROLL, b); }
+    bool getContinuousScrollFitToHeight() { return settings->value(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, false).toBool(); }
+    void setContinuousScrollFitToHeight(bool b) { settings->setValue(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, b); }
     bool getEnlargeImages() { return settings->value(ENLARGE_IMAGES, true).toBool(); }
     void setEnlargeImages(bool b) { settings->setValue(ENLARGE_IMAGES, b); }
 

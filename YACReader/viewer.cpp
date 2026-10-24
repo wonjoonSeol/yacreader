@@ -135,6 +135,7 @@ Viewer::Viewer(QWidget *parent)
     continuousWidget = new ContinuousPageWidget();
     continuousPageProvider = new ContinuousPageProvider(this);
     continuousViewModel = new ContinuousViewModel(QWIDGETSIZE_MAX, this);
+    applyContinuousPageFit();
     continuousWidget->setViewModel(continuousViewModel);
     continuousWidget->setProvider(continuousPageProvider);
     continuousWidget->installEventFilter(this);
@@ -462,8 +463,21 @@ void Viewer::goTo(unsigned int page)
     render->goTo(page);
 }
 
+void Viewer::setWebComic(bool webComic)
+{
+    this->webComic = webComic;
+    applyContinuousPageFit();
+}
+
+void Viewer::applyContinuousPageFit()
+{
+    const bool fitToHeight = !webComic && Configuration::getConfiguration().getContinuousScrollFitToHeight();
+    continuousViewModel->setPageFit(fitToHeight ? ContinuousViewModel::PageFit::Height : ContinuousViewModel::PageFit::Width);
+}
+
 void Viewer::onImageOptionsChanged()
 {
+    applyContinuousPageFit();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     } else {

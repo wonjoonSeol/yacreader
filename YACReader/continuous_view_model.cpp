@@ -30,6 +30,16 @@ void ContinuousViewModel::setNumPages(int count)
     recompute(RecomputePolicy::PreserveScrollClamped);
 }
 
+void ContinuousViewModel::setPageFit(PageFit fit)
+{
+    if (pageFitValue == fit) {
+        return;
+    }
+
+    pageFitValue = fit;
+    recompute(RecomputePolicy::PreserveViewportAnchor);
+}
+
 void ContinuousViewModel::setZoomFactor(int zoom)
 {
     if (zoomFactorValue == zoom) {
@@ -309,7 +319,10 @@ float ContinuousViewModel::scaleForPage(int pageIndex, int width) const
         return 1.0f;
     }
 
-    const float baseScale = static_cast<float>(width) / natural.width();
+    float baseScale = static_cast<float>(width) / natural.width();
+    if (pageFitValue == PageFit::Height && viewportHeightValue > 0) {
+        baseScale = std::min(baseScale, static_cast<float>(viewportHeightValue) / natural.height());
+    }
     const float zoomMultiplier = zoomFactorValue / 100.0f;
     return baseScale * zoomMultiplier;
 }

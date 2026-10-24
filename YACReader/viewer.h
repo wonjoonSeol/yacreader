@@ -96,6 +96,8 @@ public slots:
     void doublePageSwitch();
     void setMangaWithoutStoringSetting(bool manga);
     void setContinuousScrollWithoutStoringSetting(bool enabled);
+    // web comics fit the width in continuous scroll whatever the page fit setting is
+    void setWebComic(bool webComic);
     void doubleMangaPageSwitch();
     void resetContent();
     void setLoadingMessage();
@@ -132,6 +134,7 @@ private:
     bool doublePage;
     bool doubleMangaPage;
     bool continuousScroll;
+    bool webComic = false;
     bool currentPageHasDoublePageSeam = false;
     qreal doublePageSeamRatio = 0.5;
     Qt::Orientation doublePageSeamOrientation = Qt::Vertical;
@@ -255,6 +258,7 @@ private:
     void setActiveWidget(QWidget *w);
     void setContinuousScrollImpl(bool enabled, bool persistSettings);
     void setMangaModeImpl(bool manga, bool persistSettings);
+    void applyContinuousPageFit();
 
     //! Mouse handler
     std::unique_ptr<YACReader::MouseHandler> mouseHandler;

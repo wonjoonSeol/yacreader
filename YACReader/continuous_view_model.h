@@ -9,11 +9,18 @@ class ContinuousViewModel : public QObject
 {
     Q_OBJECT
 public:
+    enum class PageFit {
+        Width,
+        // fits the viewport height, capped at the viewport width
+        Height
+    };
+
     explicit ContinuousViewModel(int maximumLayoutHeight, QObject *parent = nullptr);
 
     void reset();
 
     void setNumPages(int count);
+    void setPageFit(PageFit fit);
     void setZoomFactor(int zoom);
     void setViewportSize(int width, int height);
     void setScrollYFromUser(int scrollY);
@@ -68,6 +75,7 @@ private:
     QVector<QSize> pageSizes;
     QSize defaultPageSize { 800, 1200 };
 
+    PageFit pageFitValue = PageFit::Width;
     int zoomFactorValue = 100;
     int viewportWidth = 0;
     int viewportHeightValue = 0;

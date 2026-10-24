@@ -248,6 +248,20 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     scaleBox->setLayout(scaleLayout);
     layoutImageV->addWidget(scaleBox);
 
+    auto continuousScrollBox = new QGroupBox(tr("Continuous scroll"));
+    auto continuousScrollLayout = new QVBoxLayout();
+    continuousScrollFitToWidthRadioButton = new QRadioButton(tr("Fit pages to width"));
+    continuousScrollFitToHeightRadioButton = new QRadioButton(tr("Fit pages to height"));
+    continuousScrollFitToHeightRadioButton->setToolTip(tr("Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width."));
+    connect(continuousScrollFitToHeightRadioButton, &QRadioButton::toggled, this, [this](bool checked) {
+        Configuration::getConfiguration().setContinuousScrollFitToHeight(checked);
+        emit changedImageOptions();
+    });
+    continuousScrollLayout->addWidget(continuousScrollFitToWidthRadioButton);
+    continuousScrollLayout->addWidget(continuousScrollFitToHeightRadioButton);
+    continuousScrollBox->setLayout(continuousScrollLayout);
+    layoutImageV->addWidget(continuousScrollBox);
+
     auto doublePageBox = new QGroupBox(tr("Double Page options"));
     auto doublePageBoxLayout = new QVBoxLayout();
     coverSPCheckBox = new QCheckBox(tr("Show covers as single page"));
@@ -447,6 +461,13 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     scaleCheckbox->setChecked(settings->value(ENLARGE_IMAGES, true).toBool());
     coverSPCheckBox->setChecked(settings->value(COVER_IS_SP, true).toBool());
     doublePageShadowCheckBox->setChecked(Configuration::getConfiguration().getDoublePageShadow());
+    {
+        QSignalBlocker blocker(continuousScrollFitToHeightRadioButton);
+        if (Configuration::getConfiguration().getContinuousScrollFitToHeight())
+            continuousScrollFitToHeightRadioButton->setChecked(true);
+        else
+            continuousScrollFitToWidthRadioButton->setChecked(true);
+    }
 
     doNotTurnPageOnScroll->setChecked(settings->value(DO_NOT_TURN_PAGE_ON_SCROLL, false).toBool());
     useSingleScrollStepToTurnPage->setChecked(settings->value(USE_SINGLE_SCROLL_STEP_TO_TURN_PAGE, false).toBool());
