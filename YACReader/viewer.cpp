@@ -135,6 +135,7 @@ Viewer::Viewer(QWidget *parent)
     continuousWidget = new ContinuousPageWidget();
     continuousPageProvider = new ContinuousPageProvider(this);
     continuousViewModel = new ContinuousViewModel(QWIDGETSIZE_MAX, this);
+    applyContinuousPageFit();
     continuousWidget->setViewModel(continuousViewModel);
     continuousWidget->setProvider(continuousPageProvider);
     continuousWidget->installEventFilter(this);
@@ -423,6 +424,30 @@ void Viewer::right()
     }
 }
 
+void Viewer::skipPagesToTheLeft(int count)
+{
+    skipPages(doubleMangaPage ? count : -count);
+}
+
+void Viewer::skipPagesToTheRight(int count)
+{
+    skipPages(doubleMangaPage ? -count : count);
+}
+
+void Viewer::skipPages(int count)
+{
+    if (!render->hasLoadedComic()) {
+        return;
+    }
+
+    const int currentPage = getCurrentPageNumber();
+    const int page = qBound(0, currentPage + count, static_cast<int>(render->numPages()) - 1);
+    if (page != currentPage) {
+        goTo(page);
+        updateInformation();
+    }
+}
+
 void Viewer::prev()
 {
     if (!render->hasLoadedComic()) {
@@ -462,8 +487,16 @@ void Viewer::goTo(unsigned int page)
     render->goTo(page);
 }
 
+void Viewer::applyContinuousPageFit()
+{
+    continuousViewModel->setPageFit(Configuration::getConfiguration().getContinuousScrollFitToHeight()
+                                            ? ContinuousViewModel::PageFit::Height
+                                            : ContinuousViewModel::PageFit::Width);
+}
+
 void Viewer::onImageOptionsChanged()
 {
+    applyContinuousPageFit();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     } else {

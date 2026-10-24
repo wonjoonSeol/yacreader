@@ -14,6 +14,9 @@ private slots:
     void usesCenterPageForNormalProgress();
     void doesNotReportLastPageWhenLessThanHalfIsVisible();
     void reportsLastPageWhenAtLeastHalfIsVisible();
+    void fitsPagesToTheViewportWidthByDefault();
+    void fitsEachPageToTheViewportHeight();
+    void fitsPagesWiderThanTheViewportToItsWidthInHeightMode();
 };
 
 void ContinuousViewModelTest::usesCenterPageForNormalProgress()
@@ -64,6 +67,41 @@ void ContinuousViewModelTest::reportsLastPageWhenAtLeastHalfIsVisible()
     model.setScrollYFromUser(63); // viewportBottomY=312, exactly at midpoint
 
     QCOMPARE(model.readingProgressPage(), 3);
+}
+
+void ContinuousViewModelTest::fitsPagesToTheViewportWidthByDefault()
+{
+    ContinuousViewModel model(std::numeric_limits<int>::max());
+    model.setNumPages(1);
+    model.setViewportSize(1000, 500);
+    model.setPageNaturalSize(0, QSize(400, 800));
+
+    QCOMPARE(model.scaledPageSize(0), QSize(1000, 2000));
+}
+
+void ContinuousViewModelTest::fitsEachPageToTheViewportHeight()
+{
+    ContinuousViewModel model(std::numeric_limits<int>::max());
+    model.setNumPages(2);
+    model.setViewportSize(1000, 500);
+    model.setPageFit(ContinuousViewModel::PageFit::Height);
+    model.setPageNaturalSize(0, QSize(400, 800));
+    model.setPageNaturalSize(1, QSize(800, 1600));
+
+    QCOMPARE(model.scaledPageSize(0), QSize(250, 500));
+    QCOMPARE(model.scaledPageSize(1), QSize(250, 500));
+    QCOMPARE(model.yPositionForPage(1), 500);
+}
+
+void ContinuousViewModelTest::fitsPagesWiderThanTheViewportToItsWidthInHeightMode()
+{
+    ContinuousViewModel model(std::numeric_limits<int>::max());
+    model.setNumPages(1);
+    model.setViewportSize(1000, 800);
+    model.setPageFit(ContinuousViewModel::PageFit::Height);
+    model.setPageNaturalSize(0, QSize(2000, 1000));
+
+    QCOMPARE(model.scaledPageSize(0), QSize(1000, 500));
 }
 
 QTEST_GUILESS_MAIN(ContinuousViewModelTest)

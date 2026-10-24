@@ -1490,6 +1490,15 @@ void MainWindowViewer::setUpShortcutsManagement()
     auto *const offsetDoublePageToTheRight = addActionWithShortcut(tr("Offset double page to the right"), OFFSET_DOUBLE_PAGE_TO_THE_RIGHT_Y);
     connect(offsetDoublePageToTheRight, &QAction::triggered, viewer, &Viewer::offsetDoublePageToTheRight);
 
+    auto *const go5PagesToTheLeftAction = addActionWithShortcut(tr("Go 5 pages to the left"), GO_5_PAGES_TO_THE_LEFT_ACTION_Y);
+    connect(go5PagesToTheLeftAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheLeft(5); });
+    auto *const go5PagesToTheRightAction = addActionWithShortcut(tr("Go 5 pages to the right"), GO_5_PAGES_TO_THE_RIGHT_ACTION_Y);
+    connect(go5PagesToTheRightAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheRight(5); });
+    auto *const go10PagesToTheLeftAction = addActionWithShortcut(tr("Go 10 pages to the left"), GO_10_PAGES_TO_THE_LEFT_ACTION_Y);
+    connect(go10PagesToTheLeftAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheLeft(10); });
+    auto *const go10PagesToTheRightAction = addActionWithShortcut(tr("Go 10 pages to the right"), GO_10_PAGES_TO_THE_RIGHT_ACTION_Y);
+    connect(go10PagesToTheRightAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheRight(10); });
+
     loadedComicActions = { autoScrollForwardAction,
                            autoScrollBackwardAction,
                            autoScrollForwardHorizontalFirstAction,
@@ -1503,7 +1512,11 @@ void MainWindowViewer::setUpShortcutsManagement()
                            goToFirstPageAction,
                            goToLastPageAction,
                            offsetDoublePageToTheLeft,
-                           offsetDoublePageToTheRight };
+                           offsetDoublePageToTheRight,
+                           go5PagesToTheLeftAction,
+                           go5PagesToTheRightAction,
+                           go10PagesToTheLeftAction,
+                           go10PagesToTheRightAction };
 
     editShortcutsDialog->addActionsGroup(tr("Reading"), theme.shortcutsIcons.readingIcon,
                                          tmpList = QList<QAction *>()

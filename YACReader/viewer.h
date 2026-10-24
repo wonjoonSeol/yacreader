@@ -59,6 +59,8 @@ public slots:
     void next();
     void left();
     void right();
+    void skipPagesToTheLeft(int count);
+    void skipPagesToTheRight(int count);
     void showGoToDialog();
     void goToFirstPage();
     void goToLastPage();
@@ -255,6 +257,8 @@ private:
     void setActiveWidget(QWidget *w);
     void setContinuousScrollImpl(bool enabled, bool persistSettings);
     void setMangaModeImpl(bool manga, bool persistSettings);
+    void skipPages(int count);
+    void applyContinuousPageFit();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();
 

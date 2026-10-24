@@ -46,6 +46,8 @@ private:
     QCheckBox *scaleCheckbox;
     QCheckBox *coverSPCheckBox;
     QCheckBox *doublePageShadowCheckBox;
+    QRadioButton *continuousScrollFitToWidthRadioButton;
+    QRadioButton *continuousScrollFitToHeightRadioButton;
 
     QLabel *magGlassSizeLabel;
 
