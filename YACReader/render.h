@@ -176,7 +176,7 @@ public slots:
     QString getCurrentPagesInformation();
     void setBookmark(int page);
     void removeBookmark(int page);
-    void save(int lastPage);
+    void save(int lastReadPage);
     void reset();
     void reload();
     void updateFilters(int brightness, int contrast, int gamma);

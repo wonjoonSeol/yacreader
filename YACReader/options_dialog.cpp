@@ -64,7 +64,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto readingProgressBox = new QGroupBox(tr("Reading progress"));
     auto readingProgressLayout = new QHBoxLayout();
     openFinishedComicsFromFirstPage = new QCheckBox(tr("Open finished comics from the first page"));
-    openFinishedComicsFromFirstPage->setToolTip(tr("A comic is finished when it was closed on its last page."));
+    openFinishedComicsFromFirstPage->setToolTip(tr("A comic counts as finished when its reading progress is on the last page."));
     readingProgressLayout->addWidget(openFinishedComicsFromFirstPage);
     readingProgressBox->setLayout(readingProgressLayout);
 

@@ -241,11 +241,15 @@ void Comic::removeBookmark(int index)
     emit bookmarksUpdated();
 }
 //-----------------------------------------------------------------------------
-void Comic::saveBookmarks(int lastPage)
+void Comic::saveBookmarks(int lastReadPage)
 {
+    if (lastReadPage < 0 || lastReadPage >= _pages.size()) {
+        return;
+    }
+
     QImage p;
-    p.loadFromData(_pages[lastPage]);
-    bm->setLastPage(lastPage, p);
+    p.loadFromData(_pages[lastReadPage]);
+    bm->setLastPage(lastReadPage, p);
     bm->save();
 }
 //-----------------------------------------------------------------------------
@@ -287,13 +291,16 @@ void Comic::invalidate()
     emit invalidated();
 }
 //-----------------------------------------------------------------------------
-void Comic::resolveFirstPage()
+void Comic::resolveStartPage()
 {
     if (_firstPage == -1) {
         _firstPage = bm->getLastPage();
+        if (_openFinishedFromFirstPage && _firstPage == _pages.length() - 1) {
+            _firstPage = 0;
+        }
     }
 
-    if (_firstPage >= _pages.length() || (_openFinishedFromFirstPage && _firstPage == _pages.length() - 1)) {
+    if (_firstPage < 0 || _firstPage >= _pages.length()) {
         _firstPage = 0;
     }
 }
@@ -428,7 +435,7 @@ bool FileComic::load(const QString &path, const ComicDB &comic)
         if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
             emit bookmarksUpdated();
         }
-        _firstPage = comic.info.currentPage - 1;
+        _firstPage = -1;
         _path = QDir::cleanPath(path);
         return true;
     } else {
@@ -668,7 +675,7 @@ void FileComic::process()
         _archiveIndexToPages[_pageArchiveIndexes.at(page)].append(page);
     }
 
-    resolveFirstPage();
+    resolveStartPage();
 
     _index = _firstPage;
     emit openAt(_index);
@@ -748,7 +755,7 @@ void FolderComic::process()
         moveToThread(QCoreApplication::instance()->thread());
         emit errorOpening();
     } else {
-        resolveFirstPage();
+        resolveStartPage();
 
         _index = _firstPage;
 
@@ -833,7 +840,7 @@ bool PDFComic::load(const QString &path, const ComicDB &comic)
         if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
             emit bookmarksUpdated();
         }
-        _firstPage = comic.info.currentPage - 1;
+        _firstPage = -1;
         _path = QDir::cleanPath(path);
         return true;
     } else {
@@ -886,7 +893,7 @@ void PDFComic::process()
     _pages.resize(nPages);
     _loadedPages = QVector<bool>(nPages, false);
 
-    resolveFirstPage();
+    resolveStartPage();
 
     _index = _firstPage;
     emit openAt(_index);

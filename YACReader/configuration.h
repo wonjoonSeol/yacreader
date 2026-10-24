@@ -98,8 +98,6 @@ public:
     void setContinuousScroll(bool b) { settings->setValue(CONTINUOUS_SCROLL, b); }
     bool getEnlargeImages() { return settings->value(ENLARGE_IMAGES, true).toBool(); }
     void setEnlargeImages(bool b) { settings->setValue(ENLARGE_IMAGES, b); }
-    bool getOpenFinishedComicsFromFirstPage() { return settings->value(OPEN_FINISHED_COMICS_FROM_FIRST_PAGE, false).toBool(); }
-    void setOpenFinishedComicsFromFirstPage(bool b) { settings->setValue(OPEN_FINISHED_COMICS_FROM_FIRST_PAGE, b); }
 
     QColor getBackgroundColor(const QColor &color) { return settings->value(BACKGROUND_COLOR, color).value<QColor>(); }
     void setBackgroundColor(const QColor &color) { settings->setValue(BACKGROUND_COLOR, color); }
@@ -109,6 +107,8 @@ public:
     void setShowInformation(bool b) { settings->setValue(SHOW_INFO, b); }
     bool getShowTimeInInformation() { return settings->value(SHOW_TIME_IN_INFO, true).toBool(); }
     void setShowTimeInInformation(bool b) { settings->setValue(SHOW_TIME_IN_INFO, b); }
+    bool getOpenFinishedComicsFromFirstPage() { return settings->value(OPEN_FINISHED_COMICS_FROM_FIRST_PAGE, false).toBool(); }
+    void setOpenFinishedComicsFromFirstPage(bool b) { settings->setValue(OPEN_FINISHED_COMICS_FROM_FIRST_PAGE, b); }
     QDate getLastVersionCheck() { return settings->value(LAST_VERSION_CHECK).toDate(); }
     void setLastVersionCheck(const QDate &date) { settings->setValue(LAST_VERSION_CHECK, date); }
     int getNumDaysBetweenVersionChecks() { return settings->value(NUM_DAYS_BETWEEN_VERSION_CHECKS, 1).toInt(); }
