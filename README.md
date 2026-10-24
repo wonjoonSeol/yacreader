@@ -1,3 +1,88 @@
+## About this fork
+
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with five changes to the comic reader. Each one also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+
+| Change | Kind | Preview PR |
+|---|---|---|
+| [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
+| [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
+| [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
+| [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
+| [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
+
+**Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
+
+**Screenshots** come from the fork's Linux build with generated sample pages. "Upstream" shots run the same steps on upstream `develop` (268288b).
+
+### Choose the page comics open at
+
+Options > General > **Open comics at**
+
+<img src="docs/fork/open-comics-at-options.png" width="600" alt="The Open comics at group in Options, General">
+
+| Setting | Finished comic | Unfinished comic |
+|---|---|---|
+| The last page read (default) | last page | last page read |
+| The first page if the comic is finished, otherwise the last page read | **first page** | last page read |
+| The first page | **first page** | **first page** |
+
+- **Finished:** the reading progress is on the last page, the same rule the library uses to mark a comic as read. Closing a comic on its final double page spread counts too.
+- **Where it applies:** comics opened from the library and comics opened as files.
+- **Requested on the forum:** [Read comic are opened from the last page](https://www.yacreader.com/forum/support-ios/2096-read-comic-are-opened-from-the-last-page).
+
+### Fit pages to height in continuous scroll
+
+Options > Image adjustment > **Continuous scroll**
+
+<img src="docs/fork/fit-to-height-options.png" width="600" alt="The Continuous scroll group in Options, Image adjustment">
+
+| Fit pages to width (default) | Fit pages to height |
+|---|---|
+| <img src="docs/fork/continuous-fit-width.png" width="400" alt="Continuous scroll with the page as wide as the window"> | <img src="docs/fork/continuous-fit-height.png" width="400" alt="Continuous scroll with the whole page as tall as the window"> |
+| Pages are as wide as the window, so you scroll through each one | Pages are as tall as the window, so you see each one whole |
+
+- A page that would end up wider than the window, such as a double page spread, fits the width instead.
+- Comics marked as web comics in the library always fit the width.
+
+### Go 5 or 10 pages
+
+<img src="docs/fork/page-jumps-shortcuts.png" width="600" alt="The four new shortcuts in Edit shortcuts, Reading">
+
+| Keys | Action |
+|---|---|
+| Shift+← / Shift+→ | Go 5 pages left / right |
+| Alt+← / Alt+→ | Go 10 pages left / right |
+
+- **Manga mode:** the directions flip, as they do for ← and →.
+- **Double page mode:** the 5 page jump moves 4 pages, so spreads stay paired.
+- **Changing the keys:** Options > Shortcuts > Edit shortcuts > Reading. If one of these keys is already bound to another action, that jump starts unassigned.
+
+### Next file after an unreadable one
+
+In a folder with `Comic 1.pdf`, an unreadable `Comic 2.cbz` and `Comic 3.pdf`, going from Comic 1 to the next comic shows this error:
+
+<img src="docs/fork/prev-next-error.png" width="400" alt="Format not supported error">
+
+After closing it:
+
+| | Previous / next comic buttons |
+|---|---|
+| Upstream | <img src="docs/fork/prev-next-toolbar-before.png" width="560" alt="Both buttons greyed out"> |
+| This fork | <img src="docs/fork/prev-next-toolbar-after.png" width="560" alt="Both buttons available"> |
+
+Upstream disables both buttons and their shortcuts (Ctrl+← and Ctrl+→), so the next file has to be opened by hand. In the fork, Ctrl+→ opens Comic 3.
+
+### Comics removed from the Reading list
+
+Removing a comic from the library's Reading list resets its progress to 0. Opening it again:
+
+| Upstream | This fork |
+|---|---|
+| <img src="docs/fork/reading-list-before.png" width="400" alt="0/10 and Loading, please wait"> | <img src="docs/fork/reading-list-after.png" width="400" alt="Page 1 of 10"> |
+| Shows 0/10, stays on "Loading...please wait!", then crashes | Opens at page 1 |
+
+---
+
 | Build | Master | Develop |
 |---|---|---|
 |Code Validation |[![Build Status](https://dev.azure.com/luisangelsm/YACReader/_apis/build/status/YACReader.yacreader?branchName=master&jobName=CodeFormatValidation)](https://dev.azure.com/luisangelsm/YACReader/_build/latest?definitionId=1&branchName=master)|[![Build Status](https://dev.azure.com/luisangelsm/YACReader/_apis/build/status/YACReader.yacreader?branchName=develop&jobName=CodeFormatValidation)](https://dev.azure.com/luisangelsm/YACReader/_build/latest?definitionId=1&branchName=develop)|
