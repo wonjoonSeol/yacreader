@@ -553,18 +553,17 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos4 (better quality)</source>
-        <oldsource>Lanczos (better quality)</oldsource>
-        <translation type="unfinished">Ланцос (лучшее качество)</translation>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3</source>
+        <source>Lanczos3 (balanced)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <source>Lanczos2 (fewer halos around lines)</source>
+        <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

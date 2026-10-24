@@ -1,5 +1,7 @@
 #include "resize_image.h"
 
+#include <QColor>
+#include <QImage>
 #include <QTest>
 
 #include <algorithm>
@@ -11,11 +13,26 @@ class ResizeImageTest : public QObject
 private slots:
     void scalesToTheRequestedSize_data();
     void scalesToTheRequestedSize();
-    void eachLanczosMethodScalesDifferently();
+    void fewerLobesSpreadLessFromAnEdge();
     void lanczos2RingsLessThanLanczos4WhenEnlarging();
+    void keepsTheStoredValues();
 };
 
 namespace {
+
+struct Method {
+    const char *name;
+    ScaleMethod method;
+    int storedValue;
+};
+
+constexpr Method methods[] = {
+    { "Nearest", ScaleMethod::Nearest, 0 },
+    { "Bilinear", ScaleMethod::Bilinear, 1 },
+    { "Lanczos4", ScaleMethod::Lanczos4, 2 },
+    { "Lanczos3", ScaleMethod::Lanczos3, 4 },
+    { "Lanczos2", ScaleMethod::Lanczos2, 5 },
+};
 
 constexpr int dark = 64;
 constexpr int light = 192;
@@ -49,43 +66,67 @@ int ringing(const QImage &image)
     return worst;
 }
 
+// how many pixels from the edge the scaled image still differs from the flat grey on that side
+int spread(const QImage &image)
+{
+    int furthest = 0;
+    const int y = image.height() / 2;
+    const int middle = image.width() / 2;
+    for (int x = 0; x < image.width(); ++x) {
+        const bool darkSide = x < middle;
+        if (qGreen(image.pixel(x, y)) != (darkSide ? dark : light))
+            furthest = std::max(furthest, darkSide ? middle - x : x - middle + 1);
+    }
+    return furthest;
+}
+
 }
 
 void ResizeImageTest::scalesToTheRequestedSize_data()
 {
     QTest::addColumn<ScaleMethod>("method");
+    QTest::addColumn<QSize>("size");
 
-    QTest::newRow("nearest") << ScaleMethod::Nearest;
-    QTest::newRow("bilinear") << ScaleMethod::Bilinear;
-    QTest::newRow("lanczos4") << ScaleMethod::Lanczos;
-    QTest::newRow("lanczos3") << ScaleMethod::Lanczos3;
-    QTest::newRow("lanczos2") << ScaleMethod::Lanczos2;
+    for (const auto &entry : methods) {
+        QTest::addRow("%s enlarging", entry.name) << entry.method << QSize(70, 50);
+        QTest::addRow("%s shrinking", entry.name) << entry.method << QSize(25, 15);
+    }
 }
 
 void ResizeImageTest::scalesToTheRequestedSize()
 {
     QFETCH(ScaleMethod, method);
+    QFETCH(QSize, size);
 
-    QCOMPARE(scaleImage(edge(QSize(40, 30)), 70, 50, method).size(), QSize(70, 50));
+    QCOMPARE(scaleImage(edge(QSize(40, 30)), size.width(), size.height(), method).size(), size);
 }
 
-void ResizeImageTest::eachLanczosMethodScalesDifferently()
+void ResizeImageTest::fewerLobesSpreadLessFromAnEdge()
 {
-    const QImage lanczos4 = enlargedEdge(ScaleMethod::Lanczos);
-    const QImage lanczos3 = enlargedEdge(ScaleMethod::Lanczos3);
-    const QImage lanczos2 = enlargedEdge(ScaleMethod::Lanczos2);
+    const int lanczos4 = spread(enlargedEdge(ScaleMethod::Lanczos4));
+    const int lanczos3 = spread(enlargedEdge(ScaleMethod::Lanczos3));
+    const int lanczos2 = spread(enlargedEdge(ScaleMethod::Lanczos2));
 
-    QVERIFY(lanczos4 != lanczos3);
-    QVERIFY(lanczos4 != lanczos2);
-    QVERIFY(lanczos3 != lanczos2);
+    QVERIFY2(lanczos2 < lanczos3 && lanczos3 < lanczos4,
+             qPrintable(QString("lanczos2 %1, lanczos3 %2, lanczos4 %3").arg(lanczos2).arg(lanczos3).arg(lanczos4)));
 }
 
 void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
 {
     const int lanczos2 = ringing(enlargedEdge(ScaleMethod::Lanczos2));
-    const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos));
+    const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos4));
 
     QVERIFY2(lanczos2 < lanczos4, qPrintable(QString("lanczos2 %1, lanczos4 %2").arg(lanczos2).arg(lanczos4)));
+}
+
+void ResizeImageTest::keepsTheStoredValues()
+{
+    for (const auto &entry : methods) {
+        QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
+        QVERIFY2(isKnownScaleMethod(entry.storedValue), entry.name);
+    }
+    for (const int value : { -1, 3, 6 })
+        QVERIFY2(!isKnownScaleMethod(value), qPrintable(QString::number(value)));
 }
 
 QTEST_GUILESS_MAIN(ResizeImageTest)

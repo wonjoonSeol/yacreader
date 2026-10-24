@@ -333,9 +333,8 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos4 (better quality)</source>
-        <oldsource>Lanczos (better quality)</oldsource>
-        <translation type="unfinished">Lanczos (better quality)</translation>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation>Lanczos4 (more detail, more halos)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="345"/>
@@ -564,13 +563,13 @@ If none is active, Escape does nothing.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3</source>
-        <translation type="unfinished"></translation>
+        <source>Lanczos3 (balanced)</source>
+        <translation>Lanczos3 (balanced)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <source>Lanczos2 (fewer halos around lines)</source>
-        <translation type="unfinished"></translation>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation>Lanczos2 (fewer halos, less detail)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="335"/>

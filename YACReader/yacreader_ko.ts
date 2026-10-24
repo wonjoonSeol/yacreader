@@ -573,18 +573,18 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos4 (better quality)</source>
-        <translation>Lanczos4 (더 좋은 화질)</translation>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation>Lanczos4 (디테일 많음, 헤일로 많음)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos3</source>
-        <translation>Lanczos3</translation>
+        <source>Lanczos3 (balanced)</source>
+        <translation>Lanczos3 (균형)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <source>Lanczos2 (fewer halos around lines)</source>
-        <translation>Lanczos2 (선 주변 테두리 번짐 적음)</translation>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation>Lanczos2 (헤일로 적음, 디테일 적음)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="336"/>

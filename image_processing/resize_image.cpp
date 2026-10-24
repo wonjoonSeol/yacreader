@@ -23,6 +23,19 @@ static QImage scaleImageLancir(const QImage &image, int width, int height, doubl
     return dst;
 }
 
+bool isKnownScaleMethod(int value)
+{
+    switch (static_cast<ScaleMethod>(value)) {
+    case ScaleMethod::Nearest:
+    case ScaleMethod::Bilinear:
+    case ScaleMethod::Lanczos4:
+    case ScaleMethod::Lanczos3:
+    case ScaleMethod::Lanczos2:
+        return true;
+    }
+    return false;
+}
+
 // ---- QPixmap API ------------------------------------------------------------
 
 QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod method)
@@ -35,7 +48,7 @@ QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod me
         return pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     case ScaleMethod::Bilinear:
         return pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    case ScaleMethod::Lanczos:
+    case ScaleMethod::Lanczos4:
     case ScaleMethod::Lanczos3:
     case ScaleMethod::Lanczos2:
         return QPixmap::fromImage(scaleImage(pixmap.toImage(), width, height, method));
@@ -55,7 +68,7 @@ QImage scaleImage(const QImage &image, int width, int height, ScaleMethod method
         return image.scaled(width, height, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     case ScaleMethod::Bilinear:
         return image.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    case ScaleMethod::Lanczos:
+    case ScaleMethod::Lanczos4:
         return scaleImageLancir(image, width, height, 4.0);
     case ScaleMethod::Lanczos3:
         return scaleImageLancir(image, width, height, 3.0);
