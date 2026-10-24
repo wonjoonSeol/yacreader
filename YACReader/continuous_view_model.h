@@ -11,7 +11,7 @@ class ContinuousViewModel : public QObject
 public:
     enum class PageFit {
         Width,
-        // pages that would be wider than the viewport at its height fit its width instead
+        // fits the viewport height, capped at the viewport width
         Height
     };
 

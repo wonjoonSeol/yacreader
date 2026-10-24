@@ -63,12 +63,12 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
     auto openComicsAtBox = new QGroupBox(tr("Open comics at"));
     auto openComicsAtLayout = new QVBoxLayout();
-    openAtLastPageReadRadioButton = new QRadioButton(tr("The last page read"));
-    openFinishedAtFirstPageRadioButton = new QRadioButton(tr("The first page if the comic is finished, otherwise the last page read"));
-    openFinishedAtFirstPageRadioButton->setToolTip(tr("A comic counts as finished when its reading progress is on the last page."));
-    openAtFirstPageRadioButton = new QRadioButton(tr("Always the first page"));
-    openComicsAtLayout->addWidget(openAtLastPageReadRadioButton);
-    openComicsAtLayout->addWidget(openFinishedAtFirstPageRadioButton);
+    openAtLastReadPageRadioButton = new QRadioButton(tr("The last page read"));
+    openAtFirstPageIfFinishedRadioButton = new QRadioButton(tr("The first page if the comic is finished, otherwise the last page read"));
+    openAtFirstPageIfFinishedRadioButton->setToolTip(tr("A comic counts as finished when its reading progress is on the last page."));
+    openAtFirstPageRadioButton = new QRadioButton(tr("The first page"));
+    openComicsAtLayout->addWidget(openAtLastReadPageRadioButton);
+    openComicsAtLayout->addWidget(openAtFirstPageIfFinishedRadioButton);
     openComicsAtLayout->addWidget(openAtFirstPageRadioButton);
     openComicsAtBox->setLayout(openComicsAtLayout);
 
@@ -262,9 +262,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
     auto continuousScrollBox = new QGroupBox(tr("Continuous scroll"));
     auto continuousScrollLayout = new QVBoxLayout();
-    continuousScrollFitToWidthRadioButton = new QRadioButton(tr("Fit pages to the width"));
-    continuousScrollFitToHeightRadioButton = new QRadioButton(tr("Fit pages to the height"));
-    continuousScrollFitToHeightRadioButton->setToolTip(tr("Pages that would be wider than the screen fit its width instead."));
+    continuousScrollFitToWidthRadioButton = new QRadioButton(tr("Fit pages to width"));
+    continuousScrollFitToHeightRadioButton = new QRadioButton(tr("Fit pages to height"));
+    continuousScrollFitToHeightRadioButton->setToolTip(tr("Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width."));
     connect(continuousScrollFitToHeightRadioButton, &QRadioButton::toggled, this, [this](bool checked) {
         Configuration::getConfiguration().setContinuousScrollFitToHeight(checked);
         emit changedImageOptions();
@@ -389,8 +389,8 @@ void OptionsDialog::saveOptions()
     settings->setValue(PATH, pathEdit->text());
 
     Configuration::getConfiguration().setShowTimeInInformation(showTimeInInformationLabel->isChecked());
-    auto openComicsAt = OpenComicsAt::LastPageRead;
-    if (openFinishedAtFirstPageRadioButton->isChecked()) {
+    auto openComicsAt = OpenComicsAt::LastReadPage;
+    if (openAtFirstPageIfFinishedRadioButton->isChecked()) {
         openComicsAt = OpenComicsAt::FirstPageIfFinished;
     } else if (openAtFirstPageRadioButton->isChecked()) {
         openComicsAt = OpenComicsAt::FirstPage;
@@ -459,14 +459,15 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     showTimeInInformationLabel->setChecked(Configuration::getConfiguration().getShowTimeInInformation());
     switch (Configuration::getConfiguration().getOpenComicsAt()) {
     case OpenComicsAt::FirstPageIfFinished:
-        openFinishedAtFirstPageRadioButton->setChecked(true);
+        openAtFirstPageIfFinishedRadioButton->setChecked(true);
         break;
     case OpenComicsAt::FirstPage:
         openAtFirstPageRadioButton->setChecked(true);
         break;
-    case OpenComicsAt::LastPageRead:
+    case OpenComicsAt::LastReadPage:
     default:
-        openAtLastPageReadRadioButton->setChecked(true);
+        openAtLastReadPageRadioButton->setChecked(true);
+        break;
     }
 
     circularMagnifyingGlass->setChecked(Configuration::getConfiguration().getMagnifyingGlassCircular());
@@ -493,8 +494,10 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     doublePageShadowCheckBox->setChecked(Configuration::getConfiguration().getDoublePageShadow());
     {
         QSignalBlocker blocker(continuousScrollFitToHeightRadioButton);
-        const bool fitToHeight = Configuration::getConfiguration().getContinuousScrollFitToHeight();
-        (fitToHeight ? continuousScrollFitToHeightRadioButton : continuousScrollFitToWidthRadioButton)->setChecked(true);
+        if (Configuration::getConfiguration().getContinuousScrollFitToHeight())
+            continuousScrollFitToHeightRadioButton->setChecked(true);
+        else
+            continuousScrollFitToWidthRadioButton->setChecked(true);
     }
 
     doNotTurnPageOnScroll->setChecked(settings->value(DO_NOT_TURN_PAGE_ON_SCROLL, false).toBool());

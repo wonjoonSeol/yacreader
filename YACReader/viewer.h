@@ -59,8 +59,8 @@ public slots:
     void next();
     void left();
     void right();
-    void skipPagesToTheLeft(int count);
-    void skipPagesToTheRight(int count);
+    void goPagesToTheLeft(int count);
+    void goPagesToTheRight(int count);
     void showGoToDialog();
     void goToFirstPage();
     void goToLastPage();
@@ -98,6 +98,8 @@ public slots:
     void doublePageSwitch();
     void setMangaWithoutStoringSetting(bool manga);
     void setContinuousScrollWithoutStoringSetting(bool enabled);
+    // web comics fit the width in continuous scroll whatever the page fit setting is
+    void setWebComic(bool webComic);
     void doubleMangaPageSwitch();
     void resetContent();
     void setLoadingMessage();
@@ -134,6 +136,7 @@ private:
     bool doublePage;
     bool doubleMangaPage;
     bool continuousScroll;
+    bool webComic = false;
     bool currentPageHasDoublePageSeam = false;
     qreal doublePageSeamRatio = 0.5;
     Qt::Orientation doublePageSeamOrientation = Qt::Vertical;
@@ -249,7 +252,7 @@ private:
     void syncRenderToContinuousReadingProgress();
     // Brings Render's current page in line with the continuous-scroll reading
     // position. Continuous mode never calls render->goTo() while scrolling, so
-    // this is used lazily (when leaving continuous mode) to keep Render
+    // this is used lazily (before page turns) to keep Render
     // state correct. It can block briefly, so it is kept off the scroll path.
     void syncRenderToContinuousPage();
     void onNumPagesReady(unsigned int numPages);
@@ -257,7 +260,7 @@ private:
     void setActiveWidget(QWidget *w);
     void setContinuousScrollImpl(bool enabled, bool persistSettings);
     void setMangaModeImpl(bool manga, bool persistSettings);
-    void skipPages(int count);
+    void goToRelativePage(int offset);
     void applyContinuousPageFit();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();

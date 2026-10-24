@@ -128,6 +128,7 @@ void MainWindowViewer::applySavedReaderMode()
     const bool continuousScroll = config.getContinuousScroll();
     viewer->setMangaWithoutStoringSetting(manga);
     viewer->setContinuousScrollWithoutStoringSetting(continuousScroll);
+    viewer->setWebComic(false);
     syncModeActions(manga, continuousScroll);
 }
 
@@ -153,6 +154,7 @@ void MainWindowViewer::applyLibraryReaderMode(YACReader::FileType type)
 
     viewer->setMangaWithoutStoringSetting(manga);
     viewer->setContinuousScrollWithoutStoringSetting(continuousScroll);
+    viewer->setWebComic(type == YACReader::FileType::WebComic);
     syncModeActions(manga, continuousScroll);
 }
 
@@ -1340,8 +1342,7 @@ void MainWindowViewer::checkNewVersion()
 void MainWindowViewer::processReset()
 {
     disableActions();
-    if (!isClient || siblingComics.size() <= 1)
-        disablePreviousNextComicActions();
+    updatePrevNextActions();
 }
 
 void MainWindowViewer::setUpShortcutsManagement()
@@ -1490,14 +1491,20 @@ void MainWindowViewer::setUpShortcutsManagement()
     auto *const offsetDoublePageToTheRight = addActionWithShortcut(tr("Offset double page to the right"), OFFSET_DOUBLE_PAGE_TO_THE_RIGHT_Y);
     connect(offsetDoublePageToTheRight, &QAction::triggered, viewer, &Viewer::offsetDoublePageToTheRight);
 
-    auto *const go5PagesToTheLeftAction = addActionWithShortcut(tr("Go 5 pages to the left"), GO_5_PAGES_TO_THE_LEFT_ACTION_Y);
-    connect(go5PagesToTheLeftAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheLeft(5); });
-    auto *const go5PagesToTheRightAction = addActionWithShortcut(tr("Go 5 pages to the right"), GO_5_PAGES_TO_THE_RIGHT_ACTION_Y);
-    connect(go5PagesToTheRightAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheRight(5); });
-    auto *const go10PagesToTheLeftAction = addActionWithShortcut(tr("Go 10 pages to the left"), GO_10_PAGES_TO_THE_LEFT_ACTION_Y);
-    connect(go10PagesToTheLeftAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheLeft(10); });
-    auto *const go10PagesToTheRightAction = addActionWithShortcut(tr("Go 10 pages to the right"), GO_10_PAGES_TO_THE_RIGHT_ACTION_Y);
-    connect(go10PagesToTheRightAction, &QAction::triggered, viewer, [this] { viewer->skipPagesToTheRight(10); });
+    const auto addGoPagesToTheLeftAction = [this](int count, const QString &shortcutKey) {
+        auto *const action = addActionWithShortcut(tr("Go %1 pages to the left").arg(count), shortcutKey);
+        connect(action, &QAction::triggered, viewer, [this, count] { viewer->goPagesToTheLeft(count); });
+        return action;
+    };
+    const auto addGoPagesToTheRightAction = [this](int count, const QString &shortcutKey) {
+        auto *const action = addActionWithShortcut(tr("Go %1 pages to the right").arg(count), shortcutKey);
+        connect(action, &QAction::triggered, viewer, [this, count] { viewer->goPagesToTheRight(count); });
+        return action;
+    };
+    auto *const go5PagesToTheLeftAction = addGoPagesToTheLeftAction(5, GO_5_PAGES_TO_THE_LEFT_ACTION_Y);
+    auto *const go5PagesToTheRightAction = addGoPagesToTheRightAction(5, GO_5_PAGES_TO_THE_RIGHT_ACTION_Y);
+    auto *const go10PagesToTheLeftAction = addGoPagesToTheLeftAction(10, GO_10_PAGES_TO_THE_LEFT_ACTION_Y);
+    auto *const go10PagesToTheRightAction = addGoPagesToTheRightAction(10, GO_10_PAGES_TO_THE_RIGHT_ACTION_Y);
 
     loadedComicActions = { autoScrollForwardAction,
                            autoScrollBackwardAction,
@@ -1530,9 +1537,21 @@ void MainWindowViewer::setUpShortcutsManagement()
     allActions << tmpList;
 
     ShortcutsManager::getShortcutsManager().registerActions(allActions);
+
+    // a default added after users could customize shortcuts must not take a key already bound to another action
+    for (auto *action : { go5PagesToTheLeftAction, go5PagesToTheRightAction, go10PagesToTheLeftAction, go10PagesToTheRightAction }) {
+        if (ShortcutsManager::getShortcutsManager().checkConflicts(action->shortcut(), action)) {
+            action->setShortcut(QKeySequence());
+        }
+    }
 }
 
 void MainWindowViewer::doubleMangaPageSwitch()
+{
+    updatePrevNextActions();
+}
+
+void MainWindowViewer::updatePrevNextActions()
 {
     if (isClient) {
         int index = siblingComics.indexOf(currentComicDB);

@@ -36,7 +36,7 @@ protected:
 
     // open the comic at this point, -1 opens it at the saved reading progress
     int _firstPage = -1;
-    YACReader::OpenComicsAt _openComicsAt = YACReader::OpenComicsAt::LastPageRead;
+    YACReader::OpenComicsAt _openComicsAt = YACReader::OpenComicsAt::LastReadPage;
 
     bool _isPDF;
 

@@ -424,28 +424,42 @@ void Viewer::right()
     }
 }
 
-void Viewer::skipPagesToTheLeft(int count)
+void Viewer::goPagesToTheLeft(int count)
 {
-    skipPages(doubleMangaPage ? count : -count);
+    goToRelativePage(doubleMangaPage ? count : -count);
 }
 
-void Viewer::skipPagesToTheRight(int count)
+void Viewer::goPagesToTheRight(int count)
 {
-    skipPages(doubleMangaPage ? -count : count);
+    goToRelativePage(doubleMangaPage ? -count : count);
 }
 
-void Viewer::skipPages(int count)
+void Viewer::goToRelativePage(int offset)
 {
-    if (!render->hasLoadedComic()) {
+    const int lastPage = static_cast<int>(render->numPages()) - 1;
+    if (!render->hasLoadedComic() || lastPage < 0) {
         return;
     }
 
-    const int currentPage = getCurrentPageNumber();
-    const int page = qBound(0, currentPage + count, static_cast<int>(render->numPages()) - 1);
-    if (page != currentPage) {
-        goTo(page);
-        updateInformation();
+    const int fromPage = getCurrentPageNumber();
+    if ((offset > 0 && lastReadPage() == lastPage) || (offset < 0 && fromPage == 0)) {
+        return;
     }
+
+    int page = fromPage + offset;
+    // double page spreads stay paired as long as the page parity is kept
+    if (doublePage && !continuousScroll) {
+        if (offset % 2 != 0) {
+            page -= offset > 0 ? 1 : -1;
+        }
+        while (page > lastPage) {
+            page -= 2;
+        }
+    }
+
+    goTo(qBound(0, page, lastPage));
+    shouldOpenNext = false;
+    shouldOpenPrevious = false;
 }
 
 void Viewer::prev()
@@ -481,17 +495,23 @@ void Viewer::goTo(unsigned int page)
         continuousViewModel->setAnchorPage(static_cast<int>(page));
         render->goTo(page);
         scrollToCurrentContinuousPage();
+        updateInformation();
         return;
     }
 
     render->goTo(page);
 }
 
+void Viewer::setWebComic(bool webComic)
+{
+    this->webComic = webComic;
+    applyContinuousPageFit();
+}
+
 void Viewer::applyContinuousPageFit()
 {
-    continuousViewModel->setPageFit(Configuration::getConfiguration().getContinuousScrollFitToHeight()
-                                            ? ContinuousViewModel::PageFit::Height
-                                            : ContinuousViewModel::PageFit::Width);
+    const bool fitToHeight = !webComic && Configuration::getConfiguration().getContinuousScrollFitToHeight();
+    continuousViewModel->setPageFit(fitToHeight ? ContinuousViewModel::PageFit::Height : ContinuousViewModel::PageFit::Width);
 }
 
 void Viewer::onImageOptionsChanged()
@@ -1662,8 +1682,8 @@ void Viewer::onContinuousScroll(int value)
         continuousViewModel->setAnchorPage(currentPage);
         // No render->goTo() here: that drives Render's blocking page buffer and
         // would stall scrolling. The page provider decodes off-thread, driven by
-        // the widget's paint. Render's current page is synced lazily (on mode
-        // switch) instead.
+        // the widget's paint. Render's current page is synced lazily (before
+        // page turns) instead.
         updateInformation();
         emit pageAvailable(true);
         // Render only reports bookmark state for its own page changes.

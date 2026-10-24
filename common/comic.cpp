@@ -243,13 +243,11 @@ void Comic::removeBookmark(int index)
 //-----------------------------------------------------------------------------
 void Comic::saveBookmarks(int lastReadPage)
 {
-    if (lastReadPage < 0 || lastReadPage >= _pages.size()) {
-        return;
+    if (lastReadPage >= 0 && lastReadPage < _pages.size()) {
+        QImage p;
+        p.loadFromData(_pages[lastReadPage]);
+        bm->setLastPage(lastReadPage, p);
     }
-
-    QImage p;
-    p.loadFromData(_pages[lastReadPage]);
-    bm->setLastPage(lastReadPage, p);
     bm->save();
 }
 //-----------------------------------------------------------------------------
@@ -294,15 +292,13 @@ void Comic::invalidate()
 void Comic::resolveStartPage()
 {
     if (_firstPage == -1) {
-        _firstPage = bm->getLastPage();
-
-        const bool finished = _firstPage == _pages.length() - 1;
-        if (_openComicsAt == YACReader::OpenComicsAt::FirstPage || (_openComicsAt == YACReader::OpenComicsAt::FirstPageIfFinished && finished)) {
-            _firstPage = 0;
-        }
+        const int savedPage = bm->getLastPage();
+        const bool finished = savedPage == _pages.size() - 1;
+        const bool restart = _openComicsAt == YACReader::OpenComicsAt::FirstPage || (_openComicsAt == YACReader::OpenComicsAt::FirstPageIfFinished && finished);
+        _firstPage = restart ? 0 : savedPage;
     }
 
-    if (_firstPage < 0 || _firstPage >= _pages.length()) {
+    if (_firstPage < 0 || _firstPage >= _pages.size()) {
         _firstPage = 0;
     }
 }

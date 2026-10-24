@@ -89,9 +89,9 @@ enum class FileType : int {
 };
 
 enum class OpenComicsAt : int {
-    LastPageRead = 0,
-    FirstPageIfFinished,
-    FirstPage,
+    LastReadPage = 0,
+    FirstPageIfFinished = 1,
+    FirstPage = 2,
 };
 
 enum class LibrariesUpdateInterval : int {

@@ -686,18 +686,18 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="630"/>
-        <location filename="../common/comic.cpp" line="646"/>
+        <location filename="../common/comic.cpp" line="626"/>
+        <location filename="../common/comic.cpp" line="642"/>
         <source>Format not supported</source>
         <translation>不支持的文件格式</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="624"/>
+        <location filename="../common/comic.cpp" line="620"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="517"/>
+        <location filename="../common/comic.cpp" line="513"/>
         <source>Unknown error opening the file</source>
         <translation>打开文件时出现未知错误</translation>
     </message>
@@ -706,7 +706,7 @@
         <translation type="vanished">不支持的 EPUB 格式：%1</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="510"/>
+        <location filename="../common/comic.cpp" line="506"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 页 CRC 校验失败: 部分页面将无法正确显示</translation>
     </message>
