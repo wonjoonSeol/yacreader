@@ -306,7 +306,7 @@
         <translation>我的漫画路径</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Image adjustment</source>
         <translation>图像调整</translation>
     </message>
@@ -486,12 +486,12 @@ If none is active, Escape does nothing.</source>
         <translation>显示书页折叠阴影</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="353"/>
         <source>Options</source>
         <translation>选项</translation>
     </message>
@@ -516,7 +516,7 @@ If none is active, Escape does nothing.</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="369"/>
         <source>Comics directory</source>
         <translation>漫画目录</translation>
     </message>
@@ -586,12 +586,12 @@ If none is active, Escape does nothing.</source>
         <translation>双三次（Bicubic）</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Page Flow</source>
         <translation>页面流</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
@@ -601,7 +601,7 @@ If none is active, Escape does nothing.</source>
         <translation>亮度</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="344"/>
         <source>Restart is needed</source>
         <translation>需要重启</translation>
     </message>

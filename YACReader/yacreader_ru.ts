@@ -287,7 +287,7 @@
         <translation>Папка комиксов</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Image adjustment</source>
         <translation>Настройка изображения</translation>
     </message>
@@ -312,12 +312,12 @@
         <translation>Контраст</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Appearance</source>
         <translation>Появление</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="353"/>
         <source>Options</source>
         <translation>Настройки</translation>
     </message>
@@ -352,7 +352,7 @@
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="369"/>
         <source>Comics directory</source>
         <translation>Папка комиксов</translation>
     </message>
@@ -557,12 +557,17 @@ If none is active, Escape does nothing.</source>
         <translation>Ланцос (лучшее качество)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="304"/>
+        <source>Bicubic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Page Flow</source>
         <translation>Поток Страниц</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>General</source>
         <translation>Общие</translation>
     </message>
@@ -572,7 +577,7 @@ If none is active, Escape does nothing.</source>
         <translation>Яркость</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="344"/>
         <source>Restart is needed</source>
         <translation>Требуется перезагрузка</translation>
     </message>

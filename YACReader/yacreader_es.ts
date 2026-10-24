@@ -327,7 +327,12 @@
         <translation>Lanczos (mejor calidad)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="304"/>
+        <source>Bicubic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Image adjustment</source>
         <translation>Ajustes de imagen</translation>
     </message>
@@ -352,12 +357,12 @@
         <translation>Contraste</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="337"/>
         <source>Appearance</source>
         <translation>Apariencia</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="353"/>
         <source>Options</source>
         <translation>Opciones</translation>
     </message>
@@ -382,7 +387,7 @@
         <translation>Limpiar</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="369"/>
         <source>Comics directory</source>
         <translation>Directorio de cómics</translation>
     </message>
@@ -392,12 +397,12 @@
         <translation>Color de fondo</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Page Flow</source>
         <translation>Flujo de página</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>General</source>
         <translation>Opciones generales</translation>
     </message>
@@ -407,7 +412,7 @@
         <translation>Brillo</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="344"/>
         <source>Restart is needed</source>
         <translation>Es necesario reiniciar</translation>
     </message>
