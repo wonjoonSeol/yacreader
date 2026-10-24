@@ -300,6 +300,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     scalingMethodCombo = new QComboBox();
     scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"), static_cast<int>(ScaleMethod::Nearest));
     scalingMethodCombo->addItem(tr("Bilinear"), static_cast<int>(ScaleMethod::Bilinear));
+    scalingMethodCombo->addItem(tr("Bicubic"), static_cast<int>(ScaleMethod::Bicubic));
     scalingMethodCombo->addItem(tr("Lanczos4 (more detail, more halos)"), static_cast<int>(ScaleMethod::Lanczos4));
     scalingMethodCombo->addItem(tr("Lanczos3 (balanced)"), static_cast<int>(ScaleMethod::Lanczos3));
     scalingMethodCombo->addItem(tr("Lanczos2 (fewer halos, less detail)"), static_cast<int>(ScaleMethod::Lanczos2));

@@ -4,11 +4,12 @@
 #include <QImage>
 #include <QPixmap>
 
-// The values are stored in settings and must not be renumbered. 3 is kept for upstream's Bicubic.
+// The values are stored in settings and must not be renumbered.
 enum class ScaleMethod {
     Nearest = 0,
     Bilinear = 1,
     Lanczos4 = 2,
+    Bicubic = 3,
     Lanczos3 = 4,
     Lanczos2 = 5
 };

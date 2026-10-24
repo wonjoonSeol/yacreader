@@ -30,6 +30,7 @@ constexpr Method methods[] = {
     { "Nearest", ScaleMethod::Nearest, 0 },
     { "Bilinear", ScaleMethod::Bilinear, 1 },
     { "Lanczos4", ScaleMethod::Lanczos4, 2 },
+    { "Bicubic", ScaleMethod::Bicubic, 3 },
     { "Lanczos3", ScaleMethod::Lanczos3, 4 },
     { "Lanczos2", ScaleMethod::Lanczos2, 5 },
 };
@@ -125,7 +126,7 @@ void ResizeImageTest::keepsTheStoredValues()
         QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
         QVERIFY2(isKnownScaleMethod(entry.storedValue), entry.name);
     }
-    for (const int value : { -1, 3, 6 })
+    for (const int value : { -1, 6 })
         QVERIFY2(!isKnownScaleMethod(value), qPrintable(QString::number(value)));
 }
 
