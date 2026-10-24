@@ -141,6 +141,7 @@ private:
     QAction *showInfoAction;
     QAction *closeAction; // owns the Escape key; dispatches quit vs. cancel-mode
     QAction *exitAction; // File▸Close menu command, always quits
+    QAction *toggleFullScreenAction;
 
     // Cancels the topmost active mode (magnifier, translator, go-to-flow, fullscreen).
     // Returns true if a mode was cancelled, false if none was active.
@@ -162,6 +163,7 @@ private:
 
     QList<QAction *> mglassActions;
     QList<QAction *> loadedComicActions;
+    QList<QAction *> fullScreenToolBarActions;
 
     QToolButton *openToolButton;
 
@@ -175,6 +177,14 @@ private:
     void createActions();
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
+    void setFullScreenToolBarActionsVisible(bool visible);
+    void hideToolBarOverPage();
+#ifndef Y_MAC_UI
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    void updateToolBarOverPage(const QMouseEvent *event);
+    void showToolBarOverPage();
+    bool toolBarIsOverPage() const;
+#endif
     void refreshRecentFilesActionList();
     void clearRecentFiles();
     void getSiblingComics(QString path, QString currentComic);

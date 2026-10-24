@@ -13,6 +13,7 @@ qt_add_executable(YACReader WIN32
     magnifying_glass.cpp
     main_window_viewer.h
     main_window_viewer.cpp
+    toolbar_over_page.h
     continuous_page_widget.h
     continuous_page_widget.cpp
     continuous_page_provider.h
@@ -96,6 +97,7 @@ set(yacreader_image_files
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/close.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doublePage.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doubleMangaPage.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/exitFullScreen.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/fitToPage.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/flow.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/full.svg
@@ -125,6 +127,7 @@ set(yacreader_image_files
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/close_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doublePage_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doubleMangaPage_18x18.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/exitFullScreen_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/fitToPage_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/flow_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/full_18x18.svg
