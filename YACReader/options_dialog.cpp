@@ -516,7 +516,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         QSignalBlocker blocker(scalingMethodCombo);
         int scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
         if (scalingMethodIndex < 0)
-            scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(ScaleMethod::Lanczos4));
+            scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(defaultScaleMethod));
         scalingMethodCombo->setCurrentIndex(scalingMethodIndex);
     }
 

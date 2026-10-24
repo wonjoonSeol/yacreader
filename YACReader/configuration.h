@@ -143,7 +143,7 @@ public:
     {
         bool ok = false;
         const int method = settings->value(SCALING_METHOD).toInt(&ok);
-        return ok && isKnownScaleMethod(method) ? static_cast<ScaleMethod>(method) : ScaleMethod::Lanczos4;
+        return ok && isKnownScaleMethod(method) ? static_cast<ScaleMethod>(method) : defaultScaleMethod;
     }
     void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
 };

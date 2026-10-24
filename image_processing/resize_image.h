@@ -13,12 +13,14 @@ enum class ScaleMethod {
     Lanczos2 = 5
 };
 
+constexpr ScaleMethod defaultScaleMethod = ScaleMethod::Lanczos4;
+
 bool isKnownScaleMethod(int value);
 
 // Base scaling API - callers are responsible for supplying the correct target dimensions.
 
-QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod method = ScaleMethod::Lanczos4);
+QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod method = defaultScaleMethod);
 
-QImage scaleImage(const QImage &image, int width, int height, ScaleMethod method = ScaleMethod::Lanczos4);
+QImage scaleImage(const QImage &image, int width, int height, ScaleMethod method = defaultScaleMethod);
 
 #endif // RESIZE_IMAGE_H
