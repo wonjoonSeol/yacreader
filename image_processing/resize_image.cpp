@@ -230,18 +230,23 @@ static QImage scaleImageBicubic(const QImage &image, int width, int height)
     return dst;
 }
 
-bool isKnownScaleMethod(int value)
+ScaleMethod scaleMethodFromSetting(const QVariant &value)
 {
-    switch (static_cast<ScaleMethod>(value)) {
+    bool ok = false;
+    const auto method = static_cast<ScaleMethod>(value.toInt(&ok));
+    if (!ok)
+        return defaultScaleMethod;
+
+    switch (method) {
     case ScaleMethod::Nearest:
     case ScaleMethod::Bilinear:
     case ScaleMethod::Lanczos4:
     case ScaleMethod::Bicubic:
     case ScaleMethod::Lanczos3:
     case ScaleMethod::Lanczos2:
-        return true;
+        return method;
     }
-    return false;
+    return defaultScaleMethod;
 }
 
 // ---- QPixmap API ------------------------------------------------------------

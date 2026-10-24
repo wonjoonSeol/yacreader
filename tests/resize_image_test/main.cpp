@@ -15,7 +15,8 @@ private slots:
     void scalesToTheRequestedSize();
     void fewerLobesSpreadLessFromAnEdge();
     void lanczos2RingsLessThanLanczos4WhenEnlarging();
-    void keepsTheStoredValues();
+    void readsTheStoredValues();
+    void fallsBackToLanczos4ForUnknownValues();
 };
 
 namespace {
@@ -120,14 +121,20 @@ void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
     QVERIFY2(lanczos2 < lanczos4, qPrintable(QString("lanczos2 %1, lanczos4 %2").arg(lanczos2).arg(lanczos4)));
 }
 
-void ResizeImageTest::keepsTheStoredValues()
+void ResizeImageTest::readsTheStoredValues()
 {
     for (const auto &entry : methods) {
         QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
-        QVERIFY2(isKnownScaleMethod(entry.storedValue), entry.name);
+        QCOMPARE(scaleMethodFromSetting(entry.storedValue), entry.method);
+        // ini files give the values back as strings
+        QCOMPARE(scaleMethodFromSetting(QString::number(entry.storedValue)), entry.method);
     }
-    for (const int value : { -1, 6 })
-        QVERIFY2(!isKnownScaleMethod(value), qPrintable(QString::number(value)));
+}
+
+void ResizeImageTest::fallsBackToLanczos4ForUnknownValues()
+{
+    for (const QVariant &value : { QVariant(), QVariant(-1), QVariant(6), QVariant("Lanczos3") })
+        QCOMPARE(scaleMethodFromSetting(value), ScaleMethod::Lanczos4);
 }
 
 QTEST_GUILESS_MAIN(ResizeImageTest)
