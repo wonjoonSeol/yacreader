@@ -241,11 +241,13 @@ void Comic::removeBookmark(int index)
     emit bookmarksUpdated();
 }
 //-----------------------------------------------------------------------------
-void Comic::saveBookmarks()
+void Comic::saveBookmarks(int lastReadPage)
 {
-    QImage p;
-    p.loadFromData(_pages[_index]);
-    bm->setLastPage(_index, p);
+    if (lastReadPage >= 0 && lastReadPage < _pages.size()) {
+        QImage p;
+        p.loadFromData(_pages[lastReadPage]);
+        bm->setLastPage(lastReadPage, p);
+    }
     bm->save();
 }
 //-----------------------------------------------------------------------------
@@ -290,7 +292,10 @@ void Comic::invalidate()
 void Comic::resolveStartPage()
 {
     if (_firstPage == -1) {
-        _firstPage = bm->getLastPage();
+        const int savedPage = bm->getLastPage();
+        const bool finished = savedPage == _pages.size() - 1;
+        const bool restart = _openComicsAt == YACReader::OpenComicsAt::FirstPage || (_openComicsAt == YACReader::OpenComicsAt::FirstPageIfFinished && finished);
+        _firstPage = restart ? 0 : savedPage;
     }
 
     if (_firstPage < 0 || _firstPage >= _pages.size()) {
@@ -428,7 +433,7 @@ bool FileComic::load(const QString &path, const ComicDB &comic)
         if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
             emit bookmarksUpdated();
         }
-        _firstPage = comic.info.currentPage - 1;
+        _firstPage = -1;
         _path = QDir::cleanPath(path);
         return true;
     } else {
@@ -833,7 +838,7 @@ bool PDFComic::load(const QString &path, const ComicDB &comic)
         if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
             emit bookmarksUpdated();
         }
-        _firstPage = comic.info.currentPage - 1;
+        _firstPage = -1;
         _path = QDir::cleanPath(path);
         return true;
     } else {

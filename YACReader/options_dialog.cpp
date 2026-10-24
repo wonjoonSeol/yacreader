@@ -61,6 +61,17 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     displayLayout->addWidget(showTimeInInformationLabel);
     displayBox->setLayout(displayLayout);
 
+    auto openComicsAtBox = new QGroupBox(tr("Open comics at"));
+    auto openComicsAtLayout = new QVBoxLayout();
+    openAtLastReadPageRadioButton = new QRadioButton(tr("The last page read"));
+    openAtFirstPageIfFinishedRadioButton = new QRadioButton(tr("The first page if the comic is finished, otherwise the last page read"));
+    openAtFirstPageIfFinishedRadioButton->setToolTip(tr("A comic counts as finished when its reading progress is on the last page."));
+    openAtFirstPageRadioButton = new QRadioButton(tr("The first page"));
+    openComicsAtLayout->addWidget(openAtLastReadPageRadioButton);
+    openComicsAtLayout->addWidget(openAtFirstPageIfFinishedRadioButton);
+    openComicsAtLayout->addWidget(openAtFirstPageRadioButton);
+    openComicsAtBox->setLayout(openComicsAtLayout);
+
     QGroupBox *magnifyingGlassBox = new QGroupBox(tr("Magnifying glass"));
     auto magnifyingGlassLayout = new QVBoxLayout();
     circularMagnifyingGlass = new QCheckBox(tr("Circular magnifying glass"));
@@ -160,6 +171,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutGeneral->addWidget(pathBox);
     layoutGeneral->addWidget(languageBox);
     layoutGeneral->addWidget(displayBox);
+    layoutGeneral->addWidget(openComicsAtBox);
     layoutGeneral->addWidget(magnifyingGlassBox);
     // layoutGeneral->addWidget(fitBox);
     layoutGeneral->addWidget(scrollBox);
@@ -363,6 +375,13 @@ void OptionsDialog::saveOptions()
     settings->setValue(PATH, pathEdit->text());
 
     Configuration::getConfiguration().setShowTimeInInformation(showTimeInInformationLabel->isChecked());
+    auto openComicsAt = OpenComicsAt::LastReadPage;
+    if (openAtFirstPageIfFinishedRadioButton->isChecked()) {
+        openComicsAt = OpenComicsAt::FirstPageIfFinished;
+    } else if (openAtFirstPageRadioButton->isChecked()) {
+        openComicsAt = OpenComicsAt::FirstPage;
+    }
+    Configuration::getConfiguration().setOpenComicsAt(openComicsAt);
 
     Configuration::getConfiguration().setMagnifyingGlassCircular(circularMagnifyingGlass->isChecked());
     Configuration::getConfiguration().setMagnifyingGlassRing(magnifyingGlassRing->isChecked());
@@ -424,6 +443,18 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     languageCombo->setCurrentIndex(languageIndex);
 
     showTimeInInformationLabel->setChecked(Configuration::getConfiguration().getShowTimeInInformation());
+    switch (Configuration::getConfiguration().getOpenComicsAt()) {
+    case OpenComicsAt::FirstPageIfFinished:
+        openAtFirstPageIfFinishedRadioButton->setChecked(true);
+        break;
+    case OpenComicsAt::FirstPage:
+        openAtFirstPageRadioButton->setChecked(true);
+        break;
+    case OpenComicsAt::LastReadPage:
+    default:
+        openAtLastReadPageRadioButton->setChecked(true);
+        break;
+    }
 
     circularMagnifyingGlass->setChecked(Configuration::getConfiguration().getMagnifyingGlassCircular());
     magnifyingGlassRing->setChecked(Configuration::getConfiguration().getMagnifyingGlassRing());

@@ -247,7 +247,7 @@ private:
     void syncRenderToContinuousReadingProgress();
     // Brings Render's current page in line with the continuous-scroll reading
     // position. Continuous mode never calls render->goTo() while scrolling, so
-    // this is used lazily (on save / leaving continuous mode) to keep Render
+    // this is used lazily (before page turns) to keep Render
     // state correct. It can block briefly, so it is kept off the scroll path.
     void syncRenderToContinuousPage();
     void onNumPagesReady(unsigned int numPages);
@@ -255,6 +255,8 @@ private:
     void setActiveWidget(QWidget *w);
     void setContinuousScrollImpl(bool enabled, bool persistSettings);
     void setMangaModeImpl(bool manga, bool persistSettings);
+    // 0-based. A double page spread that ends the comic counts as read up to its last page.
+    int lastReadPage();
 
     //! Mouse handler
     std::unique_ptr<YACReader::MouseHandler> mouseHandler;

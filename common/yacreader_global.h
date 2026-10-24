@@ -88,6 +88,12 @@ enum class FileType : int {
     Yonkoma, // 4Koma
 };
 
+enum class OpenComicsAt : int {
+    LastReadPage = 0,
+    FirstPageIfFinished = 1,
+    FirstPage = 2,
+};
+
 enum class LibrariesUpdateInterval : int {
     Minutes30 = 0,
     Hourly,

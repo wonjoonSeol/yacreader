@@ -768,6 +768,8 @@ void Render::createComic(const QString &path)
         return;
     }
 
+    comic->setOpenComicsAt(Configuration::getConfiguration().getOpenComicsAt());
+
     connect(comic, QOverload<>::of(&Comic::errorOpening), this, QOverload<>::of(&Render::errorOpening), Qt::QueuedConnection);
     connect(comic, QOverload<QString>::of(&Comic::errorOpening), this, QOverload<QString>::of(&Render::errorOpening), Qt::QueuedConnection);
     connect(comic, &Comic::crcErrorFound, this, &Render::crcError, Qt::QueuedConnection);
@@ -1181,9 +1183,9 @@ void Render::removeBookmark(int page)
     comic->removeBookmark(page);
 }
 
-void Render::save()
+void Render::save(int lastReadPage)
 {
-    comic->saveBookmarks();
+    comic->saveBookmarks(lastReadPage);
 }
 
 Bookmarks *Render::getBookmarks()

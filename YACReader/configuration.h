@@ -107,6 +107,8 @@ public:
     void setShowInformation(bool b) { settings->setValue(SHOW_INFO, b); }
     bool getShowTimeInInformation() { return settings->value(SHOW_TIME_IN_INFO, true).toBool(); }
     void setShowTimeInInformation(bool b) { settings->setValue(SHOW_TIME_IN_INFO, b); }
+    OpenComicsAt getOpenComicsAt() { return static_cast<OpenComicsAt>(settings->value(OPEN_COMICS_AT, static_cast<int>(OpenComicsAt::LastReadPage)).toInt()); }
+    void setOpenComicsAt(OpenComicsAt openComicsAt) { settings->setValue(OPEN_COMICS_AT, static_cast<int>(openComicsAt)); }
     QDate getLastVersionCheck() { return settings->value(LAST_VERSION_CHECK).toDate(); }
     void setLastVersionCheck(const QDate &date) { settings->setValue(LAST_VERSION_CHECK, date); }
     int getNumDaysBetweenVersionChecks() { return settings->value(NUM_DAYS_BETWEEN_VERSION_CHECKS, 1).toInt(); }

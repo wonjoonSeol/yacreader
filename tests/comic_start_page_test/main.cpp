@@ -10,6 +10,8 @@
 #include <QTemporaryDir>
 #include <QTest>
 
+using YACReader::OpenComicsAt;
+
 class ComicStartPageTest : public QObject
 {
     Q_OBJECT
@@ -22,6 +24,11 @@ private slots:
     void choosesTheStartPage();
     void choosesTheStartPageOfLibraryComics_data();
     void choosesTheStartPageOfLibraryComics();
+    void reopenedComicStartsFromTheSavedProgress_data();
+    void reopenedComicStartsFromTheSavedProgress();
+    void saveBookmarksRecordsTheLastReadPageAndItsImage();
+    void saveBookmarksKeepsTheLastReadPageForPagesOutsideTheComic_data();
+    void saveBookmarksKeepsTheLastReadPageForPagesOutsideTheComic();
 
 private:
     QTemporaryDir comicFolder;
@@ -89,23 +96,31 @@ void ComicStartPageTest::choosesTheStartPage_data()
 {
     QTest::addColumn<int>("requestedPage");
     QTest::addColumn<int>("savedPage");
+    QTest::addColumn<OpenComicsAt>("openComicsAt");
     QTest::addColumn<int>("expectedPage");
 
-    QTest::newRow("saved on a middle page") << atSavedProgress << 2 << 2;
-    QTest::newRow("saved on the last page") << atSavedProgress << lastPage << lastPage;
-    QTest::newRow("saved past the last page") << atSavedProgress << pageCount << 0;
-    QTest::newRow("saved before the first page") << atSavedProgress << -1 << 0;
-    QTest::newRow("requested middle page") << 2 << 3 << 2;
-    QTest::newRow("requested page past the end") << pageCount << 2 << 0;
+    QTest::newRow("saved on the last page, last read page") << atSavedProgress << lastPage << OpenComicsAt::LastReadPage << lastPage;
+    QTest::newRow("saved on the last page, first page if finished") << atSavedProgress << lastPage << OpenComicsAt::FirstPageIfFinished << 0;
+    QTest::newRow("saved on the second to last page, first page if finished") << atSavedProgress << lastPage - 1 << OpenComicsAt::FirstPageIfFinished << lastPage - 1;
+    QTest::newRow("saved on a middle page, last read page") << atSavedProgress << 2 << OpenComicsAt::LastReadPage << 2;
+    QTest::newRow("saved on a middle page, first page") << atSavedProgress << 2 << OpenComicsAt::FirstPage << 0;
+    QTest::newRow("saved past the last page, last read page") << atSavedProgress << pageCount << OpenComicsAt::LastReadPage << 0;
+    QTest::newRow("saved before the first page, last read page") << atSavedProgress << -1 << OpenComicsAt::LastReadPage << 0;
+    QTest::newRow("saved on the last page, unknown setting") << atSavedProgress << lastPage << static_cast<OpenComicsAt>(7) << lastPage;
+    QTest::newRow("requested last page, first page if finished") << lastPage << 2 << OpenComicsAt::FirstPageIfFinished << lastPage;
+    QTest::newRow("requested middle page, first page") << 2 << 3 << OpenComicsAt::FirstPage << 2;
+    QTest::newRow("requested page past the end") << pageCount << 2 << OpenComicsAt::LastReadPage << 0;
 }
 
 void ComicStartPageTest::choosesTheStartPage()
 {
     QFETCH(int, requestedPage);
     QFETCH(int, savedPage);
+    QFETCH(OpenComicsAt, openComicsAt);
     QFETCH(int, expectedPage);
 
     FolderComic comic;
+    comic.setOpenComicsAt(openComicsAt);
     QVERIFY(comic.load(comicFolder.path(), requestedPage));
     comic.bm->setLastPage(savedPage, QImage());
 
@@ -117,27 +132,95 @@ void ComicStartPageTest::choosesTheStartPage()
 void ComicStartPageTest::choosesTheStartPageOfLibraryComics_data()
 {
     QTest::addColumn<int>("currentPage");
+    QTest::addColumn<OpenComicsAt>("openComicsAt");
     QTest::addColumn<int>("expectedPage");
 
-    QTest::newRow("on a middle page") << 3 << 2;
-    QTest::newRow("finished") << pageCount << lastPage;
-    QTest::newRow("removed from the Reading list") << 0 << 0;
+    QTest::newRow("finished, last read page") << pageCount << OpenComicsAt::LastReadPage << lastPage;
+    QTest::newRow("finished, first page if finished") << pageCount << OpenComicsAt::FirstPageIfFinished << 0;
+    QTest::newRow("on the second to last page, first page if finished") << pageCount - 1 << OpenComicsAt::FirstPageIfFinished << lastPage - 1;
+    QTest::newRow("on a middle page, first page") << 3 << OpenComicsAt::FirstPage << 0;
+    QTest::newRow("removed from the Reading list") << 0 << OpenComicsAt::LastReadPage << 0;
 }
 
 void ComicStartPageTest::choosesTheStartPageOfLibraryComics()
 {
     QFETCH(int, currentPage);
+    QFETCH(OpenComicsAt, openComicsAt);
     QFETCH(int, expectedPage);
 
     ComicDB comicDB;
     comicDB.info.currentPage = currentPage;
 
     LibraryComicProbe comic;
+    comic.setOpenComicsAt(openComicsAt);
     QVERIFY(comic.load(comicFolder.filePath("1.png"), comicDB));
     comic.setPageCount(pageCount);
     comic.resolveStartPage();
 
     QCOMPARE(comic.startPage(), expectedPage);
+}
+
+void ComicStartPageTest::reopenedComicStartsFromTheSavedProgress_data()
+{
+    QTest::addColumn<OpenComicsAt>("openComicsAt");
+    QTest::addColumn<int>("expectedPage");
+
+    QTest::newRow("last read page") << OpenComicsAt::LastReadPage << lastPage;
+    QTest::newRow("first page if finished") << OpenComicsAt::FirstPageIfFinished << 0;
+}
+
+void ComicStartPageTest::reopenedComicStartsFromTheSavedProgress()
+{
+    QFETCH(OpenComicsAt, openComicsAt);
+    QFETCH(int, expectedPage);
+
+    {
+        FolderComic comic;
+        QVERIFY(comic.load(comicFolder.path()));
+        QCOMPARE(startPageOf(comic), 0);
+        comic.saveBookmarks(lastPage);
+    }
+
+    FolderComic reopened;
+    reopened.setOpenComicsAt(openComicsAt);
+    QVERIFY(reopened.load(comicFolder.path()));
+
+    QCOMPARE(startPageOf(reopened), expectedPage);
+    QCOMPARE(reopened.numPages(), static_cast<unsigned int>(pageCount));
+}
+
+void ComicStartPageTest::saveBookmarksRecordsTheLastReadPageAndItsImage()
+{
+    FolderComic comic;
+    QVERIFY(comic.load(comicFolder.path(), 1));
+    QCOMPARE(startPageOf(comic), 1);
+
+    comic.saveBookmarks(lastPage);
+
+    QCOMPARE(comic.bm->getLastPage(), lastPage);
+    QCOMPARE(comic.bm->getLastPagePixmap().size(), pageSize(lastPage));
+}
+
+void ComicStartPageTest::saveBookmarksKeepsTheLastReadPageForPagesOutsideTheComic_data()
+{
+    QTest::addColumn<int>("page");
+
+    QTest::newRow("past the last page") << pageCount;
+    QTest::newRow("before the first page") << -1;
+}
+
+void ComicStartPageTest::saveBookmarksKeepsTheLastReadPageForPagesOutsideTheComic()
+{
+    QFETCH(int, page);
+
+    FolderComic comic;
+    QVERIFY(comic.load(comicFolder.path(), 1));
+    QCOMPARE(startPageOf(comic), 1);
+    comic.saveBookmarks(2);
+
+    comic.saveBookmarks(page);
+
+    QCOMPARE(comic.bm->getLastPage(), 2);
 }
 
 QTEST_GUILESS_MAIN(ComicStartPageTest)

@@ -1551,10 +1551,7 @@ void Viewer::setBookmark(bool set)
 void Viewer::save()
 {
     if (render->hasLoadedComic()) {
-        // Render's current page lags the scroll position in continuous mode;
-        // bring it in line before persisting reading progress.
-        syncRenderToContinuousPage();
-        render->save();
+        render->save(lastReadPage());
     }
 }
 
@@ -1632,8 +1629,8 @@ void Viewer::onContinuousScroll(int value)
         continuousViewModel->setAnchorPage(currentPage);
         // No render->goTo() here: that drives Render's blocking page buffer and
         // would stall scrolling. The page provider decodes off-thread, driven by
-        // the widget's paint. Render's current page is synced lazily (save / mode
-        // switch) instead.
+        // the widget's paint. Render's current page is synced lazily (before
+        // page turns) instead.
         updateInformation();
         emit pageAvailable(true);
         // Render only reports bookmark state for its own page changes.
@@ -2219,21 +2216,21 @@ int Viewer::getCurrentPageNumber()
     return render->getIndex();
 }
 
+int Viewer::lastReadPage()
+{
+    if (continuousScroll && continuousViewModel->numPages() > 0) {
+        return continuousViewModel->readingProgressPage();
+    }
+    if (doublePage && render->currentPageIsDoublePage() && render->getIndex() + 2 >= render->numPages()) {
+        return render->numPages() - 1;
+    }
+    return render->getIndex();
+}
+
 void Viewer::updateComic(ComicDB &comic)
 {
     if (render->hasLoadedComic()) {
-        // set currentPage
-        if (continuousScroll && continuousViewModel->numPages() > 0) {
-            comic.info.currentPage = getCurrentPageNumber() + 1;
-        } else if (!doublePage || (doublePage && render->currentPageIsDoublePage() == false)) {
-            comic.info.currentPage = render->getIndex() + 1;
-        } else {
-            if (doublePage && render->currentPageIsDoublePage() && (render->getIndex() + 2 >= render->numPages())) {
-                comic.info.currentPage = std::min(render->numPages(), render->getIndex() + 2);
-            } else {
-                comic.info.currentPage = std::min(render->numPages(), render->getIndex() + 1);
-            }
-        }
+        comic.info.currentPage = lastReadPage() + 1;
         // set bookmarks
         Bookmarks *boomarks = render->getBookmarks();
         QList<int> boomarksList = boomarks->getBookmarkPages();

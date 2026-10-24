@@ -2,6 +2,7 @@
 #define __COMIC_H
 #include "bookmarks.h"
 #include "extract_delegate.h"
+#include "yacreader_global.h"
 
 #include <QByteArray>
 #include <QImage>
@@ -33,8 +34,9 @@ protected:
     QString _path;
     bool _loaded;
 
-    // open the comic at this point
-    int _firstPage;
+    // open the comic at this point, -1 opens it at the saved reading progress
+    int _firstPage = -1;
+    YACReader::OpenComicsAt _openComicsAt = YACReader::OpenComicsAt::LastReadPage;
 
     bool _isPDF;
 
@@ -60,6 +62,8 @@ public:
     // Load pages from file
     virtual bool load(const QString &path, int atPage = -1) = 0;
     virtual bool load(const QString &path, const ComicDB &comic);
+    // where a comic opened at its saved reading progress starts
+    void setOpenComicsAt(YACReader::OpenComicsAt openComicsAt) { _openComicsAt = openComicsAt; }
 
     /*void loadFromFile(const QString & pathFile);
                 void loadFromDir(const QString & pathDir);
@@ -91,7 +95,7 @@ public slots:
     void loadFinished();
     void setBookmark(int index);
     void removeBookmark(int index);
-    void saveBookmarks();
+    void saveBookmarks(int lastReadPage);
     void checkIsBookmark(int index);
     void updateBookmarkImage(int);
     void setPageLoaded(int page);
