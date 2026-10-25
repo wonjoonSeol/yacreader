@@ -114,16 +114,16 @@ The same line art enlarged 3x, with the boxed part shown 3x larger again below i
 
 Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
 
-| | Lanczos4 | Lanczos3 | Lanczos2 | Bilinear |
-|---|---|---|---|---|
-| Overshoot past the edge (grey levels) | 16 | 15 | 10 | 0 |
-| Pixels from the edge that change | 13 | 9 | 6 | 2 |
-| Edge rise from 10% to 90% (px) | 3.0 | 3.0 | 3.0 | 3.4 |
-| Contrast kept on stripes with a 3 px period | 98% | 96% | 90% | 77% |
+| | Lanczos4 | Lanczos3 | Lanczos2 | Bicubic | Bilinear |
+|---|---|---|---|---|---|
+| Overshoot past the edge (grey levels) | 16 | 15 | 10 | 9 | 0 |
+| Pixels from the edge that change | 13 | 9 | 6 | 6 | 2 |
+| Edge rise from 10% to 90% (px) | 3.0 | 3.0 | 3.0 | 2.9 | 3.4 |
+| Contrast kept on stripes with a 3 px period | 98% | 96% | 90% | 90% | 77% |
 
 - **Edges** are equally steep with all three. The difference is in the halos and the finest detail.
 - **Shrinking** 4x, the overshoot is at most 2 grey levels with any of them.
-- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5. Nothing uses 3, so it stays free for the Bicubic method that the open upstream PR [#620](https://github.com/YACReader/yacreader/pull/620) stores as 3. A stored value the fork does not know, 3 included, falls back to Lanczos4.
+- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5, and 3 is [Bicubic](#bicubic-scaling), as in the open upstream PR [#620](https://github.com/YACReader/yacreader/pull/620). A stored value the fork does not know falls back to Lanczos4.
 - **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
 
 ---
