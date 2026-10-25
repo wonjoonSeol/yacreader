@@ -78,3 +78,8 @@ add_library(KDSignalThrottler STATIC
 )
 target_include_directories(KDSignalThrottler PUBLIC KDToolBox)
 target_link_libraries(KDSignalThrottler PUBLIC Qt6::Core)
+
+# --- Anime4KCPP (ACNet upscaler on the CPU, used by image_processing) ---
+if(NOT BUILD_SERVER_STANDALONE)
+    add_subdirectory(anime4kcpp)
+endif()

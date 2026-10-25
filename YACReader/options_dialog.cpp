@@ -299,8 +299,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutImageV->addWidget(doublePageBox);
 
     auto scalingBox = new QGroupBox(tr("Scaling"));
-    auto scalingLayout = new QHBoxLayout();
-    scalingLayout->addWidget(new QLabel(tr("Scaling method")));
+    auto scalingLayout = new QVBoxLayout();
+    auto scalingMethodLayout = new QHBoxLayout();
+    scalingMethodLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
     for (const auto &choice : scalingMethodChoices())
         scalingMethodCombo->addItem(choice.text());
@@ -308,8 +309,29 @@ OptionsDialog::OptionsDialog(QWidget *parent)
         Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(index).method);
         emit changedImageOptions();
     });
-    scalingLayout->addWidget(scalingMethodCombo);
-    scalingLayout->addStretch();
+    scalingMethodLayout->addWidget(scalingMethodCombo);
+    scalingMethodLayout->addStretch();
+    scalingLayout->addLayout(scalingMethodLayout);
+    auto anime4kLayout = new QHBoxLayout();
+    anime4kUpscalingCheckBox = new QCheckBox(tr("Upscale small pages with Anime4K (ACNet)"));
+    anime4kUpscalingCheckBox->setToolTip(tr("Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory."));
+    anime4kModelCombo = new QComboBox();
+    anime4kModelCombo->addItem(tr("F8B4 (faster)"));
+    anime4kModelCombo->addItem(tr("F8B8-HDN (slower, more denoising)"));
+    connect(anime4kUpscalingCheckBox, &QCheckBox::clicked, this, [this](bool checked) {
+        Configuration::getConfiguration().setAnime4kUpscaling(checked);
+        anime4kModelCombo->setEnabled(checked);
+        emit changedImageOptions();
+    });
+    connect(anime4kModelCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
+        Configuration::getConfiguration().setAnime4kModel(static_cast<AcnetModel>(index));
+        emit changedImageOptions();
+    });
+    anime4kLayout->addWidget(anime4kUpscalingCheckBox);
+    anime4kLayout->addWidget(new QLabel(tr("Model")));
+    anime4kLayout->addWidget(anime4kModelCombo);
+    anime4kLayout->addStretch();
+    scalingLayout->addLayout(anime4kLayout);
     scalingBox->setLayout(scalingLayout);
     layoutImageV->addWidget(scalingBox);
 
@@ -507,6 +529,13 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     auto defaultDisableScrollAnimationsValue = false;
 #endif
     disableScrollAnimations->setChecked(settings->value(DISABLE_SCROLL_ANIMATION, defaultDisableScrollAnimationsValue).toBool());
+
+    anime4kUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAnime4kUpscaling());
+    {
+        QSignalBlocker blocker(anime4kModelCombo);
+        anime4kModelCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getAnime4kModel()));
+    }
+    anime4kModelCombo->setEnabled(anime4kUpscalingCheckBox->isChecked());
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
 

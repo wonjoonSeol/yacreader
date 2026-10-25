@@ -4,12 +4,14 @@ add_library(image_processing STATIC
     bicubic_scale.h
     bicubic_scale.cpp
     lancir.h
+    acnet_upscale.h
+    acnet_upscale.cpp
 )
 
 target_include_directories(image_processing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 yacreader_apply_build_options(image_processing)
 
-target_link_libraries(image_processing PRIVATE Qt6::Gui)
+target_link_libraries(image_processing PRIVATE Qt6::Gui anime4kcpp)
 
 # Raise the x86_64 baseline above the ancient default, on macOS only.
 #

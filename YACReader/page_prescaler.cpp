@@ -11,12 +11,6 @@ namespace {
 // Larger than the number of views, so every view's first stage runs before any view's second one
 constexpr int kStagePriorityStep = 1000;
 
-// Render decodes one page at a time, so a couple of threads next to it keep most cores free
-int defaultThreadCount()
-{
-    return std::clamp(QThread::idealThreadCount() / 4, 1, 2);
-}
-
 bool hasTransparentPixels(const QImage &image)
 {
     for (int y = 0; y < image.height(); ++y) {
@@ -70,6 +64,12 @@ PagePrescaler::~PagePrescaler()
 {
     invalidate();
     pool.waitForDone();
+}
+
+// Render decodes one page at a time, so a couple of threads next to it keep most cores free
+int PagePrescaler::defaultThreadCount()
+{
+    return std::clamp(QThread::idealThreadCount() / 4, 1, 2);
 }
 
 QImage PagePrescaler::image(const PrescaleKey &key) const
