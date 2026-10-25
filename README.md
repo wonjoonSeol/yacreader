@@ -1,11 +1,12 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with five changes to the comic reader. Each one also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
-| Change | Kind | Preview PR |
+| Change | Kind | PR |
 |---|---|---|
 | [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
+| [Image adjustment menu](#image-adjustment-menu) | Feature | [#12](https://github.com/wonjoonSeol/yacreader/pull/12) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
@@ -43,6 +44,28 @@ Options > Image adjustment > **Continuous scroll**
 
 - A page that would end up wider than the window, such as a double page spread, fits the width instead.
 - Comics marked as web comics in the library always fit the width.
+
+### Image adjustment menu
+
+Right-click the page > **Image adjustment**, or click the arrow next to the Options button on the toolbar. It changes the options of Options > Image adjustment while you read:
+
+<img src="docs/fork/image-adjustment-context-menu.png" width="600" alt="The right-click menu on a page with its Image adjustment submenu open">
+
+| In the menu | Options > Image adjustment |
+|---|---|
+| Brightness, Contrast, Gamma, Reset | Image options |
+| Enlarge images to fit width/height | Fit options |
+| Continuous scroll > Fit pages to width / height | Continuous scroll |
+| Scaling method > Nearest / Bilinear / Lanczos | Scaling |
+
+| Moving a slider | The arrow next to Options |
+|---|---|
+| <img src="docs/fork/image-adjustment-brightness.png" width="400" alt="The page brighter with Brightness at 15 in the open menu"> | <img src="docs/fork/image-adjustment-toolbar-menu.png" width="400" alt="The same menu under the Options button with the scaling methods open"> |
+| The menu stays open and the page changes when you let go | Works in every mouse mode |
+
+- **Same settings as Options:** a change in the menu shows in Options, and a change in Options shows the next time the menu opens.
+- **Right-click** opens the menu unless Options > General > Mouse mode is "Use the Left/Right buttons to turn pages", where the right button turns the page. The arrow next to Options works in every mode.
+- **macOS:** right-click only. The native toolbar has no arrow.
 
 ### Go 5 or 10 pages
 
