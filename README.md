@@ -1,11 +1,12 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with five changes to the comic reader. Each one also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Bicubic scaling comes from an upstream PR that is still open; each of the other five has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | Preview PR |
 |---|---|---|
 | [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
+| [Bicubic scaling](#bicubic-scaling) | Option | upstream [#620](https://github.com/YACReader/yacreader/pull/620) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
@@ -43,6 +44,19 @@ Options > Image adjustment > **Continuous scroll**
 
 - A page that would end up wider than the window, such as a double page spread, fits the width instead.
 - Comics marked as web comics in the library always fit the width.
+
+### Bicubic scaling
+
+Options > Image adjustment > Scaling > **Scaling method: Bicubic**
+
+<img src="docs/fork/scaling-bicubic-options.png" width="600" alt="Bicubic chosen in the Scaling group in Options, Image adjustment">
+
+<img src="docs/fork/scaling-bicubic-enlarge.png" width="996" alt="The same line art enlarged 3x with Bilinear, Bicubic and Lanczos4">
+
+- **What it is:** a Catmull-Rom cubic (B = 0, C = 1/2) from upstream [#620](https://github.com/YACReader/yacreader/pull/620) by [dichongwu](https://github.com/dichongwu). It rings less than Lanczos: a grey 64/192 edge enlarged 4x goes 9 grey levels past either side within 6 px of the edge, against 16 levels and 13 px with Lanczos (Bilinear: none, 2 px).
+- **Changed in the fork:** it averages the stored sRGB values like the other methods. #620 averages in linear light, which made shrunk line art and screentones lighter than with Bilinear or Lanczos and deepened the dark halo beside enlarged edges.
+- **Speed:** shrinking a 1600x2400 page to 1067x1600 takes about 40 ms split over up to 4 threads, where Lanczos takes about 30 ms on one.
+- **Setting:** stored as `3`, the same value as in #620.
 
 ### Go 5 or 10 pages
 
