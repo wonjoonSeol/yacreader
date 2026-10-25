@@ -3,6 +3,7 @@
 #include "app_language_utils.h"
 #include "appearance_tab_widget.h"
 #include "configuration.h"
+#include "image_adjustment.h"
 #include "theme_factory.h"
 #include "theme_manager.h"
 #include "yacreader_3d_flow_config_widget.h"
@@ -298,12 +299,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingLayout = new QHBoxLayout();
     scalingLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"));
-    scalingMethodCombo->addItem(tr("Bilinear"));
-    scalingMethodCombo->addItem(tr("Lanczos (better quality)"));
-    scalingMethodCombo->addItem(tr("Bicubic"));
+    for (const auto &choice : scalingMethodChoices())
+        scalingMethodCombo->addItem(choice.text());
     connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(index));
+        Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(index).method);
         emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
@@ -431,7 +430,7 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentIndex()));
+    Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(scalingMethodCombo->currentIndex()).method);
     emit changedImageOptions();
 
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
@@ -513,7 +512,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
 
     {
         QSignalBlocker blocker(scalingMethodCombo);
-        scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
+        scalingMethodCombo->setCurrentIndex(scalingMethodChoiceIndex(scalingMethodChoices(), Configuration::getConfiguration().getScalingMethod()));
     }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();

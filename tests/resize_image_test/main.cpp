@@ -1,5 +1,7 @@
 #include "resize_image.h"
 
+#include <QColor>
+#include <QImage>
 #include <QTest>
 
 #include <algorithm>
@@ -18,24 +20,36 @@ private slots:
     void returnsANullImageForAnEmptySize();
     void readsOtherFormatsLikeArgb32_data();
     void readsOtherFormatsLikeArgb32();
+    void fewerLobesSpreadLessFromAnEdge();
+    void lanczos2RingsLessThanLanczos4WhenEnlarging();
     void bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging();
     void bicubicKeepsTheToneOfShrunkLineArt();
     void bicubicKeepsSolidColours();
     void bicubicMatchesADoublePrecisionRun_data();
     void bicubicMatchesADoublePrecisionRun();
+    void readsTheStoredValues();
+    void fallsBackToLanczos4ForUnknownValues();
 };
 
 namespace {
 
+struct Method {
+    const char *name;
+    ScaleMethod method;
+    int storedValue;
+};
+
+constexpr Method methods[] = {
+    { "Nearest", ScaleMethod::Nearest, 0 },
+    { "Bilinear", ScaleMethod::Bilinear, 1 },
+    { "Lanczos4", ScaleMethod::Lanczos4, 2 },
+    { "Bicubic", ScaleMethod::Bicubic, 3 },
+    { "Lanczos3", ScaleMethod::Lanczos3, 4 },
+    { "Lanczos2", ScaleMethod::Lanczos2, 5 },
+};
+
 constexpr int dark = 64;
 constexpr int light = 192;
-
-const QList<std::pair<const char *, ScaleMethod>> methods {
-    { "nearest", ScaleMethod::Nearest },
-    { "bilinear", ScaleMethod::Bilinear },
-    { "lanczos", ScaleMethod::Lanczos },
-    { "bicubic", ScaleMethod::Bicubic },
-};
 
 // a vertical edge between two greys far enough from black and white that ringing is not clipped
 QImage edge(QSize size)
@@ -66,18 +80,18 @@ int ringing(const QImage &image)
     return worst;
 }
 
-// how many pixels from the edge the scaled edge still differs from the grey on that side
+// how many pixels from the edge the scaled image still differs from the flat grey on that side
 int spread(const QImage &image)
 {
+    int furthest = 0;
     const int y = image.height() / 2;
-    const int edgeX = image.width() / 2;
-    int widest = 0;
+    const int middle = image.width() / 2;
     for (int x = 0; x < image.width(); ++x) {
-        const int value = qGreen(image.pixel(x, y));
-        if (value != (x < edgeX ? dark : light))
-            widest = std::max(widest, x < edgeX ? edgeX - x : x + 1 - edgeX);
+        const bool darkSide = x < middle;
+        if (qGreen(image.pixel(x, y)) != (darkSide ? dark : light))
+            furthest = std::max(furthest, darkSide ? middle - x : x - middle + 1);
     }
-    return widest;
+    return furthest;
 }
 
 // Catmull-Rom as bicubic_scale.cpp defines it, in double precision and not rounded
@@ -167,9 +181,9 @@ void ResizeImageTest::scalesToTheRequestedSize_data()
     QTest::addColumn<ScaleMethod>("method");
     QTest::addColumn<QSize>("size");
 
-    for (const auto &[name, method] : methods) {
-        QTest::addRow("%s enlarging", name) << method << QSize(70, 50);
-        QTest::addRow("%s shrinking", name) << method << QSize(17, 11);
+    for (const auto &entry : methods) {
+        QTest::addRow("%s enlarging", entry.name) << entry.method << QSize(70, 50);
+        QTest::addRow("%s shrinking", entry.name) << entry.method << QSize(25, 15);
     }
 }
 
@@ -185,8 +199,8 @@ void ResizeImageTest::returnsANullImageForAnEmptySize_data()
 {
     QTest::addColumn<ScaleMethod>("method");
 
-    for (const auto &[name, method] : methods)
-        QTest::addRow("%s", name) << method;
+    for (const auto &entry : methods)
+        QTest::addRow("%s", entry.name) << entry.method;
 }
 
 void ResizeImageTest::returnsANullImageForAnEmptySize()
@@ -211,8 +225,8 @@ void ResizeImageTest::readsOtherFormatsLikeArgb32_data()
         { "ARGB32 premultiplied", QImage::Format_ARGB32_Premultiplied },
     };
     for (const auto &[name, format] : formats) {
-        QTest::addRow("lanczos %s", name) << ScaleMethod::Lanczos << format;
-        QTest::addRow("bicubic %s", name) << ScaleMethod::Bicubic << format;
+        QTest::addRow("Lanczos4 %s", name) << ScaleMethod::Lanczos4 << format;
+        QTest::addRow("Bicubic %s", name) << ScaleMethod::Bicubic << format;
     }
 }
 
@@ -226,10 +240,28 @@ void ResizeImageTest::readsOtherFormatsLikeArgb32()
     QCOMPARE(scaleImage(image, 170, 61, method), scaleImage(argb32, 170, 61, method));
 }
 
+void ResizeImageTest::fewerLobesSpreadLessFromAnEdge()
+{
+    const int lanczos4 = spread(enlargedEdge(ScaleMethod::Lanczos4));
+    const int lanczos3 = spread(enlargedEdge(ScaleMethod::Lanczos3));
+    const int lanczos2 = spread(enlargedEdge(ScaleMethod::Lanczos2));
+
+    QCOMPARE_LT(lanczos2, lanczos3);
+    QCOMPARE_LT(lanczos3, lanczos4);
+}
+
+void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
+{
+    const int lanczos2 = ringing(enlargedEdge(ScaleMethod::Lanczos2));
+    const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos4));
+
+    QCOMPARE_LT(lanczos2, lanczos4);
+}
+
 void ResizeImageTest::bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging()
 {
     const QImage bicubic = enlargedEdge(ScaleMethod::Bicubic);
-    const QImage lanczos4 = enlargedEdge(ScaleMethod::Lanczos);
+    const QImage lanczos4 = enlargedEdge(ScaleMethod::Lanczos4);
     const QImage bilinear = enlargedEdge(ScaleMethod::Bilinear);
     qInfo("grey levels past the edge / pixels from the edge that change: bicubic %d / %d, lanczos4 %d / %d, bilinear %d / %d",
           ringing(bicubic), spread(bicubic), ringing(lanczos4), spread(lanczos4), ringing(bilinear), spread(bilinear));
@@ -261,7 +293,7 @@ void ResizeImageTest::bicubicKeepsTheToneOfShrunkLineArt()
 
     const double bicubic = meanGrey(ScaleMethod::Bicubic);
     const double bilinear = meanGrey(ScaleMethod::Bilinear);
-    qInfo("mean grey of the shrunk lines: bicubic %.1f, bilinear %.1f, lanczos4 %.1f", bicubic, bilinear, meanGrey(ScaleMethod::Lanczos));
+    qInfo("mean grey of the shrunk lines: bicubic %.1f, bilinear %.1f, lanczos4 %.1f", bicubic, bilinear, meanGrey(ScaleMethod::Lanczos4));
     QVERIFY2(std::abs(bicubic - bilinear) < 3, qPrintable(QString("bicubic %1, bilinear %2").arg(bicubic).arg(bilinear)));
 }
 
@@ -316,6 +348,22 @@ void ResizeImageTest::bicubicMatchesADoublePrecisionRun()
     // Rounding once is 0.5 off at most, plus a little for the 16.16 weights (up
     // to 0.515 here). Rounding between the passes as well came to 0.7-1.1.
     QCOMPARE_LT(worst, 0.6);
+}
+
+void ResizeImageTest::readsTheStoredValues()
+{
+    for (const auto &entry : methods) {
+        QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
+        QCOMPARE(scaleMethodFromSetting(entry.storedValue), entry.method);
+        // ini files give the values back as strings
+        QCOMPARE(scaleMethodFromSetting(QString::number(entry.storedValue)), entry.method);
+    }
+}
+
+void ResizeImageTest::fallsBackToLanczos4ForUnknownValues()
+{
+    for (const QVariant &value : { QVariant(), QVariant(-1), QVariant(6), QVariant("Lanczos3") })
+        QCOMPARE(scaleMethodFromSetting(value), ScaleMethod::Lanczos4);
 }
 
 QTEST_GUILESS_MAIN(ResizeImageTest)

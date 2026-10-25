@@ -272,59 +272,69 @@
 <context>
     <name>OptionsDialog</name>
     <message>
-        <location filename="options_dialog.cpp" line="237"/>
+        <location filename="options_dialog.cpp" line="238"/>
         <source>Gamma</source>
         <translation>Gammawaarde</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="241"/>
+        <location filename="options_dialog.cpp" line="242"/>
         <source>Reset</source>
         <translation>Standaardwaarden terugzetten</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="38"/>
+        <location filename="options_dialog.cpp" line="39"/>
         <source>My comics path</source>
         <translation>Pad naar mijn strips</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="64"/>
+        <location filename="options_dialog.cpp" line="65"/>
         <source>Open comics at</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="66"/>
+        <location filename="options_dialog.cpp" line="67"/>
         <source>The last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="285"/>
+        <location filename="options_dialog.cpp" line="286"/>
         <source>Show book fold shadow</source>
         <translation>Schaduw bij de boekvouw weergeven</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="297"/>
+        <location filename="options_dialog.cpp" line="298"/>
         <source>Scaling</source>
         <translation>Schalen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="299"/>
+        <location filename="options_dialog.cpp" line="300"/>
         <source>Scaling method</source>
         <translation>Schaalmethode</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="301"/>
+        <location filename="image_adjustment.cpp" line="15"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Dichtstbijzijnde (snel, lage kwaliteit)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="302"/>
+        <location filename="image_adjustment.cpp" line="16"/>
         <source>Bilinear</source>
         <translation>Bilineair</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (betere kwaliteit)</translation>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="19"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
@@ -337,22 +347,22 @@
         <translation>Beeldaanpassing</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="89"/>
+        <location filename="options_dialog.cpp" line="90"/>
         <source>&quot;Go to flow&quot; size</source>
         <translation>Grootte van &quot;Ga naar Comic Flow&quot;</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="110"/>
+        <location filename="options_dialog.cpp" line="111"/>
         <source>Choose</source>
         <translation>Kies</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="246"/>
+        <location filename="options_dialog.cpp" line="247"/>
         <source>Image options</source>
         <translation>Afbeelding opties</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="236"/>
+        <location filename="options_dialog.cpp" line="237"/>
         <source>Contrast</source>
         <translation>Contrastwaarde</translation>
     </message>
@@ -367,22 +377,22 @@
         <translation>Opties</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="45"/>
+        <location filename="options_dialog.cpp" line="46"/>
         <source>Language</source>
         <translation>Taal</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="47"/>
+        <location filename="options_dialog.cpp" line="48"/>
         <source>Application language</source>
         <translation>Applicatietaal</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="49"/>
+        <location filename="options_dialog.cpp" line="50"/>
         <source>System default</source>
         <translation>Standaard van het systeem</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="111"/>
+        <location filename="options_dialog.cpp" line="112"/>
         <source>Clear</source>
         <translation>Duidelijk</translation>
     </message>
@@ -392,7 +402,7 @@
         <translation>Strips map</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="107"/>
+        <location filename="options_dialog.cpp" line="108"/>
         <source>Background color</source>
         <translation>Achtergrondkleur</translation>
     </message>
@@ -407,7 +417,7 @@
         <translation>Algemeen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="235"/>
+        <location filename="options_dialog.cpp" line="236"/>
         <source>Brightness</source>
         <translation>Helderheid</translation>
     </message>
@@ -417,117 +427,117 @@
         <translation>Herstart is nodig</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="192"/>
+        <location filename="options_dialog.cpp" line="193"/>
         <source>Quick Navigation Mode</source>
         <translation>Snelle navigatiemodus</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="58"/>
+        <location filename="options_dialog.cpp" line="59"/>
         <source>Display</source>
         <translation>Weergave</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="60"/>
+        <location filename="options_dialog.cpp" line="61"/>
         <source>Show time in current page information label</source>
         <translation>Toon de tijd in het informatielabel van de huidige pagina</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="67"/>
+        <location filename="options_dialog.cpp" line="68"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="68"/>
+        <location filename="options_dialog.cpp" line="69"/>
         <source>A comic counts as finished when its reading progress is on the last page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="69"/>
+        <location filename="options_dialog.cpp" line="70"/>
         <source>The first page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="75"/>
+        <location filename="options_dialog.cpp" line="76"/>
         <source>Magnifying glass</source>
         <translation>Vergrootglas</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="77"/>
+        <location filename="options_dialog.cpp" line="78"/>
         <source>Circular magnifying glass</source>
         <translation>Rond vergrootglas</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="78"/>
+        <location filename="options_dialog.cpp" line="79"/>
         <source>Draw a ring around the circular magnifying glass</source>
         <translation>Een rand rond het ronde vergrootglas tekenen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="81"/>
+        <location filename="options_dialog.cpp" line="82"/>
         <source>Ease cursor movement toward the edges</source>
         <translation>Cursorbeweging naar de randen versoepelen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="119"/>
+        <location filename="options_dialog.cpp" line="120"/>
         <source>Scroll behaviour</source>
         <translation>Scrollgedrag</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="122"/>
+        <location filename="options_dialog.cpp" line="123"/>
         <source>Disable scroll animations and smooth scrolling</source>
         <translation>Schakel scrollanimaties en soepel scrollen uit</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="123"/>
+        <location filename="options_dialog.cpp" line="124"/>
         <source>Do not turn page using scroll</source>
         <translation>Sla de pagina niet om met scrollen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="124"/>
+        <location filename="options_dialog.cpp" line="125"/>
         <source>Use single scroll step to turn page</source>
         <translation>Gebruik een enkele scrollstap om de pagina om te slaan</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="132"/>
+        <location filename="options_dialog.cpp" line="133"/>
         <source>Mouse mode</source>
         <translation>Muismodus</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="135"/>
+        <location filename="options_dialog.cpp" line="136"/>
         <source>Only Back/Forward buttons can turn pages</source>
         <translation>Alleen de knoppen Terug/Vooruit kunnen pagina&apos;s omslaan</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="136"/>
+        <location filename="options_dialog.cpp" line="137"/>
         <source>Use the Left/Right buttons to turn pages.</source>
         <translation>Gebruik de knoppen Links/Rechts om pagina&apos;s om te slaan.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="137"/>
+        <location filename="options_dialog.cpp" line="138"/>
         <source>Click left or right half of the screen to turn pages.</source>
         <translation>Klik op de linker- of rechterhelft van het scherm om pagina&apos;s om te slaan.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="145"/>
+        <location filename="options_dialog.cpp" line="146"/>
         <source>Escape key</source>
         <translation>Escape-toets</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="148"/>
+        <location filename="options_dialog.cpp" line="149"/>
         <source>Quit the reader</source>
         <translation>Reader afsluiten</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="149"/>
+        <location filename="options_dialog.cpp" line="150"/>
         <source>Cancel the active mode</source>
         <translation>Actieve modus annuleren</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="151"/>
+        <location filename="options_dialog.cpp" line="152"/>
         <source>Escape closes the reader, even while a mode is active.</source>
         <translation>Met de Escape-toets wordt de reader afgesloten, ook als er een modus actief is.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="156"/>
+        <location filename="options_dialog.cpp" line="157"/>
         <source>Escape cancels the first of these that is active:
 
 1. Magnifying glass
@@ -547,57 +557,57 @@ If none is active, Escape does nothing.</source>
 Als geen enkele modus actief is, doet de Escape-toets niets.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="188"/>
+        <location filename="options_dialog.cpp" line="189"/>
         <source>Use software-rendered &quot;go to flow&quot; (requires restart)</source>
         <translation>Softwarematig gerenderde &quot;Ga naar Comic Flow&quot; gebruiken (opnieuw opstarten vereist)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="189"/>
+        <location filename="options_dialog.cpp" line="190"/>
         <source>Use a simple horizontal list of page thumbnails instead of the GPU-rendered 3D flow. Enable this if reading is not smooth on your system.</source>
         <translation>Gebruik een eenvoudige horizontale lijst met paginaminiaturen in plaats van de door de GPU gerenderde 3D-flow. Schakel deze optie in als het lezen op uw systeem niet vloeiend verloopt.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="193"/>
+        <location filename="options_dialog.cpp" line="194"/>
         <source>Disable mouse over activation</source>
         <translation>Schakel muis-over-activering uit</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="250"/>
+        <location filename="options_dialog.cpp" line="251"/>
         <source>Fit options</source>
         <translation>Pas opties</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="252"/>
+        <location filename="options_dialog.cpp" line="253"/>
         <source>Enlarge images to fit width/height</source>
         <translation>Vergroot afbeeldingen zodat ze in de breedte/hoogte passen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="263"/>
+        <location filename="options_dialog.cpp" line="264"/>
         <source>Continuous scroll</source>
         <translation type="unfinished">Continu scrollen</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="265"/>
+        <location filename="options_dialog.cpp" line="266"/>
         <source>Fit pages to width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="266"/>
+        <location filename="options_dialog.cpp" line="267"/>
         <source>Fit pages to height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="267"/>
+        <location filename="options_dialog.cpp" line="268"/>
         <source>Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="277"/>
+        <location filename="options_dialog.cpp" line="278"/>
         <source>Double Page options</source>
         <translation>Opties voor dubbele pagina&apos;s</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="279"/>
+        <location filename="options_dialog.cpp" line="280"/>
         <source>Show covers as single page</source>
         <translation>Toon omslagen als enkele pagina</translation>
     </message>

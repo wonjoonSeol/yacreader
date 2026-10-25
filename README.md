@@ -1,8 +1,8 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Bicubic scaling comes from an upstream PR that is still open; each of the other five has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with seven changes to the comic reader. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
-| Change | Kind | Preview PR |
+| Change | Kind | PR |
 |---|---|---|
 | [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
@@ -10,6 +10,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six 
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
+| [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
@@ -94,6 +95,36 @@ Removing a comic from the library's Reading list resets its progress to 0. Openi
 |---|---|
 | <img src="docs/fork/reading-list-before.png" width="400" alt="0/10 and Loading, please wait"> | <img src="docs/fork/reading-list-after.png" width="400" alt="Page 1 of 10"> |
 | Shows 0/10, stays on "Loading...please wait!", then crashes | Opens at page 1 |
+
+### Lanczos3 and Lanczos2 scaling
+
+Options > Image adjustment > **Scaling** > Scaling method
+
+<img src="docs/fork/scaling-options.png" width="600" alt="The Scaling group in Options, Image adjustment, with Lanczos3 selected">
+
+| Method | Lobes | What you get |
+|---|---|---|
+| Lanczos4 (default) | 4 | Upstream's Lanczos under a new name. The most fine detail and the most halos around lines |
+| Lanczos3 | 3 | In between |
+| Lanczos2 | 2 | The fewest halos, a little less fine detail |
+
+The same line art enlarged 3x, with the boxed part shown 3x larger again below it. The light bands next to the strokes are the halos:
+
+<img src="docs/fork/scaling-comparison.png" width="900" alt="The same line art enlarged 3x with Lanczos4, Lanczos3 and Lanczos2, with a close-up of the letter A">
+
+Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
+
+| | Lanczos4 | Lanczos3 | Lanczos2 | Bilinear |
+|---|---|---|---|---|
+| Overshoot past the edge (grey levels) | 16 | 15 | 10 | 0 |
+| Pixels from the edge that change | 13 | 9 | 6 | 2 |
+| Edge rise from 10% to 90% (px) | 3.0 | 3.0 | 3.0 | 3.4 |
+| Contrast kept on stripes with a 3 px period | 98% | 96% | 90% | 77% |
+
+- **Edges** are equally steep with all three. The difference is in the halos and the finest detail.
+- **Shrinking** 4x, the overshoot is at most 2 grey levels with any of them.
+- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5. Nothing uses 3, so it stays free for the Bicubic method that the open upstream PR [#620](https://github.com/YACReader/yacreader/pull/620) stores as 3. A stored value the fork does not know, 3 included, falls back to Lanczos4.
+- **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
 
 ---
 

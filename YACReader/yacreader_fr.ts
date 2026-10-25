@@ -272,17 +272,17 @@
 <context>
     <name>OptionsDialog</name>
     <message>
-        <location filename="options_dialog.cpp" line="237"/>
+        <location filename="options_dialog.cpp" line="238"/>
         <source>Gamma</source>
         <translation>Valeur gamma</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="241"/>
+        <location filename="options_dialog.cpp" line="242"/>
         <source>Reset</source>
         <translation>Remise à zéro</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="38"/>
+        <location filename="options_dialog.cpp" line="39"/>
         <source>My comics path</source>
         <translation>Chemin de mes bandes dessinées</translation>
     </message>
@@ -292,22 +292,22 @@
         <translation>Ajustement de l&apos;image</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="89"/>
+        <location filename="options_dialog.cpp" line="90"/>
         <source>&quot;Go to flow&quot; size</source>
         <translation>Taille de &quot;Aller à Comic Flow&quot;</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="110"/>
+        <location filename="options_dialog.cpp" line="111"/>
         <source>Choose</source>
         <translation>Choisir</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="246"/>
+        <location filename="options_dialog.cpp" line="247"/>
         <source>Image options</source>
         <translation>Option de l&apos;image</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="236"/>
+        <location filename="options_dialog.cpp" line="237"/>
         <source>Contrast</source>
         <translation>Contraste</translation>
     </message>
@@ -322,32 +322,32 @@
         <translation>Possibilités</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="45"/>
+        <location filename="options_dialog.cpp" line="46"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="47"/>
+        <location filename="options_dialog.cpp" line="48"/>
         <source>Application language</source>
         <translation>Langue de l&apos;application</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="49"/>
+        <location filename="options_dialog.cpp" line="50"/>
         <source>System default</source>
         <translation>Par défaut du système</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="64"/>
+        <location filename="options_dialog.cpp" line="65"/>
         <source>Open comics at</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="66"/>
+        <location filename="options_dialog.cpp" line="67"/>
         <source>The last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="111"/>
+        <location filename="options_dialog.cpp" line="112"/>
         <source>Clear</source>
         <translation>Clair</translation>
     </message>
@@ -357,122 +357,122 @@
         <translation>Répertoire des bandes dessinées</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="192"/>
+        <location filename="options_dialog.cpp" line="193"/>
         <source>Quick Navigation Mode</source>
         <translation>Mode navigation rapide</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="58"/>
+        <location filename="options_dialog.cpp" line="59"/>
         <source>Display</source>
         <translation>Afficher</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="60"/>
+        <location filename="options_dialog.cpp" line="61"/>
         <source>Show time in current page information label</source>
         <translation>Afficher l&apos;heure dans l&apos;étiquette d&apos;information de la page actuelle</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="67"/>
+        <location filename="options_dialog.cpp" line="68"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="68"/>
+        <location filename="options_dialog.cpp" line="69"/>
         <source>A comic counts as finished when its reading progress is on the last page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="69"/>
+        <location filename="options_dialog.cpp" line="70"/>
         <source>The first page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="75"/>
+        <location filename="options_dialog.cpp" line="76"/>
         <source>Magnifying glass</source>
         <translation>Loupe</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="77"/>
+        <location filename="options_dialog.cpp" line="78"/>
         <source>Circular magnifying glass</source>
         <translation>Loupe circulaire</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="78"/>
+        <location filename="options_dialog.cpp" line="79"/>
         <source>Draw a ring around the circular magnifying glass</source>
         <translation>Tracer un anneau autour de la loupe circulaire</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="81"/>
+        <location filename="options_dialog.cpp" line="82"/>
         <source>Ease cursor movement toward the edges</source>
         <translation>Adoucir le déplacement du curseur vers les bords</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="107"/>
+        <location filename="options_dialog.cpp" line="108"/>
         <source>Background color</source>
         <translation>Couleur d&apos;arrière plan</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="119"/>
+        <location filename="options_dialog.cpp" line="120"/>
         <source>Scroll behaviour</source>
         <translation>Comportement de défilement</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="122"/>
+        <location filename="options_dialog.cpp" line="123"/>
         <source>Disable scroll animations and smooth scrolling</source>
         <translation>Désactiver les animations de défilement et le défilement fluide</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="123"/>
+        <location filename="options_dialog.cpp" line="124"/>
         <source>Do not turn page using scroll</source>
         <translation>Ne tournez pas la page en utilisant le défilement</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="124"/>
+        <location filename="options_dialog.cpp" line="125"/>
         <source>Use single scroll step to turn page</source>
         <translation>Utilisez une seule étape de défilement pour tourner la page</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="132"/>
+        <location filename="options_dialog.cpp" line="133"/>
         <source>Mouse mode</source>
         <translation>Mode souris</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="135"/>
+        <location filename="options_dialog.cpp" line="136"/>
         <source>Only Back/Forward buttons can turn pages</source>
         <translation>Seuls les boutons Précédent/Avant peuvent tourner les pages</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="136"/>
+        <location filename="options_dialog.cpp" line="137"/>
         <source>Use the Left/Right buttons to turn pages.</source>
         <translation>Utilisez les boutons Gauche/Droite pour tourner les pages.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="137"/>
+        <location filename="options_dialog.cpp" line="138"/>
         <source>Click left or right half of the screen to turn pages.</source>
         <translation>Cliquez sur la moitié gauche ou droite de l&apos;écran pour tourner les pages.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="145"/>
+        <location filename="options_dialog.cpp" line="146"/>
         <source>Escape key</source>
         <translation>Touche Échap</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="148"/>
+        <location filename="options_dialog.cpp" line="149"/>
         <source>Quit the reader</source>
         <translation>Quitter le lecteur</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="149"/>
+        <location filename="options_dialog.cpp" line="150"/>
         <source>Cancel the active mode</source>
         <translation>Annuler le mode actif</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="151"/>
+        <location filename="options_dialog.cpp" line="152"/>
         <source>Escape closes the reader, even while a mode is active.</source>
         <translation>La touche Échap ferme le lecteur, même lorsqu’un mode est actif.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="156"/>
+        <location filename="options_dialog.cpp" line="157"/>
         <source>Escape cancels the first of these that is active:
 
 1. Magnifying glass
@@ -492,69 +492,79 @@ If none is active, Escape does nothing.</source>
 Si aucun n’est actif, la touche Échap ne fait rien.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="188"/>
+        <location filename="options_dialog.cpp" line="189"/>
         <source>Use software-rendered &quot;go to flow&quot; (requires restart)</source>
         <translation>Utiliser &quot;Aller à Comic Flow&quot; avec rendu logiciel (redémarrage requis)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="189"/>
+        <location filename="options_dialog.cpp" line="190"/>
         <source>Use a simple horizontal list of page thumbnails instead of the GPU-rendered 3D flow. Enable this if reading is not smooth on your system.</source>
         <translation>Utilisez une simple liste horizontale de miniatures de pages à la place du flux 3D rendu par le GPU. Activez cette option si la lecture manque de fluidité sur votre système.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="193"/>
+        <location filename="options_dialog.cpp" line="194"/>
         <source>Disable mouse over activation</source>
         <translation>Désactiver la souris sur l&apos;activation</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="263"/>
+        <location filename="options_dialog.cpp" line="264"/>
         <source>Continuous scroll</source>
         <translation type="unfinished">Défilement continu</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="265"/>
+        <location filename="options_dialog.cpp" line="266"/>
         <source>Fit pages to width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="266"/>
+        <location filename="options_dialog.cpp" line="267"/>
         <source>Fit pages to height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="267"/>
+        <location filename="options_dialog.cpp" line="268"/>
         <source>Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="285"/>
+        <location filename="options_dialog.cpp" line="286"/>
         <source>Show book fold shadow</source>
         <translation>Afficher l’ombre du pli du livre</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="297"/>
+        <location filename="options_dialog.cpp" line="298"/>
         <source>Scaling</source>
         <translation>Mise à l&apos;échelle</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="299"/>
+        <location filename="options_dialog.cpp" line="300"/>
         <source>Scaling method</source>
         <translation>Méthode de mise à l&apos;échelle</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="301"/>
+        <location filename="image_adjustment.cpp" line="15"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Le plus proche (rapide, mauvaise qualité)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="302"/>
+        <location filename="image_adjustment.cpp" line="16"/>
         <source>Bilinear</source>
         <translation>Bilinéaire</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (meilleure qualité)</translation>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="19"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="304"/>
@@ -572,7 +582,7 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Général</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="235"/>
+        <location filename="options_dialog.cpp" line="236"/>
         <source>Brightness</source>
         <translation>Luminosité</translation>
     </message>
@@ -582,22 +592,22 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Redémarrage nécessaire</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="250"/>
+        <location filename="options_dialog.cpp" line="251"/>
         <source>Fit options</source>
         <translation>Options d&apos;ajustement</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="252"/>
+        <location filename="options_dialog.cpp" line="253"/>
         <source>Enlarge images to fit width/height</source>
         <translation>Agrandir les images pour les adapter à la largeur/hauteur</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="277"/>
+        <location filename="options_dialog.cpp" line="278"/>
         <source>Double Page options</source>
         <translation>Options de double page</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="279"/>
+        <location filename="options_dialog.cpp" line="280"/>
         <source>Show covers as single page</source>
         <translation>Afficher les couvertures sur une seule page</translation>
     </message>
