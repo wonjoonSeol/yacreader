@@ -78,6 +78,7 @@ private:
 
     QComboBox *scalingMethodCombo;
     QCheckBox *anime4kUpscalingCheckBox;
+    QComboBox *anime4kModelCombo;
 
     QRadioButton *normalMouseModeRadioButton;
     QRadioButton *leftRightNavigationMouseModeRadioButton;

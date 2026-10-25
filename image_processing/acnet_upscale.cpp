@@ -135,6 +135,14 @@ QImage upscale2xAcnet(const QImage &image, AcnetModel model)
     return isGray(image) ? upscaleGray(image, model) : upscaleColor(image, model);
 }
 
+QImage scaleImageWithAcnet(const QImage &image, QSize size, ScaleMethod method, AcnetModel model)
+{
+    if (image.isNull() || (size.width() <= image.width() && size.height() <= image.height()))
+        return { };
+
+    return scaleImage(upscale2xAcnet(image, model), size.width(), size.height(), method);
+}
+
 void setAcnetMaxThreads(int threads)
 {
     maxThreads = threads;

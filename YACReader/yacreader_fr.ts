@@ -287,7 +287,7 @@
         <translation>Chemin de mes bandes dessinées</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="344"/>
+        <location filename="options_dialog.cpp" line="357"/>
         <source>Image adjustment</source>
         <translation>Ajustement de l&apos;image</translation>
     </message>
@@ -312,12 +312,12 @@
         <translation>Contraste</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="345"/>
+        <location filename="options_dialog.cpp" line="358"/>
         <source>Appearance</source>
         <translation>Apparence</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="361"/>
+        <location filename="options_dialog.cpp" line="374"/>
         <source>Options</source>
         <translation>Possibilités</translation>
     </message>
@@ -352,7 +352,27 @@
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="377"/>
+        <location filename="options_dialog.cpp" line="314"/>
+        <source>Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="316"/>
+        <source>F8B4 (faster)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="317"/>
+        <source>F8B8-HDN (slower, more denoising)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="328"/>
+        <source>Model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="390"/>
         <source>Comics directory</source>
         <translation>Répertoire des bandes dessinées</translation>
     </message>
@@ -557,22 +577,17 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Lanczos (meilleure qualité)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="312"/>
+        <location filename="options_dialog.cpp" line="313"/>
         <source>Upscale small pages with Anime4K (ACNet)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="313"/>
-        <source>Pages shown larger than their own size are first doubled by the ACNet neural network, which keeps lines sharp. It takes more CPU time and memory.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="356"/>
         <source>Page Flow</source>
         <translation>Flux des pages</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="342"/>
+        <location filename="options_dialog.cpp" line="355"/>
         <source>General</source>
         <translation>Général</translation>
     </message>
@@ -582,7 +597,7 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Luminosité</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="365"/>
         <source>Restart is needed</source>
         <translation>Redémarrage nécessaire</translation>
     </message>
@@ -840,48 +855,48 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1893"/>
+        <location filename="viewer.cpp" line="1947"/>
         <source>Page not available!</source>
         <translation>Page non disponible !</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1865"/>
+        <location filename="viewer.cpp" line="1918"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Appuyez sur &quot;O&quot; pour ouvrir une bande dessinée.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="379"/>
+        <location filename="viewer.cpp" line="389"/>
         <source>Error opening comic</source>
         <translation>Erreur d&apos;ouverture de la bande dessinée</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2231"/>
+        <location filename="viewer.cpp" line="2287"/>
         <source>Cover!</source>
         <translation>Couverture!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="385"/>
+        <location filename="viewer.cpp" line="395"/>
         <source>CRC Error</source>
         <translation>Erreur CRC</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="373"/>
+        <location filename="viewer.cpp" line="383"/>
         <source>Comic not found</source>
         <translation>Bande dessinée introuvable</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="373"/>
+        <location filename="viewer.cpp" line="383"/>
         <source>Not found</source>
         <translation>Introuvable</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2245"/>
+        <location filename="viewer.cpp" line="2301"/>
         <source>Last page!</source>
         <translation>Dernière page!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1882"/>
+        <location filename="viewer.cpp" line="1936"/>
         <source>Loading...please wait!</source>
         <translation>Chargement... Patientez</translation>
     </message>

@@ -309,13 +309,26 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     scalingMethodLayout->addWidget(scalingMethodCombo);
     scalingMethodLayout->addStretch();
     scalingLayout->addLayout(scalingMethodLayout);
+    auto anime4kLayout = new QHBoxLayout();
     anime4kUpscalingCheckBox = new QCheckBox(tr("Upscale small pages with Anime4K (ACNet)"));
-    anime4kUpscalingCheckBox->setToolTip(tr("Pages shown larger than their own size are first doubled by the ACNet neural network, which keeps lines sharp. It takes more CPU time and memory."));
+    anime4kUpscalingCheckBox->setToolTip(tr("Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory."));
+    anime4kModelCombo = new QComboBox();
+    anime4kModelCombo->addItem(tr("F8B4 (faster)"));
+    anime4kModelCombo->addItem(tr("F8B8-HDN (slower, more denoising)"));
     connect(anime4kUpscalingCheckBox, &QCheckBox::clicked, this, [this](bool checked) {
         Configuration::getConfiguration().setAnime4kUpscaling(checked);
+        anime4kModelCombo->setEnabled(checked);
         emit changedImageOptions();
     });
-    scalingLayout->addWidget(anime4kUpscalingCheckBox);
+    connect(anime4kModelCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
+        Configuration::getConfiguration().setAnime4kModel(static_cast<AcnetModel>(index));
+        emit changedImageOptions();
+    });
+    anime4kLayout->addWidget(anime4kUpscalingCheckBox);
+    anime4kLayout->addWidget(new QLabel(tr("Model")));
+    anime4kLayout->addWidget(anime4kModelCombo);
+    anime4kLayout->addStretch();
+    scalingLayout->addLayout(anime4kLayout);
     scalingBox->setLayout(scalingLayout);
     layoutImageV->addWidget(scalingBox);
 
@@ -524,6 +537,11 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
     }
     anime4kUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAnime4kUpscaling());
+    {
+        QSignalBlocker blocker(anime4kModelCombo);
+        anime4kModelCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getAnime4kModel()));
+    }
+    anime4kModelCombo->setEnabled(anime4kUpscalingCheckBox->isChecked());
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
 

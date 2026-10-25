@@ -16,15 +16,23 @@ namespace ac::util
     void parallelFor(IndexType first, IndexType last, F&& func);
 
 #if !defined(AC_DEP_PARALLEL_PPL) && !defined(AC_DEP_PARALLEL_OPENMP)
-    // YACReader: the most threads one parallelFor call uses, 0 for all hardware threads.
+    // YACReader: the most threads a parallelFor call uses, 0 for all hardware threads. The pool takes its size from
+    // it on first use, so it also caps the threads of calls that run at the same time.
     inline std::atomic<unsigned int> parallelForThreads{ 0 };
 
     namespace detail
     {
+        inline unsigned int parallelForThreadLimit() noexcept
+        {
+            const unsigned int hardwareThreads = ThreadPool::hardwareThreads();
+            const unsigned int limit = parallelForThreads.load(std::memory_order_relaxed);
+            return limit ? std::min(limit, hardwareThreads) : hardwareThreads;
+        }
+
         // YACReader: one pool shared by every parallelFor instantiation instead of one each.
         inline ThreadPool& parallelForPool()
         {
-            static ThreadPool pool{ ThreadPool::hardwareThreads() };
+            static ThreadPool pool{ parallelForThreadLimit() };
             return pool;
         }
     }
@@ -40,9 +48,7 @@ inline void ac::util::parallelFor(const IndexType first, const IndexType last, F
 #   pragma omp parallel for schedule(guided)
     for (IndexType i = first; i < last; i++) func(i);
 #else
-    const unsigned int hardwareThreads = ThreadPool::hardwareThreads();
-    const unsigned int limit = parallelForThreads.load(std::memory_order_relaxed);
-    const auto threads = static_cast<IndexType>(limit ? std::min(limit, hardwareThreads) : hardwareThreads);
+    const auto threads = static_cast<IndexType>(detail::parallelForThreadLimit());
     const IndexType range = last - first;
     const IndexType tasks = std::min(threads, range);
     if (tasks > 1)

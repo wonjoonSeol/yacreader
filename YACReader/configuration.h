@@ -1,6 +1,7 @@
 #ifndef __CONFIGURATION_H
 #define __CONFIGURATION_H
 
+#include "acnet_upscale.h"
 #include "page_fit.h"
 #include "resize_image.h"
 #include "yacreader_global_gui.h"
@@ -137,6 +138,8 @@ public:
     void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
     bool getAnime4kUpscaling() { return settings->value(ANIME4K_UPSCALING, false).toBool(); }
     void setAnime4kUpscaling(bool b) { settings->setValue(ANIME4K_UPSCALING, b); }
+    AcnetModel getAnime4kModel() { return settings->value(ANIME4K_MODEL, 0).toInt() == static_cast<int>(AcnetModel::F8B8Hdn) ? AcnetModel::F8B8Hdn : AcnetModel::F8B4; }
+    void setAnime4kModel(AcnetModel model) { settings->setValue(ANIME4K_MODEL, static_cast<int>(model)); }
 };
 
 }

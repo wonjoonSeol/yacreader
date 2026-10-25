@@ -20,6 +20,6 @@ Added for YACReader:
 Changed upstream files:
 
 - `Model.hpp`, `Param.hpp`, `Model.cpp`, `Processor.cpp`, `CPUProcessor.cpp`: ARNet, ArtCNN and FSRCNNX removed.
-- `Parallel.hpp`, thread pool branch (the one built here): all loops share one pool instead of one pool per template instantiation, and `ac::util::parallelForThreads` caps the threads a loop uses.
+- `Parallel.hpp`, thread pool branch (the one built here): all loops share one pool instead of one pool per template instantiation, and `ac::util::parallelForThreads` caps the threads a loop uses. The pool takes its size from it on first use, so loops running at the same time share that cap.
 
 To update, export the same files from a newer revision and reapply these changes; the commit after the one that added the unmodified files shows them.

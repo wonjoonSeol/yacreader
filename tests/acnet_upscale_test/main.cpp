@@ -36,7 +36,10 @@ private slots:
     void resultDoesNotDependOnTheThreadCount();
     void keepsTransparencyAndColourAtAlphaEdges();
     void beatsLanczosOnLineArt();
+    void scalesThroughAcnetOnlyWhenEnlarging_data();
+    void scalesThroughAcnetOnlyWhenEnlarging();
     void parallelForStaysWithinTheThreadLimit();
+    void concurrentLoopsShareTheThreadLimit();
     void reportsTheTime();
 };
 
@@ -166,6 +169,8 @@ void AcnetUpscaleTest::initTestCase()
 {
     const auto processor = ac::core::Processor::create<ac::core::Processor::CPU>(0, ac::core::model::ACNet<8> { AcnetVariant::B4_NORMAL });
     qInfo("Anime4KCPP CPU backend: %s", processor->name());
+    // The first upscale creates the threads, here with the default limit
+    upscale2xAcnet(lineArt(16, 16));
 }
 
 void AcnetUpscaleTest::cleanup()
@@ -292,6 +297,63 @@ void AcnetUpscaleTest::parallelForStaysWithinTheThreadLimit()
     for (int i = 0; i < count; ++i)
         QCOMPARE(visits[i].load(), 1);
     QVERIFY(threads.size() <= 2);
+}
+
+void AcnetUpscaleTest::concurrentLoopsShareTheThreadLimit()
+{
+    std::mutex mutex;
+    std::set<std::thread::id> threads, callerThreads;
+
+    // Each loop asks for every hardware thread, from three threads at once
+    ac::util::parallelForThreads = 0;
+    std::vector<std::thread> callers;
+    for (int caller = 0; caller < 3; ++caller)
+        callers.emplace_back([&] {
+            {
+                const std::lock_guard lock(mutex);
+                callerThreads.insert(std::this_thread::get_id());
+            }
+            ac::util::parallelFor(0, 64, [&](int) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                const std::lock_guard lock(mutex);
+                threads.insert(std::this_thread::get_id());
+            });
+        });
+    for (std::thread &caller : callers)
+        caller.join();
+    for (const std::thread::id &caller : callerThreads)
+        threads.erase(caller);
+
+    // initTestCase created the pool with the default limit
+    QVERIFY(threads.size() <= size_t(std::max(1, QThread::idealThreadCount() / 2)));
+}
+
+void AcnetUpscaleTest::scalesThroughAcnetOnlyWhenEnlarging_data()
+{
+    QTest::addColumn<QSize>("size");
+    QTest::addColumn<bool>("upscaled");
+
+    // the page is 60x40
+    QTest::newRow("smaller") << QSize(30, 20) << false;
+    QTest::newRow("same size") << QSize(60, 40) << false;
+    QTest::newRow("wider only") << QSize(61, 40) << true;
+    QTest::newRow("1.5x") << QSize(90, 60) << true;
+    QTest::newRow("2x") << QSize(120, 80) << true;
+    QTest::newRow("3x") << QSize(180, 120) << true;
+}
+
+void AcnetUpscaleTest::scalesThroughAcnetOnlyWhenEnlarging()
+{
+    QFETCH(QSize, size);
+    QFETCH(bool, upscaled);
+    const QImage page = colourPage(60, 40);
+
+    const QImage result = scaleImageWithAcnet(page, size, ScaleMethod::Bilinear, AcnetModel::F8B8Hdn);
+
+    if (upscaled)
+        QCOMPARE(result, scaleImage(upscale2xAcnet(page, AcnetModel::F8B8Hdn), size.width(), size.height(), ScaleMethod::Bilinear));
+    else
+        QVERIFY(result.isNull());
 }
 
 void AcnetUpscaleTest::reportsTheTime()

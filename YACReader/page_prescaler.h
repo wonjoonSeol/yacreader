@@ -57,6 +57,8 @@ public:
     PagePrescaler(QList<std::shared_ptr<const PrescaleStage>> stages, int maxThreads, QObject *parent = nullptr);
     ~PagePrescaler() override;
 
+    static int defaultThreadCount();
+
     // The best image so far for the key, or a null image
     QImage image(const PrescaleKey &key) const;
     // Keeps an image scaled by the caller as the first stage's result
