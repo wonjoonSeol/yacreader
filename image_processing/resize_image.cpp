@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <thread>
 #include <vector>
 
 static QImage scaleImageLancir(const QImage &image, int width, int height)
@@ -28,8 +29,6 @@ static QImage scaleImageLancir(const QImage &image, int width, int height)
 }
 
 // ---- Bicubic (Catmull-Rom, separable two-pass resampler) ---------------------
-
-#include <thread>
 
 struct BicubicTap {
     int index;
@@ -83,25 +82,20 @@ static std::vector<std::vector<BicubicTap>> bicubicContributions(int srcSize, in
     return contributions;
 }
 
-static inline uint8_t clampFinal(int v)
+// Rounds a horizontal-pass sum (16.16 weights x 8-bit samples) to the signed
+// 8.6 intermediate. Catmull-Rom's overshoot has to reach the vertical pass
+// unclipped, or the negative lobes cannot cancel out there. The sums stay
+// within about -32 to 287 grey levels, so the clamp only guards the cast.
+static inline int16_t toIntermediate(int sum)
 {
-    if (v < 0)
-        return 0;
-    if (v > 255)
-        return 255;
-    return uint8_t(v);
+    return int16_t(std::clamp((sum + (1 << 9)) >> 10, -(511 << 6), 511 << 6));
 }
 
-static inline int16_t clampIntermediate(int v)
+// Rounds a vertical-pass sum (16.16 weights x 8.6 samples, so 22 fraction
+// bits) to an 8-bit sample.
+static inline uint8_t toSample(int64_t sum)
 {
-    // signed 8.6 intermediate: it must carry Catmull-Rom's overshoot into the
-    // vertical pass instead of clipping it, or the negative lobes cannot cancel
-    // out there.
-    if (v < -(511 << 6))
-        return int16_t(-(511 << 6));
-    if (v > 511 << 6)
-        return int16_t(511 << 6);
-    return int16_t(v);
+    return uint8_t(std::clamp(int((sum + (1 << 21)) >> 22), 0, 255));
 }
 
 // Averages the stored sRGB values, like the other methods. Linear light would
@@ -127,21 +121,21 @@ static QImage scaleImageBicubic(const QImage &image, int width, int height)
                 int32_t b = 0, g = 0, r = 0, a = 0;
                 for (const auto &tap : hWeights[x]) {
                     const QRgb px = row[tap.index];
-                    b += int32_t(tap.weight * qBlue(px));
-                    g += int32_t(tap.weight * qGreen(px));
-                    r += int32_t(tap.weight * qRed(px));
-                    a += int32_t(tap.weight * qAlpha(px));
+                    b += tap.weight * qBlue(px);
+                    g += tap.weight * qGreen(px);
+                    r += tap.weight * qRed(px);
+                    a += tap.weight * qAlpha(px);
                 }
                 int16_t *out = &outRow[size_t(x) * 4];
-                out[0] = clampIntermediate((b + (1 << 9)) >> 10);
-                out[1] = clampIntermediate((g + (1 << 9)) >> 10);
-                out[2] = clampIntermediate((r + (1 << 9)) >> 10);
-                out[3] = clampIntermediate((a + (1 << 9)) >> 10);
+                out[0] = toIntermediate(b);
+                out[1] = toIntermediate(g);
+                out[2] = toIntermediate(r);
+                out[3] = toIntermediate(a);
             }
         }
     };
 
-    // Vertical pass into the destination image (16.16 weights x 8.6 buffer = 22.6).
+    // Vertical pass into the destination image.
     QImage dst(width, height, QImage::Format_ARGB32);
     // QImage::scanLine() detaches the image, which is not safe to call from
     // several threads at once, so take the pixels once before splitting.
@@ -160,19 +154,17 @@ static QImage scaleImageBicubic(const QImage &image, int width, int height)
                     r += int64_t(tap.weight) * in[2];
                     a += int64_t(tap.weight) * in[3];
                 }
-                row[x] = qRgba(clampFinal(int((r + (1 << 21)) >> 22)),
-                               clampFinal(int((g + (1 << 21)) >> 22)),
-                               clampFinal(int((b + (1 << 21)) >> 22)),
-                               clampFinal(int((a + (1 << 21)) >> 22)));
+                row[x] = qRgba(toSample(r), toSample(g), toSample(b), toSample(a));
             }
         }
     };
 
-    // Modest parallelism: scaling already runs off the GUI thread (dedicated
-    // scale pool in continuous mode), so this just splits the heavy passes
-    // across cores without touching any Qt thread pool.
+    // Split the passes across up to four threads, since the single-page viewer
+    // scales on the GUI thread. Plain std::threads rather than a Qt pool,
+    // because in continuous mode this already runs inside ContinuousPageWidget's
+    // scale pool.
     const unsigned hw = std::max(1u, std::min(4u, std::thread::hardware_concurrency()));
-    if (hw == 1 || (size_t(width) * sh) < 262144) { // < 512x512 source: threading overhead not worth it
+    if (hw == 1 || (size_t(width) * sh) < 262144) { // smaller than 512x512 after the horizontal pass: not worth the threads
         hPass(0, sh);
         vPass(0, height);
     } else {
@@ -207,9 +199,8 @@ QPixmap scalePixmap(const QPixmap &pixmap, int width, int height, ScaleMethod me
     case ScaleMethod::Bilinear:
         return pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     case ScaleMethod::Lanczos:
-        return QPixmap::fromImage(scaleImageLancir(pixmap.toImage(), width, height));
     case ScaleMethod::Bicubic:
-        return QPixmap::fromImage(scaleImageBicubic(pixmap.toImage(), width, height));
+        return QPixmap::fromImage(scaleImage(pixmap.toImage(), width, height, method));
     }
     return pixmap;
 }
