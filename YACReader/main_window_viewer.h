@@ -177,7 +177,8 @@ private:
     void createActions();
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
-    void setFullScreenToolBarActionsVisible(bool visible);
+    // in full screen the toolbar has exit and close buttons, and moving the mouse to the top of the screen shows it over the page
+    void setToolBarFullScreenMode(bool on);
     void hideToolBarOverPage();
 #ifndef Y_MAC_UI
     bool eventFilter(QObject *watched, QEvent *event) override;
