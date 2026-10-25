@@ -14,7 +14,7 @@ The PR column says where each change stands. A closed preview shows the change a
 | [Toolbar in full screen](#toolbar-in-full-screen) | Feature | Reader | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) (draft) |
 | [Rate and favorite comics while reading](#rate-and-favorite-comics-while-reading) | Feature | Reader and library | [#9](https://github.com/wonjoonSeol/yacreader/pull/9) (draft) |
 | [Page number when the page changes](#page-number-when-the-page-changes) | Feature | Reader | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) (draft) |
-| [Pages scaled in the background](#pages-scaled-in-the-background) | Feature | Reader | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) (draft) |
+| [Page turns without scaling](#page-turns-without-scaling) | Feature | Reader | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) (draft) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | Reader | upstream [#630](https://github.com/YACReader/yacreader/pull/630) (open), [#1](https://github.com/wonjoonSeol/yacreader/pull/1) (closed preview) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | Reader | upstream [#629](https://github.com/YACReader/yacreader/pull/629) (open), [#2](https://github.com/wonjoonSeol/yacreader/pull/2) (closed preview) |
 | [Status messages cut off at both ends](#status-messages-cut-off-at-both-ends) | Bug fix | Reader | none yet |
@@ -172,20 +172,21 @@ Turning a page shows the page number in the top left corner for a moment, then i
 - **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
 - **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides without fading.
 
-### Pages scaled in the background
+### Page turns without scaling
 
-In single and double page mode, a page turn used to scale the page to the window before showing it, and in double page mode it first drew both pages together at full size. Now the current view, the next two and the previous one are scaled in the background, and a page turn shows the prepared image. The pages look the same as before.
+In single and double page mode the pages next to the one you read are scaled to the window in the background, so a page turn shows a page that is ready instead of scaling it first.
 
-Time a page turn kept the reader busy, median, with 1600x2400 JPEG pages, Fit to page and Lanczos4 (Linux build):
+<img src="docs/fork/prescale-page-turn-time.png" width="700" alt="Time a page turn keeps the reader busy before and after this change, for single and double pages">
 
-| View | Before | Now |
-|---|---|---|
-| Single page, 960 x 1440 px | 35.7 ms | 0.41 ms |
-| Double page, 1920 x 1440 px | 98.7 ms | 0.50 ms |
+| Single page mode | Double page mode |
+|---|---|
+| <img src="docs/fork/prescale-single-page.png" width="400" alt="Page 2 of a sample comic in single page mode"> | <img src="docs/fork/prescale-double-page.png" width="400" alt="Pages 4 and 5 of a sample comic in double page mode"> |
 
-- **When it scales again:** after a change of window size, zoom, fit mode or scaling method (from Options or the image adjustment menu), and after rotating, a filter change or opening another comic.
-- **Flipping fast:** at a page every 150 ms, single page mode still had the page ready on 12 of 13 turns. Double page mode fell behind after three spreads and then scaled on the turn, as before.
-- **Continuous scroll** already scaled ahead and is unchanged.
+- **What gets ready:** the page shown, the next two and the previous one, in that order. In double page mode the pages are paired the way the next page turns will pair them.
+- **Looks the same:** the pages are pixel for pixel what the reader showed before, in single, double, manga and rotated mode, and in the magnifier.
+- **When a page is not ready yet,** for example right after jumping far or when flipping through double pages faster than they decode, it is scaled when it is shown, as before.
+- **Memory:** the four scaled views around the current page, about 12 MB each for a 1440 x 2160 page.
+- **Continuous scroll** already scaled its pages in the background and is unchanged.
 
 ### Next file after an unreadable one
 
