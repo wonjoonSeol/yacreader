@@ -304,28 +304,28 @@
 <context>
     <name>ComicManagementCoordinator</name>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="140"/>
-        <location filename="comic_management_coordinator.cpp" line="142"/>
+        <location filename="comic_management_coordinator.cpp" line="148"/>
+        <location filename="comic_management_coordinator.cpp" line="150"/>
         <source>YACReader not found</source>
         <translation>YACReader no encontrado</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="140"/>
+        <location filename="comic_management_coordinator.cpp" line="148"/>
         <source>YACReader not found. YACReader should be installed in the same folder as YACReaderLibrary.</source>
         <translation>YACReader no encontrado. YACReader debería estar instalado en la misma carpeta que YACReaderLibrary.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="142"/>
+        <location filename="comic_management_coordinator.cpp" line="150"/>
         <source>YACReader not found. There might be a problem with your YACReader installation.</source>
         <translation>YACReader no encontrado. Podría haber un problema con tu instalación de YACReader.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="149"/>
+        <location filename="comic_management_coordinator.cpp" line="157"/>
         <source>Error</source>
         <translation>Fallo</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="149"/>
+        <location filename="comic_management_coordinator.cpp" line="157"/>
         <source>Error opening comic with third party reader.</source>
         <translation>Error al abrir el cómic con una aplicación de terceros.</translation>
     </message>
@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="643"/>
-        <location filename="../common/comic.cpp" line="659"/>
+        <location filename="../common/comic.cpp" line="666"/>
+        <location filename="../common/comic.cpp" line="682"/>
         <source>Format not supported</source>
         <translation>Formato no soportado</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="637"/>
+        <location filename="../common/comic.cpp" line="660"/>
         <source>7z not found</source>
         <translation>7z no encontrado</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="530"/>
+        <location filename="../common/comic.cpp" line="553"/>
         <source>Unknown error opening the file</source>
         <translation>Error desconocido abriendo el archivo</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="523"/>
+        <location filename="../common/comic.cpp" line="546"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Error CRC en la página (%1): algunas de las páginas no se mostrarán correctamente</translation>
     </message>
@@ -1074,7 +1074,7 @@
         <translation>Biblioteca no disponible</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="655"/>
+        <location filename="comic_management_coordinator.cpp" line="642"/>
         <source>There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder.</source>
         <translation>Ha habido algún problema intentando borrar los cómics selecionados. Por favor, verifica los permisos de escritura en los arhicovs seleccionados o los directorios que los conienen.</translation>
     </message>
@@ -1104,13 +1104,14 @@
         <translation>Descargar la nueva versión</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="545"/>
-        <location filename="comic_management_coordinator.cpp" line="569"/>
+        <location filename="comic_management_coordinator.cpp" line="548"/>
+        <location filename="comic_management_coordinator.cpp" line="636"/>
+        <location filename="delete_comics_question.cpp" line="11"/>
         <source>Delete comics</source>
         <translation>Borrar cómics</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="546"/>
+        <location filename="delete_comics_question.cpp" line="12"/>
         <source>All the selected comics will be deleted from your disk. Are you sure?</source>
         <translation>Todos los cómics seleccionados serán borrados de tu disco. ¿Estás seguro?</translation>
     </message>
@@ -1120,7 +1121,7 @@
         <translation>Biblioteca no encontrada</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="654"/>
+        <location filename="comic_management_coordinator.cpp" line="641"/>
         <location filename="folder_management_coordinator.cpp" line="250"/>
         <source>Unable to delete</source>
         <translation>No se ha podido borrar</translation>
@@ -1151,12 +1152,12 @@
         <translation>Hubo errores durante la actualización de la biblioteca en: </translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="210"/>
+        <location filename="comic_management_coordinator.cpp" line="218"/>
         <source>Copying comics...</source>
         <translation>Copiando cómics...</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="226"/>
+        <location filename="comic_management_coordinator.cpp" line="234"/>
         <source>Moving comics...</source>
         <translation>Moviendo cómics...</translation>
     </message>
@@ -1322,7 +1323,7 @@ Carpeta: %1</translation>
         <translation>No se ha podido actualizar la base de datos de la biblioteca ni deshacer el cambio de nombre de la carpeta en el disco. Ahora hay que actualizar la biblioteca a mano.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="362"/>
+        <location filename="comic_management_coordinator.cpp" line="370"/>
         <source>Save covers</source>
         <translation>Guardar portadas</translation>
     </message>
@@ -1507,46 +1508,54 @@ Puedes restaurar una copia de seguridad desde el menú Biblioteca o volver a cre
         <translation>Información de la biblioteca</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="305"/>
+        <location filename="comic_management_coordinator.cpp" line="313"/>
         <source>Assign comics numbers</source>
         <translation>Asignar números a los cómics</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="306"/>
+        <location filename="comic_management_coordinator.cpp" line="314"/>
         <source>Assign numbers starting in:</source>
         <translation>Asignar números comenzando en:</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="391"/>
+        <location filename="comic_management_coordinator.cpp" line="399"/>
         <location filename="folder_management_coordinator.cpp" line="339"/>
         <source>Invalid image</source>
         <translation>Imagen inválida</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="392"/>
+        <location filename="comic_management_coordinator.cpp" line="400"/>
         <location filename="folder_management_coordinator.cpp" line="340"/>
         <source>The selected file is not a valid image.</source>
         <translation>El archivo seleccionado no es una imagen válida.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="400"/>
+        <location filename="comic_management_coordinator.cpp" line="408"/>
         <location filename="folder_management_coordinator.cpp" line="347"/>
         <source>Error saving cover</source>
         <translation>Error guardando portada</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="401"/>
+        <location filename="comic_management_coordinator.cpp" line="409"/>
         <location filename="folder_management_coordinator.cpp" line="348"/>
         <source>There was an error saving the cover image.</source>
         <translation>Hubo un error guardando la image de portada.</translation>
     </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="637"/>
+        <source>%n folder(s) still hold files that are not pages, so they stay on your disk.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="552"/>
+        <location filename="delete_comics_question.cpp" line="21"/>
         <source>Folder comics stay on your disk and in the library unless you also delete their image folders.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="553"/>
+        <location filename="delete_comics_question.cpp" line="22"/>
         <source>%n folder(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1554,7 +1563,7 @@ Puedes restaurar una copia de seguridad desde el menú Biblioteca o volver a cre
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="554"/>
+        <location filename="delete_comics_question.cpp" line="23"/>
         <source>%n image(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1562,25 +1571,33 @@ Puedes restaurar una copia de seguridad desde el menú Biblioteca o volver a cre
         </translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="555"/>
+        <location filename="delete_comics_question.cpp" line="24"/>
         <source>Also delete the image folders (%1, %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="570"/>
+        <location filename="comic_management_coordinator.cpp" line="549"/>
         <source>Could not move %n folder(s) to the trash. Delete them permanently? This cannot be undone.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="554"/>
+        <source>%n comic file(s) that the trash refused were already deleted permanently.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="615"/>
+        <location filename="comic_management_coordinator.cpp" line="597"/>
         <source>Remove comics</source>
         <translation>Eliminar cómics</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="616"/>
+        <location filename="comic_management_coordinator.cpp" line="598"/>
         <source>Comics will only be deleted from the current label/list. Are you sure?</source>
         <translation>Los cómics sólo se eliminarán de la etiqueta/lista actual. ¿Estás seguro?</translation>
     </message>
@@ -2548,12 +2565,12 @@ Para detener una actualización automática, toca en el indicador de carga junto
 <context>
     <name>OrganizeFiles</name>
     <message>
-        <location filename="organize_files/organize_files_plan.cpp" line="541"/>
+        <location filename="organize_files/organize_files_plan.cpp" line="542"/>
         <source>Renamed, %1 is already in use</source>
         <translation>Renombrado, %1 ya está en uso</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_plan.cpp" line="544"/>
+        <location filename="organize_files/organize_files_plan.cpp" line="545"/>
         <source>Missing metadata: %1</source>
         <translation>Faltan metadatos: %1</translation>
     </message>
@@ -2561,6 +2578,26 @@ Para detener una actualización automática, toca en el indicador de carga junto
         <location filename="organize_files/organize_files_journal.cpp" line="53"/>
         <source>%1 could not be created</source>
         <translation>No se ha podido crear %1</translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="86"/>
+        <source>%1 (a folder comic cannot be moved to another drive)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="92"/>
+        <source>%1 (copy also failed: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="98"/>
+        <source>the copy did not have the same size as the original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="104"/>
+        <source>the original could not be deleted after it was copied</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
