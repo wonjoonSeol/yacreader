@@ -68,7 +68,6 @@ Viewer::Viewer(QWidget *parent)
       doubleMangaPage(false),
       continuousScroll(false),
       zoom(100),
-      currentPage(nullptr),
       wheelStop(false),
       direction(1),
       drag(false),
@@ -177,6 +176,13 @@ Viewer::Viewer(QWidget *parent)
     continuousWidget->setRender(render);
     continuousPageProvider->setRender(render);
 
+    prescaler = new PagePrescaler(this);
+    // a zero interval lets the page being shown take its image first, so it is not scaled twice
+    prescaleTimer = new QTimer(this);
+    prescaleTimer->setSingleShot(true);
+    prescaleTimer->setInterval(0);
+    connect(prescaleTimer, &QTimer::timeout, this, &Viewer::schedulePrescale);
+
     hideCursorTimer = new QTimer();
     hideCursorTimer->setSingleShot(true);
 
@@ -240,8 +246,6 @@ Viewer::~Viewer()
     delete bd;
     delete notificationsLabel;
     delete mglass;
-    if (currentPage != nullptr)
-        delete currentPage;
 }
 
 QString Viewer::renderingSystemInfo() const
@@ -296,6 +300,8 @@ void Viewer::createConnections()
     connect(render, qOverload<unsigned int>(&Render::numPages), this, &Viewer::comicLoaded);
     connect(render, QOverload<int, const QByteArray &>::of(&Render::imageLoaded), goToFlow, &GoToFlowWidget::setImageReady);
     connect(render, &Render::currentPageReady, this, &Viewer::updatePage);
+    connect(render, &Render::pageRendered, prescaleTimer, qOverload<>(&QTimer::start));
+    connect(prescaler, &PagePrescaler::imageImproved, this, &Viewer::showImprovedPage);
     // Continuous mode is driven by the off-thread page provider, not by Render's
     // (blocking) page buffer. The provider emits pageReady when a full-resolution
     // page has been decoded on a background thread.
@@ -338,6 +344,7 @@ void Viewer::prepareForOpening()
     // content while the new comic loads.
     continuousPageProvider->reset();
     continuousWidget->invalidateScaledImageCache();
+    prescaler->invalidate();
 
     verticalScrollBar()->setSliderPosition(verticalScrollBar()->minimum());
 
@@ -532,22 +539,17 @@ void Viewer::updatePage()
 
     setActiveWidget(content);
 
-    QPixmap *previousPage = currentPage;
-    currentPageHasDoublePageSeam = false;
-    if (doublePage) {
-        if (!doubleMangaPage)
-            currentPage = render->getCurrentDoublePage(&doublePageSeamRatio, &doublePageSeamOrientation);
-        else {
-            currentPage = render->getCurrentDoubleMangaPage(&doublePageSeamRatio, &doublePageSeamOrientation);
-        }
-        currentPageHasDoublePageSeam = currentPage != nullptr;
-        if (currentPage == nullptr) {
-            currentPage = render->getCurrentPage();
-        }
-    } else {
-        currentPage = render->getCurrentPage();
+    currentImages = render->viewImages(render->currentView());
+    currentFullPage = QPixmap();
+    currentPageHasDoublePageSeam = currentImages && currentImages->isDoublePage();
+    if (currentPageHasDoublePageSeam) {
+        const DoublePageLayout layout = currentImages->layout();
+        doublePageSeamRatio = layout.seamRatio;
+        doublePageSeamOrientation = layout.seamOrientation;
     }
-    content->setPixmap(*currentPage);
+    if (!currentImages) {
+        content->setPixmap(QPixmap());
+    }
     updateContentSize();
     updateVerticalScrollBar();
 
@@ -555,9 +557,8 @@ void Viewer::updatePage()
         setFocus(Qt::ShortcutFocusReason);
     else
         goToFlow->setFocus(Qt::OtherFocusReason);
-    delete previousPage;
 
-    if (currentPage->isNull())
+    if (!currentImages)
         setPageUnavailableMessage();
     else
         emit pageAvailable(true);
@@ -575,52 +576,84 @@ void Viewer::updateContentSize()
     cancelZoomPreview();
 
     // there is an image to resize
-    if (currentPage != nullptr && !currentPage->isNull()) {
-        QSize pagefit = currentPage->size();
-        bool stretchImages = Configuration::getConfiguration().getEnlargeImages();
-        YACReader::FitMode fitmode = Configuration::getConfiguration().getFitMode();
-        switch (fitmode) {
-        case YACReader::FitMode::FullRes:
-            break;
-        case YACReader::FitMode::ToWidth:
-            if (!stretchImages && width() > pagefit.width()) {
-                break;
-            }
-            pagefit.scale(width(), 0, Qt::KeepAspectRatioByExpanding);
-            break;
-        case YACReader::FitMode::ToHeight:
-            if (!stretchImages && height() > pagefit.height()) {
-                break;
-            }
-            pagefit.scale(0, height(), Qt::KeepAspectRatioByExpanding);
-            break;
-            // if everything fails showing the full page is a good idea
-        case YACReader::FitMode::FullPage:
-        default:
-            pagefit.scale(size(), Qt::KeepAspectRatio);
-            break;
-        }
-
-        if (zoom != 100) {
-            pagefit.scale(floor(pagefit.width() * zoom / 100.0f), 0, Qt::KeepAspectRatioByExpanding);
-        }
+    if (currentImages) {
+        const PageFitOptions fitOptions = pageFitOptions();
+        const PageFit fit = fitPage(currentImages->size(), fitOptions);
         // apply size to the container
-        content->resize(pagefit);
+        content->resize(fit.size);
 
         // scale the pixmap to physical pixels for crisp rendering on all displays
-        auto dpr = devicePixelRatioF();
-        QPixmap page = scalePixmap(*currentPage,
-                                   qRound(content->width() * dpr),
-                                   qRound(content->height() * dpr),
-                                   Configuration::getConfiguration().getScalingMethod());
-        page.setDevicePixelRatio(dpr);
-        content->setPixmap(page);
+        shownPrescaleKey = { currentImages->key(), fit.pixelSize, fitOptions.devicePixelRatio, Configuration::getConfiguration().getScalingMethod() };
+        content->setPixmap(scaledCurrentPage(shownPrescaleKey));
         content->setBookFoldShadow(currentPageHasDoublePageSeam && Configuration::getConfiguration().getDoublePageShadow(),
                                    doublePageSeamRatio, doublePageSeamOrientation);
 
         emit backgroundChanges();
     }
     content->update(); // TODO, it shouldn't be neccesary
+    prescaleTimer->start();
+}
+
+// Drawing a double page at full resolution takes a while, so it waits for the magnifier, saving the page or a page
+// turn that has to scale
+const QPixmap &Viewer::fullPage() const
+{
+    if (currentFullPage.isNull() && currentImages) {
+        currentFullPage = QPixmap::fromImage(currentImages->image());
+    }
+    return currentFullPage;
+}
+
+PageFitOptions Viewer::pageFitOptions() const
+{
+    Configuration &configuration = Configuration::getConfiguration();
+    return { size(), configuration.getFitMode(), configuration.getEnlargeImages(), zoom, devicePixelRatioF() };
+}
+
+// The page turn shows the prescaled image when it is ready, and scales the page here otherwise
+QPixmap Viewer::scaledCurrentPage(const PrescaleKey &key)
+{
+    const QImage prescaled = prescaler->image(key);
+    if (!prescaled.isNull()) {
+        return QPixmap::fromImage(prescaled);
+    }
+
+    QPixmap page = scalePixmap(fullPage(), key.pixelSize.width(), key.pixelSize.height(), key.scaleMethod);
+    page.setDevicePixelRatio(key.devicePixelRatio);
+    prescaler->store(key, page.toImage());
+    return page;
+}
+
+void Viewer::schedulePrescale()
+{
+    if (continuousScroll || !render->hasLoadedComic()) {
+        return;
+    }
+
+    const PageFitOptions fitOptions = pageFitOptions();
+    const ScaleMethod scaleMethod = Configuration::getConfiguration().getScalingMethod();
+    QList<PrescaleRequest> requests;
+    for (const PageView &view : render->viewsAroundCurrent()) {
+        std::optional<PageViewImages> images = render->viewImages(view);
+        if (!images) {
+            continue;
+        }
+        const PageFit fit = fitPage(images->size(), fitOptions);
+        if (fit.pixelSize.isEmpty()) {
+            continue;
+        }
+        const PrescaleKey key { images->key(), fit.pixelSize, fitOptions.devicePixelRatio, scaleMethod };
+        requests.append({ key, std::move(*images) });
+    }
+    prescaler->schedule(requests);
+}
+
+void Viewer::showImprovedPage(const PrescaleKey &key)
+{
+    if (continuousScroll || zoomPreviewActive || widget() != content || key != shownPrescaleKey) {
+        return;
+    }
+    content->setPixmap(QPixmap::fromImage(prescaler->image(key)));
 }
 
 void Viewer::increaseZoomFactor()
@@ -1060,8 +1093,8 @@ QPixmap Viewer::pixmap() const
         return img && !img->isNull() ? QPixmap::fromImage(*img) : QPixmap();
     }
 
-    if (currentPage != nullptr && !currentPage->isNull())
-        return *currentPage;
+    if (currentImages)
+        return fullPage();
 
     return content->pixmap();
 }
@@ -1308,7 +1341,7 @@ QImage Viewer::grabMagnifiedRegion(const QPoint &viewerPos, const QSize &glassSi
     }
 
     // --- single-page mode ---
-    const QPixmap sourceImage = currentPage != nullptr ? *currentPage : QPixmap();
+    const QPixmap sourceImage = fullPage();
     if (sourceImage.isNull()) {
         QImage result(zoomW, zoomH, QImage::Format_RGB32);
         result.setDevicePixelRatio(devicePixelRatioF());
@@ -1570,6 +1603,7 @@ void Viewer::rotateLeft()
     // at the same angle; continuousRotation stays in lockstep with Render.
     continuousRotation = (continuousRotation == 0) ? 270 : continuousRotation - 90;
     continuousPageProvider->setRotation(continuousRotation);
+    prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     }
@@ -1579,6 +1613,7 @@ void Viewer::rotateRight()
     render->rotateRight();
     continuousRotation = (continuousRotation + 90) % 360;
     continuousPageProvider->setRotation(continuousRotation);
+    prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     }
@@ -1627,6 +1662,7 @@ void Viewer::setContinuousScrollImpl(bool enabled, bool persistSettings)
     }
 
     if (continuousScroll) {
+        prescaler->invalidate();
         continuousViewModel->setZoomFactor(zoom);
         if (render->hasLoadedComic()) {
             continuousViewModel->setViewportSize(viewport()->width(), viewport()->height());
@@ -1867,6 +1903,7 @@ void Viewer::resetContent()
     continuousViewModel->reset();
     continuousPageProvider->reset();
     continuousWidget->reset();
+    prescaler->invalidate();
     lastCenterPage = -1;
     emit reset();
 }
@@ -2184,6 +2221,7 @@ void Viewer::updateImageOptions()
     // Settings-driven image options may have changed; force the provider to
     // re-decode with the current settings.
     continuousPageProvider->invalidate();
+    prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     }
@@ -2193,6 +2231,7 @@ void Viewer::updateFilters(int brightness, int contrast, int gamma)
 {
     render->updateFilters(brightness, contrast, gamma);
     continuousPageProvider->setFilters(brightness, contrast, gamma);
+    prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     }

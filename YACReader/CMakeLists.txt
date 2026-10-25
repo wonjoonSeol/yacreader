@@ -21,6 +21,12 @@ qt_add_executable(YACReader WIN32
     continuous_view_model.cpp
     mouse_handler.h
     mouse_handler.cpp
+    page_fit.h
+    page_fit.cpp
+    page_prescaler.h
+    page_prescaler.cpp
+    page_view.h
+    page_view.cpp
     viewer.h
     viewer.cpp
     options_dialog.h

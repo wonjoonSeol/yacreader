@@ -2,6 +2,7 @@
 #define RENDER_H
 
 #include "comic.h"
+#include "page_view.h"
 
 #include <QByteArray>
 #include <QImage>
@@ -9,6 +10,9 @@
 #include <QPixmap>
 #include <QThread>
 #include <QVector>
+
+#include <atomic>
+#include <optional>
 //-----------------------------------------------------------------------------
 // FILTERS
 //-----------------------------------------------------------------------------
@@ -92,6 +96,8 @@ public:
     void setPage(QImage *p) { page = p; };
     void setRotation(unsigned int d) { degrees = d; };
     void setFilters(QVector<ImageFilter *> f) { filters = f; };
+    // true once the page image is written, so it can be read from other threads
+    bool isDecoded() const { return decoded; }
 
 private:
     int numPage;
@@ -99,6 +105,7 @@ private:
     QImage *page;
     unsigned int degrees;
     QVector<ImageFilter *> filters;
+    std::atomic_bool decoded = false;
     void run() override;
     Render *render;
 signals:
@@ -135,14 +142,18 @@ public:
     Render();
     ~Render() override;
 
+    PageView currentView();
+    // The current view, then the views the next two page turns and the previous one would show
+    QList<PageView> viewsAroundCurrent();
+    // Empty until the view's pages are decoded
+    std::optional<PageViewImages> viewImages(PageView view) const;
+
 public slots:
     void render();
-    QPixmap *getCurrentPage();
-    QPixmap *getCurrentDoublePage(qreal *seamRatio = nullptr, Qt::Orientation *seamOrientation = nullptr);
-    QPixmap *getCurrentDoubleMangaPage(qreal *seamRatio = nullptr, Qt::Orientation *seamOrientation = nullptr);
     bool currentPageIsDoublePage();
     bool nextPageIsDoublePage();
     bool previousPageIsDoublePage();
+    // Null until the page is decoded
     const QImage *bufferedImage(int absolutePageIndex) const;
     void goTo(int index);
     void doublePageSwitch();
@@ -225,6 +236,7 @@ private:
     int imageRotation;
     QVector<ImageFilter *> filters;
     void resetDoublePageNavigation();
+    PagePairing pagePairingAt(int page) const;
     int nextDoublePageViewIndex();
     int previousDoublePageViewIndex();
     bool doublePageHistoryTracksCurrentIndex() const;
