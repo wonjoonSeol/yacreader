@@ -14,13 +14,6 @@ PageLabelWidget::PageLabelWidget(QWidget *parent)
     animation->setDuration(150);
     animation->setEndValue(QPoint((parent->geometry().size().width() - this->width()), -this->height()));
 
-    QScreen *screen = parent != nullptr ? parent->window()->screen() : nullptr;
-    if (screen == nullptr) {
-        screen = QApplication::screens().constFirst();
-    }
-
-    int verticalRes = screen != nullptr ? screen->size().height() : 600;
-
     auto layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
 
@@ -28,19 +21,8 @@ PageLabelWidget::PageLabelWidget(QWidget *parent)
     textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     textLabel->setWordWrap(false); // Wrapping needs to be disabled, we need to show all the text in one line
 
-    int contentMargin = 0;
-    if (verticalRes <= 1024) {
-        fontSizePx = 12;
-        contentMargin = 12;
-    } else if (verticalRes <= 1200) {
-        fontSizePx = 16;
-        contentMargin = 16;
-    } else {
-        fontSizePx = 20;
-        contentMargin = 20;
-    }
-
-    setContentsMargins(contentMargin * 2.3, contentMargin / 2.3, contentMargin * 2.3, contentMargin / 2.3);
+    fontSizePx = fontSizeFor(parent);
+    setContentsMargins(fontSizePx * 2.3, fontSizePx / 2.3, fontSizePx * 2.3, fontSizePx / 2.3);
 
     // Instead of fixed size, allow dynamic sizing
     textLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -54,6 +36,23 @@ PageLabelWidget::PageLabelWidget(QWidget *parent)
         move(QPoint((parent->geometry().size().width() - this->width()), -this->height()));
 
     initTheme(this);
+}
+
+int PageLabelWidget::fontSizeFor(const QWidget *parent)
+{
+    QScreen *screen = parent != nullptr ? parent->window()->screen() : nullptr;
+    if (screen == nullptr) {
+        screen = QApplication::screens().constFirst();
+    }
+
+    const int verticalRes = screen != nullptr ? screen->size().height() : 600;
+    if (verticalRes <= 1024) {
+        return 12;
+    }
+    if (verticalRes <= 1200) {
+        return 16;
+    }
+    return 20;
 }
 
 void PageLabelWidget::show()

@@ -32,6 +32,7 @@ private:
     QComboBox *languageCombo;
 
     QCheckBox *showTimeInInformationLabel;
+    QCheckBox *showPageCounter;
     QRadioButton *openAtLastReadPageRadioButton;
     QRadioButton *openAtFirstPageIfFinishedRadioButton;
     QRadioButton *openAtFirstPageRadioButton;
