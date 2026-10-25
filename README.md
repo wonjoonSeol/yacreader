@@ -109,7 +109,7 @@ Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
 
 - **Edges** are equally steep with all three. The difference is in the halos and the finest detail.
 - **Shrinking** 4x, the overshoot is at most 2 grey levels with any of them.
-- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5, leaving 3 for the Bicubic method in upstream PR [#620](https://github.com/YACReader/yacreader/pull/620). A stored value the fork does not know falls back to Lanczos4.
+- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5. Nothing uses 3, so it stays free for the Bicubic method that the open upstream PR [#620](https://github.com/YACReader/yacreader/pull/620) stores as 3. A stored value the fork does not know, 3 included, falls back to Lanczos4.
 - **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
 
 ---
