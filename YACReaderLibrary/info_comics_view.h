@@ -60,6 +60,10 @@ protected:
 
     YACReaderComicsSelectionHelper *selectionHelper;
     YACReaderComicInfoHelper *comicInfoHelper;
+
+private:
+    QMetaObject::Connection modelDataChangedConnection;
+    QMetaObject::Connection modelFavoritesChangedConnection;
 };
 
 #endif // INFOCOMICSVIEW_H

@@ -52,8 +52,9 @@ private:
     QSet<qulonglong> getFavoriteComicIds(quint64 libraryId);
     void updateComic(quint64 libraryId, ComicDB &comic);
     void updateComic(quint64 libraryId, ComicDB &comic, qulonglong nextComicId);
-    void setComicRating(const YACReader::ComicRatingUpdate &update);
-    void setComicFavorite(const YACReader::ComicFavoriteUpdate &update);
+    bool setComicRating(const YACReader::ComicRatingUpdate &update);
+    bool setComicFavorite(const YACReader::ComicFavoriteUpdate &update);
+    void acknowledge(bool saved);
 
     QLocalSocket *clientConnection;
 };

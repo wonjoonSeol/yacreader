@@ -19,7 +19,10 @@
 
 #include "comic_db.h"
 
+#include <optional>
+
 class Comic;
+class QMenu;
 class Viewer;
 class OptionsDialog;
 class HelpAboutDialog;
@@ -139,6 +142,8 @@ private:
     QAction *showBookmarksAction;
     QAction *toggleFavoriteAction;
     QList<QAction *> rateComicActions;
+    QList<QAction *> rateComicToolbarActions;
+    QMenu *ratingMenu;
     QAction *leftRotationAction;
     QAction *rightRotationAction;
     QAction *showInfoAction;
@@ -187,10 +192,11 @@ private:
     void syncModeActions(bool manga, bool continuousScroll);
     void applySavedReaderMode();
     void applyLibraryReaderMode(YACReader::FileType type);
-    void updateRatingAndFavoriteActions(bool libraryComic);
+    void updateRatingAndFavoriteActions(const ComicDB *comic);
     void updateRatingIcons();
     void rateComic(int rating);
     void setComicFavorite(bool favorite);
+    void showLibraryNotUpdated(const QString &title);
 
     //! Manejadores de evento:
     // void resizeEvent(QResizeEvent * event);
@@ -202,7 +208,9 @@ private:
 
     ComicDB currentComicDB;
     QList<ComicDB> siblingComics;
-    QSet<qulonglong> favoriteComicIds;
+    // the favorites of the library the comic was opened from; missing for libraries without rating and favorite messages
+    std::optional<QSet<qulonglong>> favoriteComicIds;
+    int shownRating = 0;
     bool isClient;
     QString startComicPath;
     quint64 libraryId;

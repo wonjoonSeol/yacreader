@@ -2,14 +2,37 @@
 
 #include "QsLog.h"
 #include "comic_db.h"
+#include "data_base_management.h"
 #include "db_helper.h"
 #include "yacreader_global.h"
+#include "yacreader_libraries.h"
 
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QPointer>
+#include <QSqlDatabase>
+
+#include <type_traits>
 
 using namespace YACReader;
+
+namespace {
+// Runs `function` on the database of the library and returns its result, or a default value if the database cannot be opened
+template<typename Function>
+auto withLibraryDatabase(quint64 libraryId, Function function)
+{
+    std::invoke_result_t<Function, QSqlDatabase &> result { };
+    QString connectionName;
+    {
+        QSqlDatabase db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(DBHelper::getLibraries().getPath(libraryId)));
+        if (db.isValid())
+            result = function(db);
+        connectionName = db.connectionName();
+    }
+    QSqlDatabase::removeDatabase(connectionName);
+    return result;
+}
+}
 
 QMutex YACReaderClientConnectionWorker::dbMutex;
 // int YACReaderClientConnectionWorker::count = 0;
@@ -155,9 +178,7 @@ void YACReaderClientConnectionWorker::run()
         QDataStream out(&block, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_4_8);
         out << (quint32)0;
-        out << comic;
-        out << siblings;
-        out << getFavoriteComicIds(libraryId);
+        out << ComicInfoAnswer { comic, siblings, getFavoriteComicIds(libraryId) };
         out.device()->seek(0);
         out << (quint32)(block.size() - sizeof(quint32));
 
@@ -200,13 +221,13 @@ void YACReaderClientConnectionWorker::run()
     case YACReader::SendComicRating: {
         ComicRatingUpdate update;
         dataStream >> update;
-        setComicRating(update);
+        acknowledge(dataStream.status() == QDataStream::Ok && setComicRating(update));
         break;
     }
     case YACReader::SendComicFavorite: {
         ComicFavoriteUpdate update;
         dataStream >> update;
-        setComicFavorite(update);
+        acknowledge(dataStream.status() == QDataStream::Ok && setComicFavorite(update));
         break;
     }
     }
@@ -241,11 +262,7 @@ void YACReaderClientConnectionWorker::getComicInfoFromReadingList(quint64 librar
 QSet<qulonglong> YACReaderClientConnectionWorker::getFavoriteComicIds(quint64 libraryId)
 {
     QMutexLocker locker(&dbMutex);
-    QSet<qulonglong> favoriteComicIds;
-    const auto favorites = DBHelper::getFavorites(libraryId);
-    for (const auto &favorite : favorites)
-        favoriteComicIds.insert(favorite.id);
-    return favoriteComicIds;
+    return withLibraryDatabase(libraryId, [](QSqlDatabase &db) { return DBHelper::getFavoriteComicIds(db); });
 }
 
 void YACReaderClientConnectionWorker::updateComic(quint64 libraryId, ComicDB &comic)
@@ -266,16 +283,37 @@ void YACReaderClientConnectionWorker::updateComic(quint64 libraryId, ComicDB &co
     emit comicUpdated(libraryId, comic);
 }
 
-void YACReaderClientConnectionWorker::setComicRating(const ComicRatingUpdate &update)
+bool YACReaderClientConnectionWorker::setComicRating(const ComicRatingUpdate &update)
 {
+    if (update.rating < 0 || update.rating > MaxComicRating)
+        return false;
+
     QMutexLocker locker(&dbMutex);
-    DBHelper::setComicRating(update.libraryId, update.comicId, update.rating);
-    emit comicUpdated(update.libraryId, DBHelper::getComicInfo(update.libraryId, update.comicId));
+    ComicDB comic;
+    const bool saved = withLibraryDatabase(update.libraryId, [&](QSqlDatabase &db) {
+        bool found = false;
+        if (DBHelper::setComicRating(update.comicId, update.rating, db))
+            comic = DBHelper::loadComic(update.comicId, db, found);
+        return found;
+    });
+    if (saved)
+        emit comicUpdated(update.libraryId, comic);
+    return saved;
 }
 
-void YACReaderClientConnectionWorker::setComicFavorite(const ComicFavoriteUpdate &update)
+bool YACReaderClientConnectionWorker::setComicFavorite(const ComicFavoriteUpdate &update)
 {
     QMutexLocker locker(&dbMutex);
-    DBHelper::setComicFavorite(update.libraryId, update.comicId, update.favorite);
-    emit comicFavoriteChanged(update.libraryId, update.comicId);
+    const bool saved = withLibraryDatabase(update.libraryId, [&](QSqlDatabase &db) {
+        return DBHelper::setComicFavorite(update.comicId, update.favorite, db);
+    });
+    if (saved)
+        emit comicFavoriteChanged(update.libraryId, update.comicId);
+    return saved;
+}
+
+void YACReaderClientConnectionWorker::acknowledge(bool saved)
+{
+    clientConnection->putChar(saved ? ChangeSaved : ChangeNotSaved);
+    clientConnection->waitForBytesWritten(1000);
 }
