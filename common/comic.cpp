@@ -10,6 +10,7 @@
 
 #include <QCoreApplication>
 #include <QDir>
+#include <QDirIterator>
 #include <QFileInfoList>
 #include <QImageReader>
 #include <QPixmap>
@@ -31,24 +32,52 @@ enum YACReaderPageSortingMode {
 
 void comic_pages_sort(QList<QString> &pageNames, YACReaderPageSortingMode sortingMode);
 
+// read once, the plugins QImageReader asks for its formats do not change while the app runs
 QStringList Comic::getSupportedImageFormats()
 {
-    QList<QByteArray> supportedImageFormats = QImageReader::supportedImageFormats();
-    QStringList supportedImageFormatStrings;
-    for (QByteArray &item : supportedImageFormats) {
-        supportedImageFormatStrings.append(QString::fromLocal8Bit("*." + item));
-    }
+    static const QStringList supportedImageFormatStrings = [] {
+        QStringList formats;
+        for (const QString &format : getSupportedImageLiteralFormats()) {
+            formats.append("*." + format);
+        }
+        return formats;
+    }();
     return supportedImageFormatStrings;
 }
 
 QStringList Comic::getSupportedImageLiteralFormats()
 {
-    QList<QByteArray> supportedImageFormats = QImageReader::supportedImageFormats();
-    QStringList supportedImageFormatStrings;
-    for (QByteArray &item : supportedImageFormats) {
-        supportedImageFormatStrings.append(QString::fromLocal8Bit(item));
-    }
+    static const QStringList supportedImageFormatStrings = [] {
+        QStringList formats;
+        for (const QByteArray &item : QImageReader::supportedImageFormats()) {
+            formats.append(QString::fromLocal8Bit(item));
+        }
+        return formats;
+    }();
     return supportedImageFormatStrings;
+}
+
+namespace {
+
+// dot files are hidden on Linux and macOS, on Windows they are listed, like the ._ files macOS leaves next to pages
+bool isPageFile(const QFileInfo &file, const QStringList &imageSuffixes)
+{
+    return !file.fileName().startsWith('.') && imageSuffixes.contains(file.suffix(), Qt::CaseInsensitive);
+}
+
+bool isComicInfoFile(const QFileInfo &file)
+{
+    return file.fileName().compare(QStringLiteral("ComicInfo.xml"), Qt::CaseInsensitive) == 0;
+}
+
+void sortPages(QFileInfoList &pages)
+{
+    // don't fix double page files sorting, because the user can see how the SO sorts the files in the folder.
+    std::sort(pages.begin(), pages.end(), [](const QFileInfo &left, const QFileInfo &right) {
+        return naturalCompareStrict(left.fileName(), right.fileName()) < 0;
+    });
+}
+
 }
 
 const QStringList Comic::imageExtensions = QStringList() << "*.jpg"
@@ -332,18 +361,12 @@ bool Comic::fileIsComic(const QString &path)
 
 bool Comic::folderIsComic(const QString &path)
 {
-    if (QFileInfo(path).fileName().startsWith('.')) {
-        return false;
-    }
+    return FolderComic::comicContents(path).has_value();
+}
 
-    // lists subfolders whatever their names and files only when they are pages or comics, and nothing for a file
-    QDir folder(path);
-    folder.setNameFilters(comicExtensions + getSupportedImageFormats());
-    folder.setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
-    const QFileInfoList entries = folder.entryInfoList();
-
-    const auto isPage = [](const QFileInfo &entry) { return entry.isFile() && !fileIsComic(entry.filePath()); };
-    return !entries.isEmpty() && std::all_of(entries.cbegin(), entries.cend(), isPage);
+bool Comic::isMetadataFolder(const QString &folderName)
+{
+    return folderName.startsWith('.') || folderName.startsWith('@') || folderName == QStringLiteral("__MACOSX");
 }
 
 bool Comic::fileIsEpub(const QString &path)
@@ -748,11 +771,13 @@ bool FolderComic::load(const QString &path, int atPage)
 
 bool FolderComic::load(const QString &path, const ComicDB &comic)
 {
-    // a missing folder is reported by process(), which finds no pages in it
+    // FactoryComic::newComic makes a FolderComic only for an existing folder, and process() reports one without pages
     _path = QDir::cleanPath(path);
     QList<int> bookmarkIndexes;
     bookmarkIndexes << comic.info.bookmark1 << comic.info.bookmark2 << comic.info.bookmark3;
-    if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
+    // a comic never opened has currentPage 0, which must not become last page -1
+    const int lastReadPage = std::max(comic.info.currentPage - 1, 0);
+    if (bm->load(bookmarkIndexes, lastReadPage)) {
         emit bookmarksUpdated();
     }
     _firstPage = -1;
@@ -761,14 +786,48 @@ bool FolderComic::load(const QString &path, const ComicDB &comic)
 
 QFileInfoList FolderComic::pageFiles(const QString &path)
 {
-    QDir folder(path);
-    folder.setNameFilters(getSupportedImageFormats());
-    folder.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    QFileInfoList pages = folder.entryInfoList();
-
-    // don't fix double page files sorting, because the user can see how the SO sorts the files in the folder.
-    std::sort(pages.begin(), pages.end(), naturalSortLessThanCIFileInfo);
+    const QStringList imageSuffixes = getSupportedImageLiteralFormats();
+    QFileInfoList pages;
+    QDirIterator files(path, QDir::Files | QDir::NoDotAndDotDot);
+    while (files.hasNext()) {
+        const QFileInfo file = files.nextFileInfo();
+        if (isPageFile(file, imageSuffixes)) {
+            pages.append(file);
+        }
+    }
+    sortPages(pages);
     return pages;
+}
+
+std::optional<FolderComicContents> FolderComic::comicContents(const QString &path)
+{
+    if (isMetadataFolder(QFileInfo(path).fileName())) {
+        return std::nullopt;
+    }
+
+    const QStringList imageSuffixes = getSupportedImageLiteralFormats();
+    FolderComicContents contents;
+    QDirIterator entries(path, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+    while (entries.hasNext()) {
+        const QFileInfo entry = entries.nextFileInfo();
+        if (entry.isDir()) {
+            if (!isMetadataFolder(entry.fileName())) {
+                return std::nullopt;
+            }
+        } else if (fileIsComic(entry.filePath())) {
+            return std::nullopt;
+        } else if (isPageFile(entry, imageSuffixes)) {
+            contents.pages.append(entry);
+        } else if (isComicInfoFile(entry)) {
+            contents.comicInfoPath = entry.absoluteFilePath();
+        }
+    }
+
+    if (contents.pages.isEmpty()) {
+        return std::nullopt;
+    }
+    sortPages(contents.pages);
+    return contents;
 }
 
 void FolderComic::process()

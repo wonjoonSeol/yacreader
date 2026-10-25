@@ -2,12 +2,15 @@
 #define __COMIC_H
 #include "bookmarks.h"
 #include "extract_delegate.h"
+#include "folder_comic_contents.h"
 #include "yacreader_global.h"
 
 #include <QByteArray>
 #include <QImage>
 #include <QMap>
 #include <QtCore>
+
+#include <optional>
 
 #ifndef NO_PDF
 #include "pdf_comic.h"
@@ -87,8 +90,10 @@ public:
     static QStringList getSupportedImageLiteralFormats();
 
     static bool fileIsComic(const QString &path);
-    // a folder with images and no subfolders or comic files, the library reads it as one comic
+    // a folder with images and no comic files or subfolders other than metadata ones, the library reads it as one comic
     static bool folderIsComic(const QString &path);
+    // folders that tools keep their own data in, like .thumbnails, @eaDir or __MACOSX, on every platform
+    static bool isMetadataFolder(const QString &folderName);
     static bool fileIsEpub(const QString &path);
     static QList<QString> findValidComicFiles(const QList<QUrl> &list);
     static QList<QString> findValidComicFilesInFolder(const QString &path);
@@ -167,7 +172,10 @@ public:
 
     bool load(const QString &path, int atPage = -1);
     bool load(const QString &path, const ComicDB &comic);
+    // every image in the folder in reading order, the pages the reader shows
     static QFileInfoList pageFiles(const QString &path);
+    // nothing when the folder is not a comic, the listing stops at the first entry that rules it out
+    static std::optional<FolderComicContents> comicContents(const QString &path);
 
 public slots:
 

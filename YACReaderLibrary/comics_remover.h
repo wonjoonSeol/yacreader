@@ -1,16 +1,22 @@
 #ifndef COMICS_REMOVER_H
 #define COMICS_REMOVER_H
 
+#include "comic_db.h"
+#include "folder_comic_contents.h"
+
+#include <QFile>
 #include <QModelIndex>
-#include <QStringList>
 #include <QThread>
 
+#include <functional>
+
 // What deleting some comics removes from disk: comic files always, folder comics only when
-// their image folders are deleted too. Positions refer to the list of comic paths.
+// their image folders are deleted too. Positions refer to the list of comics.
 struct ComicsDeletion {
-    explicit ComicsDeletion(const QStringList &comicPaths);
+    ComicsDeletion(const QList<ComicDB> &comics, const QString &libraryPath);
     QList<int> deleted(bool deleteFolders) const;
 
+    // comic files, and comics missing from disk, whose deletion fails and is reported as before
     QList<int> files;
     QList<int> folders;
     int folderImages = 0;
@@ -20,14 +26,25 @@ class ComicsRemover : public QObject
 {
     Q_OBJECT
 public:
-    explicit ComicsRemover(QModelIndexList &indexList, QList<QString> &paths, qulonglong parentId, QObject *parent = nullptr);
-    // folders skip the trash, otherwise a folder the trash refuses is only reported with folderNotTrashed
-    void setDeleteFoldersPermanently(bool permanently) { deleteFoldersPermanently = permanently; }
+    enum class FolderDeletion {
+        ToTrash,
+        // for the folders the trash refused: their pages and ComicInfo.xml are deleted, other files stay
+        Permanently
+    };
+    using Trash = std::function<bool(const QString &path)>;
+
+    explicit ComicsRemover(QModelIndexList &indexList, QList<QString> &paths, qulonglong parentId, FolderDeletion folderDeletion = FolderDeletion::ToTrash, QObject *parent = nullptr);
+    // the system trash unless a test replaces it
+    void setTrash(Trash trash) { this->trash = std::move(trash); }
 
 signals:
     void remove(int);
     void removeError();
-    void folderNotTrashed(const QString &path);
+    // a comic file the trash refused, which is deleted for good as it always was
+    void fileDeletedPermanently();
+    // positions in the lists given to the constructor
+    void folderNotTrashed(int position);
+    void folderNotEmptied(int position);
     void finished();
     void removedItemsFromFolder(qulonglong);
 
@@ -35,12 +52,21 @@ public slots:
     void process();
 
 private:
-    void removeFolder(int row, const QString &path);
+    enum class PermanentDeletion {
+        Deleted,
+        FilesLeft,
+        Failed
+    };
+
+    void removeFile(int row, const QString &path);
+    void removeFolder(int position, int row, const QString &path);
+    PermanentDeletion deletePermanently(const QString &path, const FolderComicContents &contents);
 
     QModelIndexList indexList;
     QList<QString> paths;
     qulonglong parentId;
-    bool deleteFoldersPermanently = false;
+    FolderDeletion folderDeletion;
+    Trash trash = [](const QString &path) { return QFile::moveToTrash(path); };
 };
 
 class FoldersRemover : public QObject

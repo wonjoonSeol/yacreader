@@ -518,7 +518,8 @@ QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &o
 
         const QFileInfo destinationInfo(destination);
         const QString directory = destinationInfo.absolutePath();
-        const QString suffix = move.extension;
+        // never cut the name at a dot that is not the comic's extension
+        const QString suffix = destinationInfo.fileName().endsWith(move.extension) ? move.extension : QString();
         const QString stem = destinationInfo.fileName().chopped(suffix.size());
 
         QString candidate = destination;

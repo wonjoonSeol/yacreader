@@ -2,6 +2,7 @@
 #define COMIC_MANAGEMENT_COORDINATOR_H
 
 #include "comic_model.h"
+#include "comics_remover.h"
 #include "yacreader_global.h"
 
 #include <QList>
@@ -11,10 +12,10 @@
 #include <QString>
 
 #include <functional>
+#include <memory>
 
 class ComicFilesManager;
 class ComicDB;
-struct ComicsDeletion;
 class ComicVineDialog;
 class FolderModel;
 class FolderModelProxy;
@@ -107,12 +108,12 @@ private:
     SourceContext currentSource() const;
     QModelIndexList indexesForComicIds(const QList<qulonglong> &comicIds, const SourceContext &source) const;
     bool isCurrentSource(const SourceContext &source) const;
+    struct DeletionOutcome;
     void deleteComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source);
-    bool confirmComicsDeletion(const ComicsDeletion &deletion, bool *deleteFolders) const;
-    bool confirmPermanentFolderDeletion(int folderCount) const;
-    bool removeComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source, bool deleteFoldersPermanently);
+    bool confirmPermanentFolderDeletion(int folderCount, int filesDeletedPermanently) const;
+    bool removeComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source, ComicsRemover::FolderDeletion folderDeletion, const std::shared_ptr<DeletionOutcome> &outcome);
     void deleteComicsFromList(const QList<qulonglong> &comicIds, const SourceContext &source, int listType, qulonglong listId);
-    void finishComicDeletion(const SourceContext &source);
+    void finishComicDeletion(const SourceContext &source, const std::shared_ptr<DeletionOutcome> &outcome);
 
     QWidget *window;
     QSettings *settings;
@@ -128,8 +129,6 @@ private:
     ComicOpeningAllowedProvider comicOpeningAllowedProvider;
     LibraryIdProvider libraryIdProvider;
     LibraryPathProvider libraryPathProvider;
-    bool comicDeletionFailed { false };
-    QList<qulonglong> foldersNotTrashed;
 };
 
 #endif // COMIC_MANAGEMENT_COORDINATOR_H
