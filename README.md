@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with seven changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -10,6 +10,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six 
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Page turns without scaling](#page-turns-without-scaling) | Speed | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) |
+| [Sharper enlarged pages with Anime4K](#sharper-enlarged-pages-with-anime4k) | Option | |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
@@ -97,6 +98,48 @@ In single and double page mode the pages next to the one you read are scaled to 
 - **When a page is not ready yet,** for example right after jumping far or when flipping through double pages faster than they decode, it is scaled when it is shown, as before.
 - **Memory:** the four scaled views around the current page, about 12 MB each for a 1440 x 2160 page.
 - **Continuous scroll** already scaled its pages in the background and is unchanged.
+
+### Sharper enlarged pages with Anime4K
+
+Options > Image adjustment > Scaling > **Upscale small pages with Anime4K (ACNet)**, off by default, with a **Model** choice: F8B4 (default) or F8B8-HDN.
+
+In single and double page mode, a page shown larger than its own size is first shown scaled as usual, then replaced by a sharper one: [Anime4KCPP](https://github.com/TianZerL/Anime4KCPP)'s ACNet, a small neural network for line art, doubles it on the CPU in the background and the scaling method takes it to the window size. The network sharpens the luma; colour and transparency are scaled with Catmull-Rom. The code is vendored in `third_party/anime4kcpp` (MIT) with the revisions it came from.
+
+<img src="docs/fork/anime4k-crop.png" width="700" alt="The same lettering doubled with Lanczos4 and with ACNet F8B4, shown at 4x">
+
+Quality: the page shrunk to half with a 2x2 box filter, doubled again, and compared with the original (whole page, PSNR / SSIM on luma).
+
+| Method | Krazy Kat page | Synthetic gray page | Synthetic colour page |
+|---|---|---|---|
+| Lanczos4 (the default scaling) | 25.8 dB / 0.931 | 22.5 / 0.946 | 27.7 / 0.969 |
+| **ACNet F8B4 (default model)** | **29.5 / 0.970** | **26.4 / 0.980** | **31.5 / 0.990** |
+| ACNet F8B8-HDN | 29.9 / 0.969 | 26.6 / 0.981 | 31.7 / 0.990 |
+| Anime4K 0.9, CPU port | 21.8 / 0.888 | 18.1 / 0.892 | 24.0 / 0.957 |
+| ArtCNN C4F16, CPU (not included) | 30.2 / 0.973 | 28.2 / 0.987 | 32.6 / 0.992 |
+| Anime4K v4 CNN M, GPU shader | 29.4 / 0.966 | 25.9 / 0.979 | 32.0 / 0.989 |
+| Anime4K v4 CNN UL, GPU shader | 30.5 / 0.970 | 28.4 / 0.987 | 33.0 / 0.992 |
+
+The Krazy Kat page is George Herriman's of 1922-04-02, public domain ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Krazy_Kat_1922-04-02_original.jpg)), in gray at 2482 x 3000. The synthetic pages are generated 2000 x 3000 manga-style pages.
+
+| Hatching | Lettering |
+|---|---|
+| <img src="docs/fork/anime4k-krazykat-hatching.png" width="400" alt="Hatching from the Krazy Kat page doubled by each method"> | <img src="docs/fork/anime4k-krazykat-lettering.png" width="400" alt="Lettering from the Krazy Kat page doubled by each method"> |
+
+Speed of one 2x upscale of a 1000 x 1500 page, in ms:
+
+| | Gray | Colour |
+|---|---|---|
+| Lanczos4, one thread (WSL) | 37 | 39 |
+| ACNet F8B4, 8 threads (Windows) | 46 | 66 |
+| ACNet F8B8-HDN, 8 threads (Windows) | 82 | 99 |
+| ACNet F8B4, 1 / 4 / 16 threads (WSL) | 229 / 71 / 43 | 253 / 87 / 61 |
+| ACNet F8B8-HDN, 1 / 4 / 16 threads (WSL) | 345 / 132 / 72 | not measured cleanly |
+
+Ryzen 7 5700X3D with the FMA backend, the one Windows x64 builds pick on this CPU. The Windows row is the MSVC build's test; the WSL rows are the best of 5 to 7 runs on a machine shared with other builds, so allow about ±40%. Linux x86_64 builds use the SSE backend, about 1.7 times slower.
+
+- **CPU:** at most half of the CPU's threads for all upscales together, and the fastest backend the CPU supports: FMA or AVX on Windows x64, AVX on Intel Macs, NEON on arm64, SSE on Linux x86_64.
+- **Memory:** the network works on strips of 256 rows, so its scratch memory stays near 28 MB for a 1600 pixel wide page. A 1600 x 2400 colour page peaks at about 157 MB more than before the upscale, Lanczos4 at 78 MB.
+- **When it runs:** only for pages that end up larger than their own size; any other factor than 2x is reached with the scaling method after the 2x upscale. Continuous scroll does not use it yet.
 
 ---
 
