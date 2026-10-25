@@ -7,6 +7,7 @@
 #include "configuration.h"
 #include "edit_shortcuts_dialog.h"
 #include "help_about_dialog.h"
+#include "image_adjustment_menu.h"
 #include "options_dialog.h"
 #include "qnaturalsorting.h"
 #include "shortcuts_manager.h"
@@ -296,6 +297,14 @@ void MainWindowViewer::setupUI()
     connect(optionsDialog, &OptionsDialog::changedImageOptions, viewer, &Viewer::onImageOptionsChanged);
 
     optionsDialog->restoreOptions(settings);
+
+    imageAdjustmentMenu = new ImageAdjustmentMenu(this);
+    connect(imageAdjustmentMenu, &ImageAdjustmentMenu::imageOptionsChanged, viewer, &Viewer::onImageOptionsChanged);
+    connect(imageAdjustmentMenu, &ImageAdjustmentMenu::imageOptionsChanged, optionsDialog, &OptionsDialog::restoreImageOptions);
+    // the filters go through the Options dialog, which stores and applies them
+    connect(imageAdjustmentMenu, &ImageAdjustmentMenu::filtersChanged, optionsDialog, &OptionsDialog::setFilters);
+    connect(imageAdjustmentMenu, &ImageAdjustmentMenu::resetFiltersRequested, optionsDialog, &OptionsDialog::resetImageConfig);
+
     // shortcutsDialog = new ShortcutsDialog(this);
     editShortcutsDialog = new EditShortcutsDialog(this);
     connect(optionsDialog, &YACReaderOptionsDialog::editShortcuts, editShortcutsDialog, &QWidget::show);
@@ -719,7 +728,16 @@ void MainWindowViewer::createToolBars()
 #endif
 
     comicToolBar->addAction(wrappedToolbarAction(showShorcutsAction));
+#ifdef Y_MAC_UI
     comicToolBar->addAction(wrappedToolbarAction(optionsAction));
+#else
+    // the arrow next to Options opens the image adjustment menu
+    auto optionsToolButton = new QToolButton();
+    optionsToolButton->setDefaultAction(wrappedToolbarAction(optionsAction));
+    optionsToolButton->setMenu(imageAdjustmentMenu);
+    optionsToolButton->setPopupMode(QToolButton::MenuButtonPopup);
+    comicToolBar->addWidget(optionsToolButton);
+#endif
     comicToolBar->addAction(wrappedToolbarAction(helpAboutAction));
 
 #ifndef Y_MAC_UI
@@ -743,6 +761,7 @@ void MainWindowViewer::createToolBars()
     viewer->addAction(adjustToFullSizeAction);
     viewer->addAction(fitToPageAction);
     viewer->addAction(continuousScrollAction);
+    viewer->addAction(imageAdjustmentMenu->menuAction());
     YACReader::addSperator(viewer);
     viewer->addAction(leftRotationAction);
     viewer->addAction(rightRotationAction);

@@ -3,6 +3,7 @@
 #include "app_language_utils.h"
 #include "appearance_tab_widget.h"
 #include "configuration.h"
+#include "image_adjustment.h"
 #include "theme_factory.h"
 #include "theme_manager.h"
 #include "yacreader_3d_flow_config_widget.h"
@@ -214,19 +215,19 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto layoutImage = new QGridLayout();
 
     brightnessS = new YACReaderSpinSliderWidget(this, true);
-    brightnessS->setRange(0, 100);
+    brightnessS->setRange(brightnessRange.minimum, brightnessRange.maximum);
     // brightnessS->setText(tr("Brightness"));
     brightnessS->setTracking(false);
     connect(brightnessS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::brightnessChanged);
 
     contrastS = new YACReaderSpinSliderWidget(this, true);
-    contrastS->setRange(0, 250);
+    contrastS->setRange(contrastRange.minimum, contrastRange.maximum);
     // contrastS->setText(tr("Contrast"));
     contrastS->setTracking(false);
     connect(contrastS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::contrastChanged);
 
     gammaS = new YACReaderSpinSliderWidget(this, true);
-    gammaS->setRange(0, 250);
+    gammaS->setRange(gammaRange.minimum, gammaRange.maximum);
     // gammaS->setText(tr("Gamma"));
     gammaS->setTracking(false);
     connect(gammaS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::gammaChanged);
@@ -298,11 +299,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingLayout = new QHBoxLayout();
     scalingLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"));
-    scalingMethodCombo->addItem(tr("Bilinear"));
-    scalingMethodCombo->addItem(tr("Lanczos (better quality)"));
+    for (const auto &choice : scalingMethodChoices())
+        scalingMethodCombo->addItem(choice.text());
     connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(index));
+        Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(index).method);
         emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
@@ -430,7 +430,9 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentIndex()));
+    // left unselected when the stored method is not one of the choices
+    if (const int scalingMethodIndex = scalingMethodCombo->currentIndex(); scalingMethodIndex >= 0)
+        Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(scalingMethodIndex).method);
     emit changedImageOptions();
 
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
@@ -485,20 +487,11 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     quickNavi->setChecked(settings->value(QUICK_NAVI_MODE).toBool());
     disableShowOnMouseOver->setChecked(settings->value(DISABLE_MOUSE_OVER_GOTO_FLOW).toBool());
 
-    brightnessS->setValue(settings->value(BRIGHTNESS, 0).toInt());
-    contrastS->setValue(settings->value(CONTRAST, 100).toInt());
-    gammaS->setValue(settings->value(GAMMA, 100).toInt());
+    brightnessS->setValue(Configuration::getConfiguration().getBrightness());
+    contrastS->setValue(Configuration::getConfiguration().getContrast());
+    gammaS->setValue(Configuration::getConfiguration().getGamma());
 
-    scaleCheckbox->setChecked(settings->value(ENLARGE_IMAGES, true).toBool());
-    coverSPCheckBox->setChecked(settings->value(COVER_IS_SP, true).toBool());
-    doublePageShadowCheckBox->setChecked(Configuration::getConfiguration().getDoublePageShadow());
-    {
-        QSignalBlocker blocker(continuousScrollFitToHeightRadioButton);
-        if (Configuration::getConfiguration().getContinuousScrollFitToHeight())
-            continuousScrollFitToHeightRadioButton->setChecked(true);
-        else
-            continuousScrollFitToWidthRadioButton->setChecked(true);
-    }
+    restoreImageOptions();
 
     doNotTurnPageOnScroll->setChecked(settings->value(DO_NOT_TURN_PAGE_ON_SCROLL, false).toBool());
     useSingleScrollStepToTurnPage->setChecked(settings->value(USE_SINGLE_SCROLL_STEP_TO_TURN_PAGE, false).toBool());
@@ -509,11 +502,6 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     auto defaultDisableScrollAnimationsValue = false;
 #endif
     disableScrollAnimations->setChecked(settings->value(DISABLE_SCROLL_ANIMATION, defaultDisableScrollAnimationsValue).toBool());
-
-    {
-        QSignalBlocker blocker(scalingMethodCombo);
-        scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
-    }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
 
@@ -533,6 +521,27 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         escapeCancelsModeRadioButton->setChecked(true);
     else
         escapeQuitsRadioButton->setChecked(true);
+}
+
+void OptionsDialog::restoreImageOptions()
+{
+    auto &configuration = Configuration::getConfiguration();
+
+    scaleCheckbox->setChecked(configuration.getEnlargeImages());
+    coverSPCheckBox->setChecked(settings->value(COVER_IS_SP, true).toBool());
+    doublePageShadowCheckBox->setChecked(configuration.getDoublePageShadow());
+    {
+        QSignalBlocker blocker(continuousScrollFitToHeightRadioButton);
+        if (configuration.getContinuousScrollFitToHeight())
+            continuousScrollFitToHeightRadioButton->setChecked(true);
+        else
+            continuousScrollFitToWidthRadioButton->setChecked(true);
+    }
+
+    {
+        QSignalBlocker blocker(scalingMethodCombo);
+        scalingMethodCombo->setCurrentIndex(scalingMethodChoiceIndex(scalingMethodChoices(), configuration.getScalingMethod()));
+    }
 }
 
 void OptionsDialog::updateColor(const QColor &color)

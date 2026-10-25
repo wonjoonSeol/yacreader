@@ -88,6 +88,8 @@ private:
 public slots:
     void saveOptions() override;
     void restoreOptions(QSettings *settings) override;
+    // the Image adjustment page except brightness, contrast and gamma, from the stored settings
+    void restoreImageOptions();
     void findFolder();
     void showColorDialog();
     void updateColor(const QColor &color);

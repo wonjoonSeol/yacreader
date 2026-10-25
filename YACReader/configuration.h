@@ -100,6 +100,10 @@ public:
     void setContinuousScrollFitToHeight(bool b) { settings->setValue(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, b); }
     bool getEnlargeImages() { return settings->value(ENLARGE_IMAGES, true).toBool(); }
     void setEnlargeImages(bool b) { settings->setValue(ENLARGE_IMAGES, b); }
+    // written by the Options dialog
+    int getBrightness() { return settings->value(BRIGHTNESS, 0).toInt(); }
+    int getContrast() { return settings->value(CONTRAST, 100).toInt(); }
+    int getGamma() { return settings->value(GAMMA, 100).toInt(); }
 
     QColor getBackgroundColor(const QColor &color) { return settings->value(BACKGROUND_COLOR, color).value<QColor>(); }
     void setBackgroundColor(const QColor &color) { settings->setValue(BACKGROUND_COLOR, color); }
