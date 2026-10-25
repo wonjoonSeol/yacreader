@@ -1,6 +1,7 @@
 #ifndef __CONFIGURATION_H
 #define __CONFIGURATION_H
 
+#include "page_fit.h"
 #include "resize_image.h"
 #include "yacreader_global_gui.h"
 
@@ -18,13 +19,6 @@
 using namespace YACReader;
 
 namespace YACReader {
-
-enum FitMode {
-    ToWidth = 0x01,
-    ToHeight = 0x02,
-    FullRes = 0x03,
-    FullPage = 0x04
-};
 
 enum MouseMode {
     Normal,
