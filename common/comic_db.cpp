@@ -638,6 +638,26 @@ QDataStream &operator>>(QDataStream &stream, ComicDB &comic)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream &stream, const ComicInfoAnswer &answer)
+{
+    stream << answer.comic << answer.siblings;
+    if (answer.favoriteComicIds)
+        stream << *answer.favoriteComicIds;
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, ComicInfoAnswer &answer)
+{
+    stream >> answer.comic >> answer.siblings;
+    answer.favoriteComicIds.reset();
+    if (!stream.atEnd()) {
+        QSet<qulonglong> favoriteComicIds;
+        stream >> favoriteComicIds;
+        answer.favoriteComicIds = favoriteComicIds;
+    }
+    return stream;
+}
+
 QDataStream &operator<<(QDataStream &stream, const ComicInfo &comicInfo)
 {
     stream << comicInfo.id;

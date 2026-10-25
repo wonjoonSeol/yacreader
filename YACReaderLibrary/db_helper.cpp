@@ -1664,6 +1664,26 @@ void DBHelper::insertComicsInFavorites(const QList<ComicDB> &comicsList, QSqlDat
     db.commit();
 }
 
+bool DBHelper::setComicFavorite(qulonglong comicId, bool favorite, QSqlDatabase &db)
+{
+    QSqlQuery query(db);
+    if (favorite) {
+        // a comic that is already a favorite keeps its place
+        query.prepare("INSERT OR IGNORE INTO comic_default_reading_list (default_reading_list_id, comic_id, ordering) "
+                      "SELECT 1, :comic_id, COALESCE(MAX(ordering) + 1, 0) FROM comic_default_reading_list WHERE default_reading_list_id = 1");
+    } else {
+        query.prepare("DELETE FROM comic_default_reading_list WHERE default_reading_list_id = 1 AND comic_id = :comic_id");
+    }
+    query.bindValue(":comic_id", comicId);
+
+    if (!query.exec()) {
+        QLOG_ERROR() << "setComicFavorite failed for comic" << comicId << ":" << query.lastError().text();
+        return false;
+    }
+
+    return true;
+}
+
 void DBHelper::insertComicsInLabel(const QList<ComicDB> &comicsList, qulonglong labelId, QSqlDatabase &db)
 {
     QSqlQuery getNumComics(QString("SELECT count(*) FROM comic_label WHERE label_id = %1;").arg(labelId), db);
@@ -1971,6 +1991,7 @@ bool DBHelper::setComicType(qulonglong comicId, YACReader::FileType type, QSqlDa
     return true;
 }
 
+// false when the comic is not in the library
 bool DBHelper::setComicRating(qulonglong comicId, int rating, QSqlDatabase &db)
 {
     QSqlQuery updateComicInfo(db);
@@ -1985,41 +2006,7 @@ bool DBHelper::setComicRating(qulonglong comicId, int rating, QSqlDatabase &db)
         return false;
     }
 
-    return true;
-}
-
-void DBHelper::setComicRating(qulonglong libraryId, qulonglong comicId, int rating)
-{
-    QString libraryPath = DBHelper::getLibraries().getPath(libraryId);
-    QString connectionName = "";
-    {
-        QSqlDatabase db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(libraryPath));
-        DBHelper::setComicRating(comicId, rating, db);
-        connectionName = db.connectionName();
-    }
-    QSqlDatabase::removeDatabase(connectionName);
-}
-
-void DBHelper::setComicFavorite(qulonglong comicId, bool favorite, QSqlDatabase &db)
-{
-    ComicDB comic;
-    comic.id = comicId;
-    if (favorite)
-        DBHelper::insertComicsInFavorites({ comic }, db);
-    else
-        DBHelper::deleteComicsFromFavorites({ comic }, db);
-}
-
-void DBHelper::setComicFavorite(qulonglong libraryId, qulonglong comicId, bool favorite)
-{
-    QString libraryPath = DBHelper::getLibraries().getPath(libraryId);
-    QString connectionName = "";
-    {
-        QSqlDatabase db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(libraryPath));
-        DBHelper::setComicFavorite(comicId, favorite, db);
-        connectionName = db.connectionName();
-    }
-    QSqlDatabase::removeDatabase(connectionName);
+    return updateComicInfo.numRowsAffected() == 1;
 }
 
 bool DBHelper::setFolderFinished(qulonglong folderId, bool finished, QSqlDatabase &db)
@@ -2403,6 +2390,18 @@ bool DBHelper::isFavoriteComic(qulonglong id, QSqlDatabase &db)
     }
 
     return false;
+}
+
+QSet<qulonglong> DBHelper::getFavoriteComicIds(QSqlDatabase &db)
+{
+    QSet<qulonglong> comicIds;
+    QSqlQuery selectQuery(db);
+    selectQuery.prepare("SELECT comic_id FROM comic_default_reading_list WHERE default_reading_list_id = 1");
+    selectQuery.exec();
+    while (selectQuery.next())
+        comicIds.insert(selectQuery.value(0).toULongLong());
+
+    return comicIds;
 }
 
 QVariantMap DBHelper::getLibraryInfoData(QUuid id)

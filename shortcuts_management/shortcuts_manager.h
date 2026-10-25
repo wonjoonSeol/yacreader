@@ -28,9 +28,12 @@ public:
 
     void resetToDefaults();
     QString getShortcut(const QString &name);
+    bool hasSavedShortcut(const QString &name);
     void saveShortcut(QAction *action);
     void registerActions(const QList<QAction *> &actions);
     bool checkConflicts(const QKeySequence &shortcut, const QAction *dest);
+    // defaults added after users could customize shortcuts must not take a key the user gave to another action
+    void clearConflictingDefaults(const QList<QAction *> &actionsWithNewDefaults);
 };
 
 // ACTION NAMES YACReaderLibrary

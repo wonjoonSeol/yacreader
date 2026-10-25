@@ -123,7 +123,7 @@ Right-click the page > **Image adjustment**, or click the arrow next to the Opti
 
 - **Manga mode:** the directions flip, as they do for ← and →.
 - **Double page mode:** the 5 page jump moves 4 pages, so spreads stay paired.
-- **Changing the keys:** Options > Shortcuts > Edit shortcuts > Reading. If one of these keys is already bound to another action, that jump starts unassigned.
+- **Changing the keys:** Options > Shortcuts > Edit shortcuts > Reading. If you already gave one of these keys to another action, that jump starts unassigned.
 
 ### Toolbar in full screen
 
@@ -142,7 +142,7 @@ Full screen (F) has no title bar and hides the toolbar. Move the mouse to the to
 
 ### Rate and favorite comics while reading
 
-A comic opened from the library gets a favorite button and five stars on the toolbar. They show the comic's rating and whether it is in the library's Favorites, and a change is saved to the library right away.
+A comic opened from the library gets a favorite button and five stars on the toolbar. They show the comic's rating and whether it is in the library's Favorites, and a change is saved to the library right away. If the library cannot save it, the button goes back and a message says so.
 
 | | Favorite and rating buttons |
 |---|---|
@@ -155,7 +155,7 @@ The library, open at the same time, shows the change:
 
 - **Rating:** a star sets the rating from 1 to 5, and the current one clears it. Keys 1 to 5 do the same.
 - **Favorite:** the heart adds the comic to the library's Favorites or removes it. An open Favorites list updates too.
-- **Keys:** Options > Shortcuts > Edit shortcuts > Comics. The heart has no key until you set one. If 1 to 5 are already bound to other actions, those ratings start unassigned.
+- **Keys:** Options > Shortcuts > Edit shortcuts > Comics. The heart has no key until you set one. If you already gave 1 to 5 to other actions, those ratings start unassigned.
 
 ### Page number when the page changes
 

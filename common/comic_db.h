@@ -7,7 +7,10 @@
 #include <QList>
 #include <QMetaType>
 #include <QPixmap>
+#include <QSet>
 #include <QVariant>
+
+#include <optional>
 
 class ComicInfo : public QObject
 {
@@ -278,5 +281,16 @@ public:
 };
 
 Q_DECLARE_METATYPE(ComicDB)
+
+// The library's answer to the reader's RequestComicInfo message
+struct ComicInfoAnswer {
+    ComicDB comic;
+    QList<ComicDB> siblings;
+    // missing in the answers of libraries that predate the rating and favorite messages
+    std::optional<QSet<qulonglong>> favoriteComicIds;
+};
+
+QDataStream &operator<<(QDataStream &stream, const ComicInfoAnswer &answer);
+QDataStream &operator>>(QDataStream &stream, ComicInfoAnswer &answer);
 
 #endif

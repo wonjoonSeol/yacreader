@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QSet>
 
+#include <optional>
+
 class QLocalSocket;
 
 class YACReaderLocalClient : public QObject
@@ -19,7 +21,7 @@ signals:
     void finished();
 public slots:
     void readMessage();
-    bool requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, QSet<qulonglong> &favoriteComicIds, YACReader::OpenComicSource source);
+    bool requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, std::optional<QSet<qulonglong>> &favoriteComicIds, YACReader::OpenComicSource source);
     bool sendComicInfo(quint64 libraryId, ComicDB &comic);
     bool sendComicInfo(quint64 libraryId, ComicDB &comic, qulonglong nextComicId);
     bool sendComicRating(const YACReader::ComicRatingUpdate &update);

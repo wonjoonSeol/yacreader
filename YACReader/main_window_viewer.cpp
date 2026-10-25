@@ -187,42 +187,57 @@ void MainWindowViewer::syncModeActions(bool manga, bool continuousScroll)
     refreshPrevNextActions();
 }
 
-void MainWindowViewer::updateRatingAndFavoriteActions(bool libraryComic)
+// comic is the library comic on screen, or nullptr for files and folders
+void MainWindowViewer::updateRatingAndFavoriteActions(const ComicDB *comic)
 {
-    toggleFavoriteAction->setEnabled(libraryComic);
-    toggleFavoriteAction->setChecked(libraryComic && favoriteComicIds.contains(currentComicDB.id));
+    // an older library sends no favorite ids and ignores the rating and favorite messages
+    const bool available = comic != nullptr && favoriteComicIds.has_value();
+    toggleFavoriteAction->setEnabled(available);
+    toggleFavoriteAction->setChecked(available && favoriteComicIds->contains(comic->id));
+    ratingMenu->menuAction()->setEnabled(available);
     for (auto *rateAction : std::as_const(rateComicActions))
-        rateAction->setEnabled(libraryComic);
+        rateAction->setEnabled(available);
+    shownRating = available ? comic->info.rating : 0;
     updateRatingIcons();
 }
 
 void MainWindowViewer::updateRatingIcons()
 {
-    for (int star = 0; star < rateComicActions.size(); star++) {
-        const auto *rateAction = rateComicActions[star];
-        const bool filled = rateAction->isEnabled() && star < currentComicDB.info.rating;
-        rateAction->property("wrappedToolbarAction").value<QAction *>()->setIcon(filled ? theme.toolbar.ratingStar18x18 : theme.toolbar.ratingStarEmpty18x18);
-    }
+    for (int star = 0; star < rateComicToolbarActions.size(); star++)
+        rateComicToolbarActions[star]->setIcon(star < shownRating ? theme.toolbar.ratingStar18x18 : theme.toolbar.ratingStarEmpty18x18);
 }
 
 void MainWindowViewer::rateComic(int rating)
 {
-    currentComicDB.info.rating = rating;
-    updateRatingIcons();
-
     YACReaderLocalClient client;
-    client.sendComicRating({ libraryId, currentComicDB.id, rating });
+    if (!client.sendComicRating({ libraryId, currentComicDB.id, rating })) {
+        showLibraryNotUpdated(tr("Rating"));
+        return;
+    }
+
+    currentComicDB.info.rating = rating;
+    shownRating = rating;
+    updateRatingIcons();
 }
 
 void MainWindowViewer::setComicFavorite(bool favorite)
 {
-    if (favorite)
-        favoriteComicIds.insert(currentComicDB.id);
-    else
-        favoriteComicIds.remove(currentComicDB.id);
-
     YACReaderLocalClient client;
-    client.sendComicFavorite({ libraryId, currentComicDB.id, favorite });
+    if (!client.sendComicFavorite({ libraryId, currentComicDB.id, favorite })) {
+        toggleFavoriteAction->setChecked(!favorite);
+        showLibraryNotUpdated(toggleFavoriteAction->text());
+        return;
+    }
+
+    if (favorite)
+        favoriteComicIds->insert(currentComicDB.id);
+    else
+        favoriteComicIds->remove(currentComicDB.id);
+}
+
+void MainWindowViewer::showLibraryNotUpdated(const QString &title)
+{
+    QMessageBox::warning(this, title, tr("The library could not be updated. Check that YACReaderLibrary is still open."));
 }
 
 MainWindowViewer::~MainWindowViewer()
@@ -355,7 +370,7 @@ void MainWindowViewer::setupUI()
     disablePreviousNextComicActions();
 
     createToolBars();
-    updateRatingAndFavoriteActions(false);
+    updateRatingAndFavoriteActions(nullptr);
 
     setWindowTitle("YACReader");
 
@@ -614,15 +629,18 @@ void MainWindowViewer::createActions()
     toggleFavoriteAction = addActionWithShortcut(tr("Favorite"), TOGGLE_FAVORITE_ACTION_Y);
     toggleFavoriteAction->setToolTip(tr("Add the comic to the library favorites or remove it"));
     toggleFavoriteAction->setCheckable(true);
+    toggleFavoriteAction->setAutoRepeat(false);
     connect(toggleFavoriteAction, &QAction::triggered, this, &MainWindowViewer::setComicFavorite);
 
     const QStringList rateShortcutKeys { RATE_1_ACTION_Y, RATE_2_ACTION_Y, RATE_3_ACTION_Y, RATE_4_ACTION_Y, RATE_5_ACTION_Y };
-    for (int rating = 1; rating <= 5; rating++) {
+    for (int rating = 1; rating <= MaxComicRating; rating++) {
         auto *const rateAction = addActionWithShortcut(tr("Rate %1 out of 5").arg(rating), rateShortcutKeys[rating - 1]);
-        // selecting the current rating again clears it
-        connect(rateAction, &QAction::triggered, this, [this, rating] { rateComic(currentComicDB.info.rating == rating ? 0 : rating); });
+        rateAction->setAutoRepeat(false);
+        connect(rateAction, &QAction::triggered, this, [this, rating] { rateComic(ratingAfterSelecting(currentComicDB.info.rating, rating)); });
         rateComicActions << rateAction;
     }
+    ratingMenu = new QMenu(tr("Rating"), this);
+    ratingMenu->addActions(rateComicActions);
 
     showShorcutsAction = new QAction(tr("Show keyboard shortcuts"), this);
     showShorcutsAction->setData(SHOW_SHORCUTS_ACTION_Y);
@@ -781,8 +799,11 @@ void MainWindowViewer::createToolBars()
     comicToolBar->addSeparator();
 
     comicToolBar->addAction(wrappedToolbarAction(toggleFavoriteAction));
-    for (auto *rateAction : std::as_const(rateComicActions))
-        comicToolBar->addAction(wrappedToolbarAction(rateAction));
+    for (auto *rateAction : std::as_const(rateComicActions)) {
+        auto *const rateToolbarAction = wrappedToolbarAction(rateAction);
+        rateComicToolbarActions << rateToolbarAction;
+        comicToolBar->addAction(rateToolbarAction);
+    }
 
 #ifdef Y_MAC_UI
     comicToolBar->addStretch();
@@ -854,6 +875,10 @@ void MainWindowViewer::createToolBars()
     viewer->addAction(showDictionaryAction);
     viewer->addAction(showFlowAction);
     viewer->addAction(showInfoAction);
+    YACReader::addSperator(viewer);
+
+    viewer->addAction(toggleFavoriteAction);
+    viewer->addAction(ratingMenu->menuAction());
     YACReader::addSperator(viewer);
 
     viewer->addAction(showShorcutsAction);
@@ -1015,6 +1040,7 @@ void MainWindowViewer::openComicFromRecentAction(QAction *action)
         previousComicPath = nextComicPath = "";
         viewer->resetContent();
         viewer->showMessageErrorOpening();
+        updateRatingAndFavoriteActions(nullptr);
     }
 }
 
@@ -1063,7 +1089,7 @@ void MainWindowViewer::open(QString path, ComicDB &comic, QList<ComicDB> &siblin
 
     viewer->open(path, comic);
     enableActions();
-    updateRatingAndFavoriteActions(true);
+    updateRatingAndFavoriteActions(&comic);
     int index = siblings.indexOf(comic);
     updatePrevNextActions(index > 0, index + 1 < siblings.count());
 
@@ -1121,7 +1147,7 @@ void MainWindowViewer::openComic(QString pathFile)
     setWindowTitle("YACReader - " + fi.fileName());
 
     enableActions();
-    updateRatingAndFavoriteActions(false);
+    updateRatingAndFavoriteActions(nullptr);
     applySavedReaderMode();
 
     viewer->open(pathFile);
@@ -1149,7 +1175,7 @@ void MainWindowViewer::openFolderFromPath(QString pathDir)
     setWindowTitle("YACReader - " + fi.fileName());
 
     enableActions();
-    updateRatingAndFavoriteActions(false);
+    updateRatingAndFavoriteActions(nullptr);
     applySavedReaderMode();
 
     viewer->open(pathDir);
@@ -1167,7 +1193,7 @@ void MainWindowViewer::openFolderFromPath(QString pathDir, QString atFileName)
     setWindowTitle("YACReader - " + fi.fileName());
 
     enableActions();
-    updateRatingAndFavoriteActions(false);
+    updateRatingAndFavoriteActions(nullptr);
     applySavedReaderMode();
 
     QDir d(pathDir);
@@ -1718,13 +1744,7 @@ void MainWindowViewer::setUpShortcutsManagement()
 
     ShortcutsManager::getShortcutsManager().registerActions(allActions);
 
-    // a default added after users could customize shortcuts must not take a key already bound to another action
-    const auto actionsWithNewDefaults = QList<QAction *> { go5PagesToTheLeftAction, go5PagesToTheRightAction, go10PagesToTheLeftAction, go10PagesToTheRightAction } + rateComicActions;
-    for (auto *action : actionsWithNewDefaults) {
-        if (ShortcutsManager::getShortcutsManager().checkConflicts(action->shortcut(), action)) {
-            action->setShortcut(QKeySequence());
-        }
-    }
+    ShortcutsManager::getShortcutsManager().clearConflictingDefaults(QList<QAction *> { go5PagesToTheLeftAction, go5PagesToTheRightAction, go10PagesToTheLeftAction, go10PagesToTheRightAction } + rateComicActions);
 }
 
 void MainWindowViewer::refreshPrevNextActions()
@@ -1999,6 +2019,7 @@ void MainWindowViewer::applyTheme(const Theme &theme)
     setIcon(toggleFavoriteAction, toolbarTheme.toggleFavoriteAction, toolbarTheme.toggleFavoriteAction18x18);
     for (auto *rateAction : std::as_const(rateComicActions))
         rateAction->setIcon(toolbarTheme.ratingStar);
+    ratingMenu->menuAction()->setIcon(toolbarTheme.ratingStar);
     updateRatingIcons();
 }
 

@@ -53,9 +53,14 @@ namespace YACReader {
 enum YACReaderIPCMessages {
     RequestComicInfo = 0,
     SendComicInfo,
-    SendComicRating,
-    SendComicFavorite,
+    // fork-only messages, numbered far from upstream's so that a future upstream message is never read as one of these
+    SendComicRating = 200,
+    SendComicFavorite = 201,
 };
+
+// The byte the library answers SendComicRating and SendComicFavorite with
+constexpr char ChangeNotSaved = 0;
+constexpr char ChangeSaved = 1;
 
 enum YACReaderComicReadStatus {
     Unread = 0,
@@ -119,19 +124,27 @@ struct OpenComicSource {
 QDataStream &operator<<(QDataStream &stream, const OpenComicSource &source);
 QDataStream &operator>>(QDataStream &stream, OpenComicSource &source);
 
+constexpr int MaxComicRating = 5;
+
+// Selecting the current rating again clears it
+constexpr int ratingAfterSelecting(int currentRating, int selectedRating)
+{
+    return selectedRating == currentRating ? 0 : selectedRating;
+}
+
 struct ComicRatingUpdate {
-    quint64 libraryId;
-    qulonglong comicId;
-    int rating;
+    quint64 libraryId = 0;
+    qulonglong comicId = 0;
+    int rating = 0;
 };
 
 QDataStream &operator<<(QDataStream &stream, const ComicRatingUpdate &update);
 QDataStream &operator>>(QDataStream &stream, ComicRatingUpdate &update);
 
 struct ComicFavoriteUpdate {
-    quint64 libraryId;
-    qulonglong comicId;
-    bool favorite;
+    quint64 libraryId = 0;
+    qulonglong comicId = 0;
+    bool favorite = false;
 };
 
 QDataStream &operator<<(QDataStream &stream, const ComicFavoriteUpdate &update);
