@@ -179,6 +179,9 @@ void ResizeImageTest::bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging()
 {
     const QImage bicubic = enlargedEdge(ScaleMethod::Bicubic);
     const QImage lanczos4 = enlargedEdge(ScaleMethod::Lanczos);
+    const QImage bilinear = enlargedEdge(ScaleMethod::Bilinear);
+    qInfo("grey levels past the edge / pixels from the edge that change: bicubic %d / %d, lanczos4 %d / %d, bilinear %d / %d",
+          ringing(bicubic), spread(bicubic), ringing(lanczos4), spread(lanczos4), ringing(bilinear), spread(bilinear));
 
     QCOMPARE_LT(ringing(bicubic), ringing(lanczos4));
     QCOMPARE_LT(spread(bicubic), spread(lanczos4));
@@ -207,6 +210,7 @@ void ResizeImageTest::bicubicKeepsTheToneOfShrunkLineArt()
 
     const double bicubic = meanGrey(ScaleMethod::Bicubic);
     const double bilinear = meanGrey(ScaleMethod::Bilinear);
+    qInfo("mean grey of the shrunk lines: bicubic %.1f, bilinear %.1f, lanczos4 %.1f", bicubic, bilinear, meanGrey(ScaleMethod::Lanczos));
     QVERIFY2(std::abs(bicubic - bilinear) < 3, qPrintable(QString("bicubic %1, bilinear %2").arg(bicubic).arg(bilinear)));
 }
 
