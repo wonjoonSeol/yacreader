@@ -152,7 +152,7 @@
 <context>
     <name>ContinuousPageWidget</name>
     <message>
-        <location filename="continuous_page_widget.cpp" line="272"/>
+        <location filename="continuous_page_widget.cpp" line="280"/>
         <source>Loading page %1</source>
         <translation>Cargando página %1</translation>
     </message>
