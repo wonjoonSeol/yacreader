@@ -1,6 +1,8 @@
 add_library(image_processing STATIC
     resize_image.h
     resize_image.cpp
+    bicubic_scale.h
+    bicubic_scale.cpp
     lancir.h
 )
 

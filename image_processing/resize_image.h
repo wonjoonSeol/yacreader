@@ -6,7 +6,7 @@
 
 class QVariant;
 
-// The values are stored in settings and must not be renumbered.
+// The values are stored in settings and must not be renumbered. Bicubic is 3, as in upstream PR #620.
 enum class ScaleMethod {
     Nearest = 0,
     Bilinear = 1,

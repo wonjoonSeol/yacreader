@@ -14,5 +14,6 @@ target_link_libraries(image_adjustment_test PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Test
+    image_processing
 )
 add_test(NAME image_adjustment_test COMMAND image_adjustment_test)

@@ -16,15 +16,19 @@ class ResizeImageTest : public QObject
 private slots:
     void scalesToTheRequestedSize_data();
     void scalesToTheRequestedSize();
+    void returnsANullImageForAnEmptySize_data();
+    void returnsANullImageForAnEmptySize();
+    void readsOtherFormatsLikeArgb32_data();
+    void readsOtherFormatsLikeArgb32();
     void fewerLobesSpreadLessFromAnEdge();
     void lanczos2RingsLessThanLanczos4WhenEnlarging();
-    void readsTheStoredValues();
-    void fallsBackToLanczos4ForUnknownValues();
     void bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging();
     void bicubicKeepsTheToneOfShrunkLineArt();
     void bicubicKeepsSolidColours();
     void bicubicMatchesADoublePrecisionRun_data();
     void bicubicMatchesADoublePrecisionRun();
+    void readsTheStoredValues();
+    void fallsBackToLanczos4ForUnknownValues();
 };
 
 namespace {
@@ -90,7 +94,7 @@ int spread(const QImage &image)
     return furthest;
 }
 
-// Catmull-Rom as resize_image.cpp defines it, in double precision and rounded once at the end
+// Catmull-Rom as bicubic_scale.cpp defines it, in double precision and not rounded
 double catmullRom(double t)
 {
     t = std::fabs(t);
@@ -119,7 +123,8 @@ std::vector<std::vector<std::pair<int, double>>> catmullRomWeights(int sourceSiz
     return weights;
 }
 
-QImage doublePrecisionBicubic(const QImage &source, QSize size)
+// every sample of the result, in RGBA order and clamped to 0..255
+std::vector<double> doublePrecisionBicubic(const QImage &source, QSize size)
 {
     const auto across = catmullRomWeights(source.width(), size.width());
     const auto down = catmullRomWeights(source.height(), size.height());
@@ -136,16 +141,16 @@ QImage doublePrecisionBicubic(const QImage &source, QSize size)
             }
         }
     }
-    QImage result(size, QImage::Format_ARGB32);
+    std::vector<double> result(size_t(size.width()) * size.height() * 4);
     for (int y = 0; y < size.height(); ++y) {
         for (int x = 0; x < size.width(); ++x) {
-            double sum[4] = { };
+            double *out = &result[(size_t(y) * size.width() + x) * 4];
             for (const auto &[from, weight] : down[y]) {
                 for (int channel = 0; channel < 4; ++channel)
-                    sum[channel] += weight * rows[(size_t(from) * size.width() + x) * 4 + channel];
+                    out[channel] += weight * rows[(size_t(from) * size.width() + x) * 4 + channel];
             }
-            const auto level = [&](int channel) { return std::clamp(int(std::lround(sum[channel])), 0, 255); };
-            result.setPixel(x, y, qRgba(level(0), level(1), level(2), level(3)));
+            for (int channel = 0; channel < 4; ++channel)
+                out[channel] = std::clamp(out[channel], 0.0, 255.0);
         }
     }
     return result;
@@ -190,6 +195,51 @@ void ResizeImageTest::scalesToTheRequestedSize()
     QCOMPARE(scaleImage(edge(QSize(40, 30)), size.width(), size.height(), method).size(), size);
 }
 
+void ResizeImageTest::returnsANullImageForAnEmptySize_data()
+{
+    QTest::addColumn<ScaleMethod>("method");
+
+    for (const auto &entry : methods)
+        QTest::addRow("%s", entry.name) << entry.method;
+}
+
+void ResizeImageTest::returnsANullImageForAnEmptySize()
+{
+    QFETCH(ScaleMethod, method);
+
+    const QImage image = edge(QSize(40, 30));
+    QVERIFY(scaleImage(image, 0, 20, method).isNull());
+    QVERIFY(scaleImage(image, 20, 0, method).isNull());
+    QVERIFY(scaleImage(image, -5, 20, method).isNull());
+}
+
+void ResizeImageTest::readsOtherFormatsLikeArgb32_data()
+{
+    QTest::addColumn<ScaleMethod>("method");
+    QTest::addColumn<QImage::Format>("format");
+
+    const QList<std::pair<const char *, QImage::Format>> formats {
+        { "RGB32", QImage::Format_RGB32 },
+        { "RGB888", QImage::Format_RGB888 },
+        { "Grayscale8", QImage::Format_Grayscale8 },
+        { "ARGB32 premultiplied", QImage::Format_ARGB32_Premultiplied },
+    };
+    for (const auto &[name, format] : formats) {
+        QTest::addRow("Lanczos4 %s", name) << ScaleMethod::Lanczos4 << format;
+        QTest::addRow("Bicubic %s", name) << ScaleMethod::Bicubic << format;
+    }
+}
+
+void ResizeImageTest::readsOtherFormatsLikeArgb32()
+{
+    QFETCH(ScaleMethod, method);
+    QFETCH(QImage::Format, format);
+
+    const QImage image = noisyTiles(QSize(120, 90)).convertToFormat(format);
+    const QImage argb32 = image.convertToFormat(QImage::Format_ARGB32);
+    QCOMPARE(scaleImage(image, 170, 61, method), scaleImage(argb32, 170, 61, method));
+}
+
 void ResizeImageTest::fewerLobesSpreadLessFromAnEdge()
 {
     const int lanczos4 = spread(enlargedEdge(ScaleMethod::Lanczos4));
@@ -206,22 +256,6 @@ void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
     const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos4));
 
     QCOMPARE_LT(lanczos2, lanczos4);
-}
-
-void ResizeImageTest::readsTheStoredValues()
-{
-    for (const auto &entry : methods) {
-        QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
-        QCOMPARE(scaleMethodFromSetting(entry.storedValue), entry.method);
-        // ini files give the values back as strings
-        QCOMPARE(scaleMethodFromSetting(QString::number(entry.storedValue)), entry.method);
-    }
-}
-
-void ResizeImageTest::fallsBackToLanczos4ForUnknownValues()
-{
-    for (const QVariant &value : { QVariant(), QVariant(-1), QVariant(6), QVariant("Lanczos3") })
-        QCOMPARE(scaleMethodFromSetting(value), ScaleMethod::Lanczos4);
 }
 
 void ResizeImageTest::bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging()
@@ -283,10 +317,12 @@ void ResizeImageTest::bicubicMatchesADoublePrecisionRun_data()
     QTest::addColumn<QSize>("source");
     QTest::addColumn<QSize>("target");
 
-    // the larger ones are big enough for the passes to be split across threads
+    // the first two are big enough to be split across threads; shrinking 12x reads
+    // 48 source rows for each output row, so the ring of rows wraps many times
     QTest::newRow("enlarging") << QSize(640, 480) << QSize(800, 600);
     QTest::newRow("shrinking") << QSize(1040, 720) << QSize(416, 288);
     QTest::newRow("small") << QSize(200, 150) << QSize(83, 61);
+    QTest::newRow("shrinking 12x") << QSize(1200, 900) << QSize(100, 75);
 }
 
 void ResizeImageTest::bicubicMatchesADoublePrecisionRun()
@@ -296,23 +332,38 @@ void ResizeImageTest::bicubicMatchesADoublePrecisionRun()
 
     const QImage image = noisyTiles(source);
     const QImage scaled = scaleImage(image, target.width(), target.height(), ScaleMethod::Bicubic);
-    const QImage reference = doublePrecisionBicubic(image, target);
+    const std::vector<double> reference = doublePrecisionBicubic(image, target);
 
-    int worst = 0;
-    qint64 off = 0;
+    double worst = 0;
     for (int y = 0; y < target.height(); ++y) {
         for (int x = 0; x < target.width(); ++x) {
-            const QRgb a = scaled.pixel(x, y);
-            const QRgb b = reference.pixel(x, y);
-            for (const int difference : { qRed(a) - qRed(b), qGreen(a) - qGreen(b), qBlue(a) - qBlue(b), qAlpha(a) - qAlpha(b) }) {
-                worst = std::max(worst, std::abs(difference));
-                off += difference != 0;
-            }
+            const QRgb pixel = scaled.pixel(x, y);
+            const double *exact = &reference[(size_t(y) * target.width() + x) * 4];
+            const int samples[4] = { qRed(pixel), qGreen(pixel), qBlue(pixel), qAlpha(pixel) };
+            for (int channel = 0; channel < 4; ++channel)
+                worst = std::max(worst, std::abs(samples[channel] - exact[channel]));
         }
     }
-    // fixed point leaves about 1 % of the samples one level off; rounding between the passes left 10-16 %
-    QCOMPARE_LE(worst, 1);
-    QCOMPARE_LT(double(off) / (4.0 * target.width() * target.height()), 0.03);
+    qInfo("worst difference from the exact value: %.3f", worst);
+    // Rounding once is 0.5 off at most, plus a little for the 16.16 weights (up
+    // to 0.515 here). Rounding between the passes as well came to 0.7-1.1.
+    QCOMPARE_LT(worst, 0.6);
+}
+
+void ResizeImageTest::readsTheStoredValues()
+{
+    for (const auto &entry : methods) {
+        QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
+        QCOMPARE(scaleMethodFromSetting(entry.storedValue), entry.method);
+        // ini files give the values back as strings
+        QCOMPARE(scaleMethodFromSetting(QString::number(entry.storedValue)), entry.method);
+    }
+}
+
+void ResizeImageTest::fallsBackToLanczos4ForUnknownValues()
+{
+    for (const QVariant &value : { QVariant(), QVariant(-1), QVariant(6), QVariant("Lanczos3") })
+        QCOMPARE(scaleMethodFromSetting(value), ScaleMethod::Lanczos4);
 }
 
 QTEST_GUILESS_MAIN(ResizeImageTest)
