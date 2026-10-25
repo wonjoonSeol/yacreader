@@ -1897,6 +1897,8 @@ void Viewer::configureContent(QString msg)
 {
     messageLabel->setText(msg);
     setActiveWidget(messageLabel);
+    // QScrollArea sizes a non-resizable widget only when it is first set, so fit the label to the new text
+    messageLabel->adjustSize();
     setFocus(Qt::ShortcutFocusReason);
 }
 
