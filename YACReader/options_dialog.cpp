@@ -3,6 +3,7 @@
 #include "app_language_utils.h"
 #include "appearance_tab_widget.h"
 #include "configuration.h"
+#include "image_adjustment.h"
 #include "theme_factory.h"
 #include "theme_manager.h"
 #include "yacreader_3d_flow_config_widget.h"
@@ -298,13 +299,10 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingLayout = new QHBoxLayout();
     scalingLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"), static_cast<int>(ScaleMethod::Nearest));
-    scalingMethodCombo->addItem(tr("Bilinear"), static_cast<int>(ScaleMethod::Bilinear));
-    scalingMethodCombo->addItem(tr("Lanczos4 (more detail, more halos)"), static_cast<int>(ScaleMethod::Lanczos4));
-    scalingMethodCombo->addItem(tr("Lanczos3 (balanced)"), static_cast<int>(ScaleMethod::Lanczos3));
-    scalingMethodCombo->addItem(tr("Lanczos2 (fewer halos, less detail)"), static_cast<int>(ScaleMethod::Lanczos2));
-    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this] {
-        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentData().toInt()));
+    for (const auto &choice : scalingMethodChoices())
+        scalingMethodCombo->addItem(choice.text());
+    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
+        Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(index).method);
         emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
@@ -432,7 +430,7 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentData().toInt()));
+    Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(scalingMethodCombo->currentIndex()).method);
     emit changedImageOptions();
 
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
@@ -514,10 +512,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
 
     {
         QSignalBlocker blocker(scalingMethodCombo);
-        int scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
-        if (scalingMethodIndex < 0)
-            scalingMethodIndex = scalingMethodCombo->findData(static_cast<int>(defaultScaleMethod));
-        scalingMethodCombo->setCurrentIndex(scalingMethodIndex);
+        scalingMethodCombo->setCurrentIndex(scalingMethodChoiceIndex(scalingMethodChoices(), Configuration::getConfiguration().getScalingMethod()));
     }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
