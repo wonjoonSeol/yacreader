@@ -28,7 +28,7 @@ void YACReaderLocalClient::readMessage()
 }
 #include <QMessageBox>
 
-bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, OpenComicSource source)
+bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, QSet<qulonglong> &favoriteComicIds, OpenComicSource source)
 {
     localSocket->connectToServer(YACREADERLIBRARY_GUID);
     if (localSocket->isOpen()) {
@@ -107,6 +107,7 @@ bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, Q
         QDataStream dataStream(data);
         dataStream >> comic;
         dataStream >> siblings;
+        dataStream >> favoriteComicIds;
         localSocket->close();
         return true;
     } else {
@@ -196,4 +197,44 @@ bool YACReaderLocalClient::sendComicInfo(quint64 libraryId, ComicDB &comic, qulo
     emit finished();
     QLOG_ERROR() << "Sending Comic Info : unable to connect to the server";
     return false;
+}
+
+namespace {
+template<typename Update>
+QByteArray message(YACReaderIPCMessages type, const Update &update)
+{
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_8);
+    out << (quint32)0 << (quint8)type << update;
+    out.device()->seek(0);
+    out << (quint32)(block.size() - sizeof(quint32));
+    return block;
+}
+}
+
+bool YACReaderLocalClient::sendComicRating(const ComicRatingUpdate &update)
+{
+    return send(message(SendComicRating, update));
+}
+
+bool YACReaderLocalClient::sendComicFavorite(const ComicFavoriteUpdate &update)
+{
+    return send(message(SendComicFavorite, update));
+}
+
+bool YACReaderLocalClient::send(const QByteArray &message)
+{
+    localSocket->connectToServer(YACREADERLIBRARY_GUID);
+    if (!localSocket->isOpen()) {
+        QLOG_ERROR() << "Sending message : unable to connect to the server";
+        return false;
+    }
+
+    const bool written = localSocket->write(message) == message.size();
+    localSocket->waitForBytesWritten(2000);
+    localSocket->close();
+    if (!written)
+        QLOG_ERROR() << "Sending message : unable to write data";
+    return written;
 }

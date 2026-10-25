@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QScrollArea>
+#include <QSet>
 #include <QSettings>
 #include <QToolBar>
 #include <QToolButton>
@@ -136,6 +137,8 @@ private:
     QAction *showMagnifyingGlassAction;
     QAction *setBookmarkAction;
     QAction *showBookmarksAction;
+    QAction *toggleFavoriteAction;
+    QList<QAction *> rateComicActions;
     QAction *leftRotationAction;
     QAction *rightRotationAction;
     QAction *showInfoAction;
@@ -195,6 +198,10 @@ private:
     void syncModeActions(bool manga, bool continuousScroll);
     void applySavedReaderMode();
     void applyLibraryReaderMode(YACReader::FileType type);
+    void updateRatingAndFavoriteActions(bool libraryComic);
+    void updateRatingIcons();
+    void rateComic(int rating);
+    void setComicFavorite(bool favorite);
 
     //! Manejadores de evento:
     // void resizeEvent(QResizeEvent * event);
@@ -206,6 +213,7 @@ private:
 
     ComicDB currentComicDB;
     QList<ComicDB> siblingComics;
+    QSet<qulonglong> favoriteComicIds;
     bool isClient;
     QString startComicPath;
     quint64 libraryId;

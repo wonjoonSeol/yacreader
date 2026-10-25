@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with eight changes to the comic reader. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with nine changes to the comic reader. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -9,6 +9,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with eigh
 | [Bicubic scaling](#bicubic-scaling) | Option | upstream [#620](https://github.com/YACReader/yacreader/pull/620) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Toolbar in full screen](#toolbar-in-full-screen) | Feature | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) |
+| [Rate and favorite comics while reading](#rate-and-favorite-comics-while-reading) | Toolbar | [#9](https://github.com/wonjoonSeol/yacreader/pull/9) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
@@ -87,6 +88,23 @@ Full screen (F) has no title bar and hides the toolbar. Move the mouse to the to
 - **The page stays still:** the toolbar covers the top of the page instead of pushing it down.
 - **Not while** the magnifying glass is on or a mouse button is held, so dragging a page up to the top does not open it.
 - **macOS:** unchanged. In full screen macOS shows its own menu bar and window buttons at the top of the screen.
+
+### Rate and favorite comics while reading
+
+A comic opened from the library gets a favorite button and five stars on the toolbar. They show the comic's rating and whether it is in the library's Favorites, and a change is saved to the library right away.
+
+| | Favorite and rating buttons |
+|---|---|
+| Comic from the library | <img src="docs/fork/reader-rating-library-comic.png" width="560" alt="Favorite on and four of five stars filled"> |
+| File opened directly | <img src="docs/fork/reader-rating-file.png" width="560" alt="Favorite and stars greyed out"> |
+
+The library, open at the same time, shows the change:
+
+<img src="docs/fork/library-rating-favorite.png" width="600" alt="The comic shows a rating of 4 in the grid and a heart and four stars in the info panel">
+
+- **Rating:** a star sets the rating from 1 to 5, and the current one clears it. Keys 1 to 5 do the same.
+- **Favorite:** the heart adds the comic to the library's Favorites or removes it. An open Favorites list updates too.
+- **Keys:** Options > Shortcuts > Edit shortcuts > Comics. The heart has no key until you set one. If 1 to 5 are already bound to other actions, those ratings start unassigned.
 
 ### Next file after an unreadable one
 

@@ -52,6 +52,11 @@ void ShortcutsManager::initDefaultShorcuts()
     defaultShorcuts.insert(SHOW_MAGNIFYING_GLASS_ACTION_Y, Qt::Key_Z);
     defaultShorcuts.insert(SET_BOOKMARK_ACTION_Y, Qt::CTRL | Qt::Key_M);
     defaultShorcuts.insert(SHOW_BOOKMARKS_ACTION_Y, Qt::Key_M);
+    defaultShorcuts.insert(RATE_1_ACTION_Y, Qt::Key_1);
+    defaultShorcuts.insert(RATE_2_ACTION_Y, Qt::Key_2);
+    defaultShorcuts.insert(RATE_3_ACTION_Y, Qt::Key_3);
+    defaultShorcuts.insert(RATE_4_ACTION_Y, Qt::Key_4);
+    defaultShorcuts.insert(RATE_5_ACTION_Y, Qt::Key_5);
     defaultShorcuts.insert(SHOW_INFO_ACTION_Y, Qt::Key_I);
     defaultShorcuts.insert(CLOSE_ACTION_Y, Qt::Key_Escape);
     defaultShorcuts.insert(SHOW_DICTIONARY_ACTION_Y, Qt::Key_T);

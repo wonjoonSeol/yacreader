@@ -157,6 +157,9 @@ Theme makeTheme(const ThemeParams &params)
     setToolbarIconPairT(theme.toolbar.showMagnifyingGlassAction, theme.toolbar.showMagnifyingGlassAction18x18, ":/images/viewer_toolbar/magnifyingGlass.svg");
     setToolbarIconPairT(theme.toolbar.setBookmarkAction, theme.toolbar.setBookmarkAction18x18, ":/images/viewer_toolbar/bookmark.svg");
     setToolbarIconPairT(theme.toolbar.showBookmarksAction, theme.toolbar.showBookmarksAction18x18, ":/images/viewer_toolbar/showBookmarks.svg");
+    setToolbarIconPairT(theme.toolbar.toggleFavoriteAction, theme.toolbar.toggleFavoriteAction18x18, ":/images/viewer_toolbar/favorite.svg");
+    setToolbarIconPairT(theme.toolbar.ratingStar, theme.toolbar.ratingStar18x18, ":/images/viewer_toolbar/ratingStar.svg");
+    setToolbarIconPairT(theme.toolbar.ratingStarEmpty, theme.toolbar.ratingStarEmpty18x18, ":/images/viewer_toolbar/ratingStarEmpty.svg");
     setToolbarIconPairT(theme.toolbar.showShorcutsAction, theme.toolbar.showShorcutsAction18x18, ":/images/viewer_toolbar/shortcuts.svg");
     setToolbarIconPairT(theme.toolbar.showInfoAction, theme.toolbar.showInfoAction18x18, ":/images/viewer_toolbar/info.svg");
     setToolbarIconPairT(theme.toolbar.closeAction, theme.toolbar.closeAction18x18, ":/images/viewer_toolbar/close.svg");
