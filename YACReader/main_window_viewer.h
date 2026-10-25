@@ -182,11 +182,10 @@ private:
     void createActions();
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
-    // in full screen the toolbar has exit and close buttons, and moving the mouse to the top of the screen shows it over the page
+    // except on macOS, in full screen the toolbar has exit and close buttons, and moving the mouse to the top of the screen shows it over the page
     void setToolBarFullScreenMode(bool on);
     void hideToolBarOverPage();
 #ifndef Y_MAC_UI
-    bool eventFilter(QObject *watched, QEvent *event) override;
     void updateToolBarOverPage(const QMouseEvent *event);
     void showToolBarOverPage();
     bool toolBarIsOverPage() const;
@@ -231,6 +230,9 @@ protected:
 public:
     MainWindowViewer();
     ~MainWindowViewer() override;
+#ifndef Y_MAC_UI
+    bool eventFilter(QObject *watched, QEvent *event) override;
+#endif
 };
 
 }
