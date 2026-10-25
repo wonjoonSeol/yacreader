@@ -307,27 +307,37 @@
         <translation>Ölçeklendirme</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="299"/>
+        <location filename="options_dialog.cpp" line="300"/>
         <source>Scaling method</source>
         <translation>Ölçeklendirme yöntemi</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="301"/>
+        <location filename="options_dialog.cpp" line="302"/>
         <source>Nearest (fast, low quality)</source>
         <translation>En yakın (hızlı, düşük kalite)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="302"/>
+        <location filename="options_dialog.cpp" line="303"/>
         <source>Bilinear</source>
         <translation>Çift doğrusal</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
+        <location filename="options_dialog.cpp" line="304"/>
         <source>Lanczos (better quality)</source>
         <translation>Lanczos (daha kaliteli)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="312"/>
+        <source>Upscale small pages with Anime4K (ACNet)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="313"/>
+        <source>Pages shown larger than their own size are first doubled by the ACNet neural network, which keeps lines sharp. It takes more CPU time and memory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="344"/>
         <source>Image adjustment</source>
         <translation>Resim ayarları</translation>
     </message>
@@ -352,12 +362,12 @@
         <translation>Kontrast</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="345"/>
         <source>Appearance</source>
         <translation>Dış görünüş</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="361"/>
         <source>Options</source>
         <translation>Ayarlar</translation>
     </message>
@@ -382,7 +392,7 @@
         <translation>Temizle</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="377"/>
         <source>Comics directory</source>
         <translation>Çizgi roman konumu</translation>
     </message>
@@ -392,12 +402,12 @@
         <translation>Arka plan rengi</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Page Flow</source>
         <translation>Sayfa akışı</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="342"/>
         <source>General</source>
         <translation>Genel</translation>
     </message>
@@ -407,7 +417,7 @@
         <translation>Parlaklık</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Restart is needed</source>
         <translation>Yeniden başlatılmalı</translation>
     </message>

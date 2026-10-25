@@ -295,8 +295,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutImageV->addWidget(doublePageBox);
 
     auto scalingBox = new QGroupBox(tr("Scaling"));
-    auto scalingLayout = new QHBoxLayout();
-    scalingLayout->addWidget(new QLabel(tr("Scaling method")));
+    auto scalingLayout = new QVBoxLayout();
+    auto scalingMethodLayout = new QHBoxLayout();
+    scalingMethodLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
     scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"));
     scalingMethodCombo->addItem(tr("Bilinear"));
@@ -305,8 +306,16 @@ OptionsDialog::OptionsDialog(QWidget *parent)
         Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(index));
         emit changedImageOptions();
     });
-    scalingLayout->addWidget(scalingMethodCombo);
-    scalingLayout->addStretch();
+    scalingMethodLayout->addWidget(scalingMethodCombo);
+    scalingMethodLayout->addStretch();
+    scalingLayout->addLayout(scalingMethodLayout);
+    anime4kUpscalingCheckBox = new QCheckBox(tr("Upscale small pages with Anime4K (ACNet)"));
+    anime4kUpscalingCheckBox->setToolTip(tr("Pages shown larger than their own size are first doubled by the ACNet neural network, which keeps lines sharp. It takes more CPU time and memory."));
+    connect(anime4kUpscalingCheckBox, &QCheckBox::clicked, this, [this](bool checked) {
+        Configuration::getConfiguration().setAnime4kUpscaling(checked);
+        emit changedImageOptions();
+    });
+    scalingLayout->addWidget(anime4kUpscalingCheckBox);
     scalingBox->setLayout(scalingLayout);
     layoutImageV->addWidget(scalingBox);
 
@@ -514,6 +523,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         QSignalBlocker blocker(scalingMethodCombo);
         scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
     }
+    anime4kUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAnime4kUpscaling());
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
 

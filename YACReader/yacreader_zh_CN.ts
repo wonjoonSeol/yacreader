@@ -306,7 +306,7 @@
         <translation>我的漫画路径</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="344"/>
         <source>Image adjustment</source>
         <translation>图像调整</translation>
     </message>
@@ -486,12 +486,22 @@ If none is active, Escape does nothing.</source>
         <translation>显示书页折叠阴影</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="312"/>
+        <source>Upscale small pages with Anime4K (ACNet)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="313"/>
+        <source>Pages shown larger than their own size are first doubled by the ACNet neural network, which keeps lines sharp. It takes more CPU time and memory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="345"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="361"/>
         <source>Options</source>
         <translation>选项</translation>
     </message>
@@ -516,7 +526,7 @@ If none is active, Escape does nothing.</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="377"/>
         <source>Comics directory</source>
         <translation>漫画目录</translation>
     </message>
@@ -561,32 +571,32 @@ If none is active, Escape does nothing.</source>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="299"/>
+        <location filename="options_dialog.cpp" line="300"/>
         <source>Scaling method</source>
         <translation>缩放方法</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="301"/>
+        <location filename="options_dialog.cpp" line="302"/>
         <source>Nearest (fast, low quality)</source>
         <translation>最近（快速，低质量）</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="302"/>
+        <location filename="options_dialog.cpp" line="303"/>
         <source>Bilinear</source>
         <translation>双线性</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
+        <location filename="options_dialog.cpp" line="304"/>
         <source>Lanczos (better quality)</source>
         <translation>Lanczos（质量更好）</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Page Flow</source>
         <translation>页面流</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="342"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
@@ -596,7 +606,7 @@ If none is active, Escape does nothing.</source>
         <translation>亮度</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Restart is needed</source>
         <translation>需要重启</translation>
     </message>

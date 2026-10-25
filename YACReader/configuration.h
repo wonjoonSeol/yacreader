@@ -141,6 +141,8 @@ public:
 
     ScaleMethod getScalingMethod() { return static_cast<ScaleMethod>(settings->value(SCALING_METHOD, static_cast<int>(ScaleMethod::Lanczos)).toInt()); }
     void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
+    bool getAnime4kUpscaling() { return settings->value(ANIME4K_UPSCALING, false).toBool(); }
+    void setAnime4kUpscaling(bool b) { settings->setValue(ANIME4K_UPSCALING, b); }
 };
 
 }
