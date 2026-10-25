@@ -528,10 +528,11 @@ void ComicInfoRepairer::run()
 
 #if !defined use_unarr && !defined use_libarchive
                 if (repairCase == RepairCase::InvalidPageCount || repairCase == RepairCase::MissingCover) {
+                    const QFileInfo comicFile(comicPath);
 #ifndef NO_PDF
-                    const bool needs7zLibrary = QFileInfo(comicPath).suffix().compare("pdf", Qt::CaseInsensitive) != 0;
+                    const bool needs7zLibrary = comicFile.isFile() && comicFile.suffix().compare("pdf", Qt::CaseInsensitive) != 0;
 #else
-                    const bool needs7zLibrary = true;
+                    const bool needs7zLibrary = comicFile.isFile();
 #endif
                     if (needs7zLibrary && !ensure7zLibraryLoaded()) {
                         repairSummary.error = sevenzLibrary->errorString();

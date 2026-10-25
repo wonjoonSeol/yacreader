@@ -25,6 +25,7 @@ private slots:
     void reportsInvalidTokens();
     void sanitizesSegments();
     void resolvesCollisionsAgainstDiskAndPlan();
+    void numbersCollidingFolderComicsAfterTheWholeName();
     void freesTheNameOfAFileThatMovesAway();
     void keepsOverridesAndExclusions();
     void renameModeKeepsEveryFileInItsFolder();
@@ -267,6 +268,36 @@ void OrganizeFilesTest::resolvesCollisionsAgainstDiskAndPlan()
     QCOMPARE(moves.at(0).status, PlannedMove::Status::Renamed);
     QCOMPARE(moves.at(1).destinationRelative, QStringLiteral("Marvel/Series/001 (2).cbz"));
     QCOMPARE(moves.at(1).status, PlannedMove::Status::Renamed);
+}
+
+void OrganizeFilesTest::numbersCollidingFolderComicsAfterTheWholeName()
+{
+    QTemporaryDir temporary;
+    const QString base = temporary.path();
+
+    // folder comics have no extension, so the dot in "Vol. 2" is part of the name
+    ComicEntry first;
+    first.comicId = 1;
+    first.sourceAbsolute = base + QStringLiteral("/in/a");
+    first.baseName = QStringLiteral("a");
+    first.series = QStringLiteral("Series");
+    first.number = QStringLiteral("2");
+
+    ComicEntry second = first;
+    second.comicId = 2;
+    second.sourceAbsolute = base + QStringLiteral("/in/b");
+    second.baseName = QStringLiteral("b");
+
+    QVERIFY(QDir().mkpath(first.sourceAbsolute));
+    QVERIFY(QDir().mkpath(second.sourceAbsolute));
+
+    PlanBuilder builder({ first, second }, base, Mode::Organize);
+    const auto moves = builder.build(QStringLiteral("{series}/Vol. {number}"), { });
+
+    QCOMPARE(moves.size(), 2);
+    QCOMPARE(moves.at(0).destinationRelative, QStringLiteral("Series/Vol. 2"));
+    QCOMPARE(moves.at(1).destinationRelative, QStringLiteral("Series/Vol. 2 (1)"));
+    QCOMPARE(moves.at(1).extension, QString());
 }
 
 void OrganizeFilesTest::freesTheNameOfAFileThatMovesAway()

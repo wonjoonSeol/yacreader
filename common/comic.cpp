@@ -332,12 +332,11 @@ bool Comic::fileIsComic(const QString &path)
 
 bool Comic::folderIsComic(const QString &path)
 {
-    const QFileInfo info(path);
-    if (!info.isDir() || info.fileName().startsWith('.')) {
+    if (QFileInfo(path).fileName().startsWith('.')) {
         return false;
     }
 
-    // subfolders are listed whatever their names, files only when they are pages or comics
+    // lists subfolders whatever their names and files only when they are pages or comics, and nothing for a file
     QDir folder(path);
     folder.setNameFilters(comicExtensions + getSupportedImageFormats());
     folder.setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
@@ -749,10 +748,11 @@ bool FolderComic::load(const QString &path, int atPage)
 
 bool FolderComic::load(const QString &path, const ComicDB &comic)
 {
+    // a missing folder is reported by process(), which finds no pages in it
     _path = QDir::cleanPath(path);
     QList<int> bookmarkIndexes;
     bookmarkIndexes << comic.info.bookmark1 << comic.info.bookmark2 << comic.info.bookmark3;
-    if (bm->load(bookmarkIndexes, std::max(comic.info.currentPage - 1, 0))) {
+    if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
         emit bookmarksUpdated();
     }
     _firstPage = -1;

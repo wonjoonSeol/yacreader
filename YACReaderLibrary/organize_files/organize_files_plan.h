@@ -53,6 +53,8 @@ struct PlannedMove {
     qulonglong comicId = 0;
     QString sourceAbsolute;
     QString destinationRelative;
+    // the comic's extension, which a folder comic does not have even when its name has a dot
+    QString extension;
     Status status = Status::Move;
     bool edited = false;
     QString note;

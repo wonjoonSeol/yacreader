@@ -67,18 +67,25 @@ bool writeFile(const QString &path, const QByteArray &content)
     return file.open(QIODevice::WriteOnly) && file.write(content) == content.size();
 }
 
-bool runCreator(const QString &source, QSettings &settings, bool update)
+bool runUntil(LibraryCreator &creator, void (LibraryCreator::*finishedSignal)())
 {
-    LibraryCreator creator(&settings);
-    QSignalSpy finished(&creator, update ? &LibraryCreator::updated : &LibraryCreator::created);
-    const auto target = LibraryPaths::libraryDataPath(source);
-    if (update) {
-        creator.updateLibrary(source, target);
-    } else {
-        creator.createLibrary(source, target);
-    }
+    QSignalSpy finished(&creator, finishedSignal);
     creator.start();
     return creator.wait() && finished.count() == 1;
+}
+
+bool createLibrary(const QString &source, QSettings &settings)
+{
+    LibraryCreator creator(&settings);
+    creator.createLibrary(source, LibraryPaths::libraryDataPath(source));
+    return runUntil(creator, &LibraryCreator::created);
+}
+
+bool updateLibrary(const QString &source, QSettings &settings)
+{
+    LibraryCreator creator(&settings);
+    creator.updateLibrary(source, LibraryPaths::libraryDataPath(source));
+    return runUntil(creator, &LibraryCreator::updated);
 }
 
 QMap<QString, ComicRow> comicsByPath(const QString &source)
@@ -213,15 +220,7 @@ void LibraryImageFoldersTest::tellsComicFoldersApart()
     const auto folder = root.filePath(name);
     QVERIFY(QDir().mkpath(folder));
     for (const auto &file : files) {
-        const auto path = QDir(folder).filePath(file);
-        if (file.endsWith(".png") || file.endsWith(".jpg")) {
-            QVERIFY(QDir().mkpath(QFileInfo(path).absolutePath()));
-            QImage image(pageSize(1), QImage::Format_RGB32);
-            image.fill(Qt::white);
-            QVERIFY(image.save(path));
-        } else {
-            QVERIFY(writeFile(path, "data"));
-        }
+        QVERIFY(writeFile(QDir(folder).filePath(file), "data"));
     }
 
     QCOMPARE(Comic::folderIsComic(folder), isComic);
@@ -236,7 +235,7 @@ void LibraryImageFoldersTest::importsFoldersOfImagesAsComics()
     QSettings settings(root.filePath("settings.ini"), QSettings::IniFormat);
     settings.setValue(IMPORT_COMIC_INFO_XML_METADATA, true);
 
-    QVERIFY(runCreator(source, settings, false));
+    QVERIFY(createLibrary(source, settings));
 
     const auto comics = comicsByPath(source);
     const QMap<QString, int> expected {
@@ -262,7 +261,7 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
     const auto source = root.path();
     QVERIFY(buildLibrary(source));
     QSettings settings(root.filePath("settings.ini"), QSettings::IniFormat);
-    QVERIFY(runCreator(source, settings, false));
+    QVERIFY(createLibrary(source, settings));
     const auto comicsBefore = comicsByPath(source);
     const auto foldersBefore = folderIdsByPath(source);
 
@@ -273,7 +272,7 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
     QVERIFY(QDir(source + "/Mixed/Extras").removeRecursively());
     QVERIFY(writePages(source + "/Vol 3/Part", 3, 12));
 
-    QVERIFY(runCreator(source, settings, true));
+    QVERIFY(updateLibrary(source, settings));
 
     const auto comics = comicsByPath(source);
     const auto folders = folderIdsByPath(source);
