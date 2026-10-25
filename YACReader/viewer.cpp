@@ -12,6 +12,8 @@
 #include "goto_flow_widget.h"
 #include "magnifying_glass.h"
 #include "notifications_label_widget.h"
+#include "page_counter.h"
+#include "page_counter_widget.h"
 #include "page_label_widget.h"
 #include "render.h"
 #include "resize_image.h"
@@ -208,6 +210,7 @@ Viewer::Viewer(QWidget *parent)
     notificationsLabel->hide();
 
     informationLabel = new PageLabelWidget(this);
+    pageCounter = new PageCounterWidget(this);
 
     setAcceptDrops(true);
 
@@ -316,6 +319,7 @@ void Viewer::createConnections()
     });
     connect(render, &Render::pageChanged, this, &Viewer::updateInformation);
     connect(render, &Render::pageChanged, this, &Viewer::onRenderPageChanged);
+    connect(render, &Render::pageChanged, this, &Viewer::flashPageCounter);
 
     connect(render, &Render::isLast, this, &Viewer::showIsLastMessage);
     connect(render, &Render::isCover, this, &Viewer::showIsCoverMessage);
@@ -561,6 +565,9 @@ void Viewer::updatePage()
         setPageUnavailableMessage();
     else
         emit pageAvailable(true);
+
+    // a double page spread is only known once both of its pages are loaded
+    updateInformation();
 
     emit backgroundChanges();
 
@@ -1437,12 +1444,8 @@ void Viewer::informationSwitch()
 void Viewer::updateInformation()
 {
     if (render->hasLoadedComic()) {
-        QString pagesInformation;
-        if (continuousScroll && continuousViewModel->numPages() > 0) {
-            pagesInformation = QString::number(continuousViewModel->readingProgressPage() + 1) + "/" + QString::number(continuousViewModel->numPages());
-        } else {
-            pagesInformation = render->getCurrentPagesInformation();
-        }
+        const QString pagesInformation = currentPagesInformation();
+        pageCounter->setText(pagesInformation);
 
         auto displayTime = Configuration::getConfiguration().getShowTimeInInformation();
         if (displayTime) {
@@ -1455,6 +1458,29 @@ void Viewer::updateInformation()
         informationLabel->update(); // TODO it shouldn't be neccesary
         informationLabel->updatePosition();
     }
+}
+
+QString Viewer::currentPagesInformation()
+{
+    if (continuousScroll && continuousViewModel->numPages() > 0) {
+        return YACReader::pagesInformation(continuousViewModel->readingProgressPage(), continuousViewModel->numPages());
+    }
+    return render->getCurrentPagesInformation();
+}
+
+void Viewer::flashPageCounter()
+{
+    // syncing Render with the continuous scroll position doesn't change the page shown
+    if (!render->hasLoadedComic() || syncingRenderFromContinuousScroll) {
+        return;
+    }
+
+    // the page information label already shows the pages
+    if (information || !Configuration::getConfiguration().getShowPageCounter()) {
+        return;
+    }
+
+    pageCounter->flash(currentPagesInformation());
 }
 
 void Viewer::goToFlowSwitch()
@@ -1685,6 +1711,7 @@ void Viewer::onContinuousScroll(int value)
         // the widget's paint. Render's current page is synced lazily (before
         // page turns) instead.
         updateInformation();
+        flashPageCounter();
         emit pageAvailable(true);
         // Render only reports bookmark state for its own page changes.
         if (Bookmarks *bookmarks = render->getBookmarks()) {

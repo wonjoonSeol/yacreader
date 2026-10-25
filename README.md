@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with nine changes to the comic reader and one to the library. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with ten changes to the comic reader and one to the library. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -10,6 +10,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with nine
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Toolbar in full screen](#toolbar-in-full-screen) | Feature | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) |
 | [Rate and favorite comics while reading](#rate-and-favorite-comics-while-reading) | Toolbar | [#9](https://github.com/wonjoonSeol/yacreader/pull/9) |
+| [Page number when the page changes](#page-number-when-the-page-changes) | Display | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
@@ -106,6 +107,21 @@ The library, open at the same time, shows the change:
 - **Rating:** a star sets the rating from 1 to 5, and the current one clears it. Keys 1 to 5 do the same.
 - **Favorite:** the heart adds the comic to the library's Favorites or removes it. An open Favorites list updates too.
 - **Keys:** Options > Shortcuts > Edit shortcuts > Comics. The heart has no key until you set one. If 1 to 5 are already bound to other actions, those ratings start unassigned.
+
+### Page number when the page changes
+
+Turning a page shows the page number in the top left corner for a moment, then it fades out. Options > General > Display > **Briefly show the page number when the page changes**, on by default.
+
+<img src="docs/fork/page-counter-option.png" width="600" alt="The Display group in Options, General">
+
+| Single page | Double page |
+|---|---|
+| <img src="docs/fork/page-counter-single-page.png" width="400" alt="10/100 in the top left corner after turning to page 10"> | <img src="docs/fork/page-counter-double-page.png" width="400" alt="12-13/100 in the top left corner after turning to pages 12 and 13"> |
+
+- **When:** next and previous page, Go 5 or 10 pages, Go to page, the page flow, bookmarks, first and last page, opening a comic, and scrolling onto another page in continuous scroll. It stays hidden when the page doesn't change, such as Next on the last page.
+- **Double page mode:** a spread shows both pages, such as 12-13/100. In manga mode they read right to left, 13-12/100, as in the page information label.
+- **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
+- **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides without fading.
 
 ### Next file after an unreadable one
 

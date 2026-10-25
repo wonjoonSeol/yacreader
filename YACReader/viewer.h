@@ -39,6 +39,7 @@ class ContinuousPageWidget;
 class ContinuousPageProvider;
 class ContinuousViewModel;
 class PageLabelWidget;
+class PageCounterWidget;
 class NotificationsLabelWidget;
 
 class Viewer : public QScrollArea, public ScrollManagement, protected Themable
@@ -144,6 +145,7 @@ private:
     int zoom;
 
     PageLabelWidget *informationLabel;
+    PageCounterWidget *pageCounter;
     // QTimer * scroller;
     QPropertyAnimation *verticalScroller;
     QPropertyAnimation *horizontalScroller;
@@ -262,6 +264,9 @@ private:
     void setMangaModeImpl(bool manga, bool persistSettings);
     void goToRelativePage(int offset);
     void applyContinuousPageFit();
+    QString currentPagesInformation();
+    // shows the pages for a moment after a page change
+    void flashPageCounter();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();
 

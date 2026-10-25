@@ -23,6 +23,8 @@ protected:
 
 public:
     PageLabelWidget(QWidget *parent);
+    // grows with the screen height
+    static int fontSizeFor(const QWidget *parent);
 
 public slots:
     void show();
