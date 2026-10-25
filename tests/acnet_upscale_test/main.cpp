@@ -270,7 +270,7 @@ void AcnetUpscaleTest::beatsLanczosOnLineArt()
     const QImage original = lineArt(800, 1200);
     const QImage small = boxShrink2x(original);
 
-    const double lanczos = psnr(scaleImage(small, original.width(), original.height(), ScaleMethod::Lanczos), original);
+    const double lanczos = psnr(scaleImage(small, original.width(), original.height(), ScaleMethod::Lanczos4), original);
     const double fast = psnr(upscale2xAcnet(small, AcnetModel::F8B4), original);
     const double quality = psnr(upscale2xAcnet(small, AcnetModel::F8B8Hdn), original);
     qInfo("Line art 2x PSNR: Lanczos4 %.2f dB, ACNet F8B4 %.2f dB, F8B8-HDN %.2f dB", lanczos, fast, quality);
