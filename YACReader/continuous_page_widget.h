@@ -11,6 +11,8 @@
 #include <QVector>
 #include <QWidget>
 
+#include <optional>
+
 class Render;
 class ContinuousViewModel;
 class ContinuousPageProvider;
@@ -31,9 +33,10 @@ public:
     int heightForWidth(int w) const override;
     QSize sizeHint() const override;
 
-    // Delivers the result of a background scaling task. Runs on the GUI thread
-    // (queued invocation). Public because the worker lambda is not a friend.
-    void deliverScaledImage(int pageIndex, quint64 generation, QImage scaledImage,
+    // Delivers the result of a background scaling task, the plain scale or the
+    // ACNet one. Runs on the GUI thread (queued invocation). Public because the
+    // worker lambda is not a friend.
+    void deliverScaledImage(int pageIndex, quint64 generation, bool upscaled, QImage scaledImage,
                             qint64 sourceCacheKey, QSize sourceSize, QSize targetSize,
                             QSize targetPixelSize, qreal devicePixelRatio);
 
@@ -54,6 +57,8 @@ private:
         QSize targetPixelSize;
         qreal targetDevicePixelRatio = 1.0;
         QImage scaledImage;
+        // ACNet has been tried on it, so it is not queued again
+        bool upscaled = false;
     };
 
     struct ScaledPageCache {
@@ -114,14 +119,25 @@ private:
         }
     };
 
+    struct PendingUpscale {
+        int pageIndex = -1;
+        ScaleRequestKey key;
+    };
+
     // Returns a cached, still-valid scaled image for the page, or nullptr.
     const QImage *cachedScaledImage(int pageIndex, const QImage *source, const QSize &targetSize, const QSize &targetPixelSize, qreal dpr) const;
     // Schedules a high-quality scale of the page on the background pool.
     void enqueueScale(int pageIndex, const QImage *source, const QSize &targetSize, const QSize &targetPixelSize, qreal dpr);
+    void deliverUpscaledImage(int pageIndex, const ScaleRequestKey &key, QImage image);
+    // Starts ACNet on the next page that needs it, unless one is running.
+    void startNextUpscale();
+    QList<int> upscaleOrder() const;
     // Drops the whole scaled cache and discards/ignores any in-flight work.
     void resetScaledCache();
     // Rect (widget coords) occupied by a page, centered horizontally.
     QRect pageRectFor(int pageIndex) const;
+    // Pages in the real viewport (not the paint dirty rect, which can be a single page).
+    void visiblePageRange(int &firstPageIndex, int &lastPageIndex) const;
     // Page range to keep cached / preload, derived from the real viewport
     // (not the paint dirty rect, which can be a single page).
     void managedPageRange(int &minPageIndex, int &maxPageIndex) const;
@@ -135,6 +151,7 @@ private:
     // are discarded when they arrive from the background pool.
     quint64 cacheGeneration = 0;
     QHash<int, ScaleRequestKey> pendingScaleRequests;
+    std::optional<PendingUpscale> pendingUpscale;
     QThreadPool scalePool;
 };
 

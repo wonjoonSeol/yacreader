@@ -103,7 +103,7 @@ In single and double page mode the pages next to the one you read are scaled to 
 
 Options > Image adjustment > Scaling > **Upscale small pages with Anime4K (ACNet)**, off by default, with a **Model** choice: F8B4 (default) or F8B8-HDN.
 
-In single and double page mode, a page shown larger than its own size is first shown scaled as usual, then replaced by a sharper one: [Anime4KCPP](https://github.com/TianZerL/Anime4KCPP)'s ACNet, a small neural network for line art, doubles it on the CPU in the background and the scaling method takes it to the window size. The network sharpens the luma; colour and transparency are scaled with Catmull-Rom. The code is vendored in `third_party/anime4kcpp` (MIT) with the revisions it came from.
+In single page, double page and continuous scroll mode, a page shown larger than its own size is first shown scaled as usual, then replaced by a sharper one: [Anime4KCPP](https://github.com/TianZerL/Anime4KCPP)'s ACNet, a small neural network for line art, doubles it on the CPU in the background and the scaling method takes it to the window size. The network sharpens the luma; colour and transparency are scaled with Catmull-Rom. The code is vendored in `third_party/anime4kcpp` (MIT) with the revisions it came from.
 
 <img src="docs/fork/anime4k-crop.png" width="700" alt="The same lettering doubled with Lanczos4 and with ACNet F8B4, shown at 4x">
 
@@ -139,7 +139,7 @@ Ryzen 7 5700X3D with the FMA backend, the one Windows x64 builds pick on this CP
 
 - **CPU:** at most half of the CPU's threads for all upscales together, and the fastest backend the CPU supports: FMA or AVX on Windows x64, AVX on Intel Macs, NEON on arm64, SSE on Linux x86_64.
 - **Memory:** the network works on strips of 256 rows, so its scratch memory stays near 28 MB for a 1600 pixel wide page. A 1600 x 2400 colour page peaks at about 157 MB more than before the upscale, Lanczos4 at 78 MB.
-- **When it runs:** only for pages that end up larger than their own size; any other factor than 2x is reached with the scaling method after the 2x upscale. Continuous scroll does not use it yet.
+- **When it runs:** only for pages that end up larger than their own size; any other factor than 2x is reached with the scaling method after the 2x upscale. Continuous scroll upscales one page at a time, visible pages first.
 
 ---
 
