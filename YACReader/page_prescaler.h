@@ -19,7 +19,7 @@ struct PrescaleKey {
     PageViewKey view;
     QSize pixelSize;
     qreal devicePixelRatio = 1.0;
-    ScaleMethod scaleMethod = ScaleMethod::Lanczos;
+    ScaleMethod scaleMethod = ScaleMethod::Lanczos4;
 
     bool operator==(const PrescaleKey &other) const = default;
 };

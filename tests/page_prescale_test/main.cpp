@@ -38,7 +38,7 @@ QImage filled(QSize size, const QColor &color, QImage::Format format = QImage::F
 PrescaleRequest pageRequest(int page)
 {
     PageViewImages images { page, filled(QSize(4, 4), Qt::gray), QImage(), 0 };
-    const PrescaleKey key { images.key(), QSize(page + 10, 8), 1.0, ScaleMethod::Lanczos };
+    const PrescaleKey key { images.key(), QSize(page + 10, 8), 1.0, ScaleMethod::Lanczos4 };
     return { key, images };
 }
 
@@ -314,7 +314,7 @@ void PagePrescaleTest::leavesOutViewsWithPagesNotDecoded()
 void PagePrescaleTest::findsImagesOnlyForTheSameKey()
 {
     PagePrescaler prescaler({ std::make_shared<ScaleStage>() }, 1);
-    const PrescaleKey key { { 3, 11, 12 }, QSize(40, 60), 2.0, ScaleMethod::Lanczos };
+    const PrescaleKey key { { 3, 11, 12 }, QSize(40, 60), 2.0, ScaleMethod::Lanczos4 };
     const QImage image = filled(QSize(40, 60), Qt::red);
     prescaler.store(key, image);
 
@@ -354,10 +354,10 @@ void PagePrescaleTest::deliversImagesReadyForAPixmap()
     PagePrescaler prescaler({ std::make_shared<ScaleStage>() }, 1);
     PrescaleRequest opaque = pageRequest(1);
     opaque.images.first = filled(QSize(4, 4), Qt::gray, QImage::Format_ARGB32);
-    opaque.key = { opaque.images.key(), QSize(8, 8), 2.0, ScaleMethod::Lanczos };
+    opaque.key = { opaque.images.key(), QSize(8, 8), 2.0, ScaleMethod::Lanczos4 };
     PrescaleRequest transparent = pageRequest(2);
     transparent.images.first = filled(QSize(4, 4), Qt::transparent, QImage::Format_ARGB32);
-    transparent.key = { transparent.images.key(), QSize(8, 8), 2.0, ScaleMethod::Lanczos };
+    transparent.key = { transparent.images.key(), QSize(8, 8), 2.0, ScaleMethod::Lanczos4 };
 
     prescaler.schedule({ opaque, transparent });
 
