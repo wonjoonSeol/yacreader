@@ -28,6 +28,7 @@ class ShortcutsDialog;
 class YACReaderSliderAction;
 class YACReaderSlider;
 class EditShortcutsDialog;
+class ImageAdjustmentMenu;
 
 namespace YACReader {
 
@@ -103,6 +104,7 @@ private:
     Viewer *viewer;
     // GoToDialog * goToDialog;
     OptionsDialog *optionsDialog;
+    ImageAdjustmentMenu *imageAdjustmentMenu;
     HelpAboutDialog *had;
     // ShortcutsDialog * shortcutsDialog;
     EditShortcutsDialog *editShortcutsDialog;
