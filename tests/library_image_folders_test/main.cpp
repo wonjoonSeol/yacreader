@@ -1,4 +1,5 @@
 #include "comic.h"
+#include "comics_remover.h"
 #include "data_base_management.h"
 #include "library_creator.h"
 #include "yacreader_global.h"
@@ -12,6 +13,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QStandardPaths>
+#include <QStringListModel>
 #include <QTemporaryDir>
 #include <QTest>
 
@@ -27,6 +29,8 @@ private slots:
     void tellsComicFoldersApart();
     void importsFoldersOfImagesAsComics();
     void updateFollowsTheFoldersOfImages();
+    void deletesFolderComicsOnlyWhenAsked();
+    void deletesFolderComicsForGoodWhenToldTo();
 };
 
 namespace {
@@ -295,6 +299,49 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
     // what the update did not change keeps its row, and with it its reading lists and labels
     QCOMPARE(comics.value("/Series/Chapter 10").id, comicsBefore.value("/Series/Chapter 10").id);
     QCOMPARE(folders.value("/Vol 10"), foldersBefore.value("/Vol 10"));
+}
+
+void LibraryImageFoldersTest::deletesFolderComicsOnlyWhenAsked()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    QVERIFY(writePages(root.filePath("Chapter 1"), 2, 1));
+    QVERIFY(writeFile(root.filePath("Book.cbz"), "book"));
+    QVERIFY(writePages(root.filePath("Chapter 2"), 3, 2));
+    QVERIFY(writeFile(root.filePath("Chapter 2/notes.txt"), "notes"));
+
+    const ComicsDeletion deletion({ root.filePath("Chapter 1"), root.filePath("Book.cbz"), root.filePath("Chapter 2") });
+
+    QCOMPARE(deletion.files, QList<int>({ 1 }));
+    QCOMPARE(deletion.folders, QList<int>({ 0, 2 }));
+    QCOMPARE(deletion.folderImages, 5);
+    QCOMPARE(deletion.deleted(false), QList<int>({ 1 }));
+    QCOMPARE(deletion.deleted(true), QList<int>({ 0, 1, 2 }));
+}
+
+void LibraryImageFoldersTest::deletesFolderComicsForGoodWhenToldTo()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    QVERIFY(writePages(root.filePath("Chapter 1"), 2, 1));
+    QVERIFY(writePages(root.filePath("Chapter 2"), 3, 2));
+
+    QStringListModel model({ "Chapter 1", "Chapter 2" });
+    QModelIndexList indexes { model.index(0), model.index(1) };
+    QList<QString> paths { root.filePath("Chapter 1"), root.filePath("Chapter 2") };
+    ComicsRemover remover(indexes, paths, 1);
+    remover.setDeleteFoldersPermanently(true);
+    QSignalSpy removed(&remover, &ComicsRemover::remove);
+    QSignalSpy notTrashed(&remover, &ComicsRemover::folderNotTrashed);
+    QSignalSpy failed(&remover, &ComicsRemover::removeError);
+
+    remover.process();
+
+    QCOMPARE(removed.count(), 2);
+    QCOMPARE(notTrashed.count(), 0);
+    QCOMPARE(failed.count(), 0);
+    QVERIFY(!QFileInfo::exists(root.filePath("Chapter 1")));
+    QVERIFY(!QFileInfo::exists(root.filePath("Chapter 2")));
 }
 
 QTEST_GUILESS_MAIN(LibraryImageFoldersTest)

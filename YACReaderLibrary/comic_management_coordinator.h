@@ -14,6 +14,7 @@
 
 class ComicFilesManager;
 class ComicDB;
+struct ComicsDeletion;
 class ComicVineDialog;
 class FolderModel;
 class FolderModelProxy;
@@ -107,8 +108,11 @@ private:
     QModelIndexList indexesForComicIds(const QList<qulonglong> &comicIds, const SourceContext &source) const;
     bool isCurrentSource(const SourceContext &source) const;
     void deleteComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source);
+    bool confirmComicsDeletion(const ComicsDeletion &deletion, bool *deleteFolders) const;
+    bool confirmPermanentFolderDeletion(int folderCount) const;
+    bool removeComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source, bool deleteFoldersPermanently);
     void deleteComicsFromList(const QList<qulonglong> &comicIds, const SourceContext &source, int listType, qulonglong listId);
-    void finishComicDeletion();
+    void finishComicDeletion(const SourceContext &source);
 
     QWidget *window;
     QSettings *settings;
@@ -125,6 +129,7 @@ private:
     LibraryIdProvider libraryIdProvider;
     LibraryPathProvider libraryPathProvider;
     bool comicDeletionFailed { false };
+    QList<qulonglong> foldersNotTrashed;
 };
 
 #endif // COMIC_MANAGEMENT_COORDINATOR_H

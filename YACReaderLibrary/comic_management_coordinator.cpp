@@ -13,6 +13,7 @@
 #include "reading_list_model.h"
 #include "yacreader_global_gui.h"
 
+#include <QCheckBox>
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDesktopServices>
@@ -20,6 +21,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QHash>
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QProcess>
@@ -516,42 +518,95 @@ bool ComicManagementCoordinator::isCurrentSource(const SourceContext &source) co
 
 void ComicManagementCoordinator::deleteComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source)
 {
-    const auto answer = QMessageBox::question(window,
-                                              QCoreApplication::translate("LibraryWindow", "Delete comics"),
-                                              QCoreApplication::translate("LibraryWindow", "All the selected comics will be deleted from your disk. Are you sure?"),
-                                              QMessageBox::Yes,
-                                              QMessageBox::No);
-    if (answer != QMessageBox::Yes)
+    const auto selectedComics = comicsModel->getComics(indexesForComicIds(comicIds, source));
+    if (selectedComics.isEmpty())
         return;
 
+    QStringList selectedPaths;
+    for (const auto &comic : selectedComics)
+        selectedPaths.append(source.libraryPath + comic.path);
+    const ComicsDeletion deletion(selectedPaths);
+
+    bool deleteFolders = false;
+    if (!confirmComicsDeletion(deletion, &deleteFolders))
+        return;
+
+    QList<qulonglong> deletedIds;
+    for (const int position : deletion.deleted(deleteFolders))
+        deletedIds.append(selectedComics.at(position).id);
+
+    comicDeletionFailed = false;
+    removeComicsFromDisk(deletedIds, source, false);
+}
+
+bool ComicManagementCoordinator::confirmComicsDeletion(const ComicsDeletion &deletion, bool *deleteFolders) const
+{
+    QMessageBox question(QMessageBox::Question,
+                         QCoreApplication::translate("LibraryWindow", "Delete comics"),
+                         QCoreApplication::translate("LibraryWindow", "All the selected comics will be deleted from your disk. Are you sure?"),
+                         QMessageBox::Yes | QMessageBox::No,
+                         window);
+
+    QCheckBox *deleteFoldersBox = nullptr;
+    if (!deletion.folders.isEmpty()) {
+        question.setInformativeText(QCoreApplication::translate("LibraryWindow", "Folder comics stay on your disk and in the library unless you also delete their image folders."));
+        const auto folders = QCoreApplication::translate("LibraryWindow", "%n folder(s)", nullptr, deletion.folders.size());
+        const auto images = QCoreApplication::translate("LibraryWindow", "%n image(s)", nullptr, deletion.folderImages);
+        deleteFoldersBox = new QCheckBox(QCoreApplication::translate("LibraryWindow", "Also delete the image folders (%1, %2)").arg(folders, images));
+        question.setCheckBox(deleteFoldersBox);
+    }
+
+    if (question.exec() != QMessageBox::Yes)
+        return false;
+
+    *deleteFolders = deleteFoldersBox != nullptr && deleteFoldersBox->isChecked();
+    return true;
+}
+
+bool ComicManagementCoordinator::confirmPermanentFolderDeletion(int folderCount) const
+{
+    const auto answer = QMessageBox::warning(window,
+                                             QCoreApplication::translate("LibraryWindow", "Delete comics"),
+                                             QCoreApplication::translate("LibraryWindow", "Could not move %n folder(s) to the trash. Delete them permanently? This cannot be undone.", nullptr, folderCount),
+                                             QMessageBox::Yes | QMessageBox::No,
+                                             QMessageBox::No);
+    return answer == QMessageBox::Yes;
+}
+
+bool ComicManagementCoordinator::removeComicsFromDisk(const QList<qulonglong> &comicIds, const SourceContext &source, bool deleteFoldersPermanently)
+{
     auto indexList = indexesForComicIds(comicIds, source);
     auto comics = comicsModel->getComics(indexList);
     if (comics.isEmpty())
-        return;
+        return false;
 
     QList<QString> paths;
+    QHash<QString, qulonglong> comicIdsByPath;
     paths.reserve(comics.size());
     for (const auto &comic : std::as_const(comics)) {
         paths.append(source.libraryPath + comic.path);
+        comicIdsByPath.insert(paths.last(), comic.id);
         QLOG_TRACE() << comic.path;
         QLOG_TRACE() << comic.id;
         QLOG_TRACE() << comic.parentId;
     }
 
     auto remover = new ComicsRemover(indexList, paths, comics.constFirst().parentId);
+    remover->setDeleteFoldersPermanently(deleteFoldersPermanently);
     auto thread = new QThread(this);
     moveAndConnectRemoverToThread(remover, thread);
 
-    comicDeletionFailed = false;
     comicsModel->startTransaction();
 
     connect(remover, &ComicsRemover::remove, comicsModel, &ComicModel::remove);
     connect(remover, &ComicsRemover::removeError, this, [this] { comicDeletionFailed = true; });
+    connect(remover, &ComicsRemover::folderNotTrashed, this, [this, comicIdsByPath](const QString &path) { foldersNotTrashed.append(comicIdsByPath.value(path)); });
     connect(remover, &ComicsRemover::finished, comicsModel, &ComicModel::finishTransaction);
     connect(remover, &ComicsRemover::removedItemsFromFolder, foldersModel, &FolderModel::updateFolderChildrenInfo);
-    connect(remover, &ComicsRemover::finished, this, &ComicManagementCoordinator::finishComicDeletion);
+    connect(remover, &ComicsRemover::finished, this, [this, source] { finishComicDeletion(source); });
 
     thread->start();
+    return true;
 }
 
 void ComicManagementCoordinator::deleteComicsFromList(const QList<qulonglong> &comicIds, const SourceContext &source, int listType, qulonglong listId)
@@ -587,9 +642,13 @@ void ComicManagementCoordinator::deleteComicsFromList(const QList<qulonglong> &c
     }
 }
 
-void ComicManagementCoordinator::finishComicDeletion()
+void ComicManagementCoordinator::finishComicDeletion(const SourceContext &source)
 {
     emit comicDeletionFinished();
+    const auto notTrashed = std::exchange(foldersNotTrashed, { });
+    if (!notTrashed.isEmpty() && confirmPermanentFolderDeletion(notTrashed.size()) && removeComicsFromDisk(notTrashed, source, true))
+        return;
+
     if (comicDeletionFailed) {
         QMessageBox::critical(window,
                               QCoreApplication::translate("LibraryWindow", "Unable to delete"),
