@@ -36,7 +36,6 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QToolButton>
-#include <QWindow>
 
 #include <algorithm>
 #include <utility>
@@ -732,8 +731,7 @@ void MainWindowViewer::createToolBars()
     auto *closeTBAction = wrappedToolbarAction(exitAction);
     comicToolBar->addAction(closeTBAction);
     fullScreenToolBarActions = { fullScreenSeparator, exitFullScreenTBAction, closeTBAction };
-    setFullScreenToolBarActionsVisible(false);
-    qApp->installEventFilter(this);
+    setToolBarFullScreenMode(false);
 
     comicToolBar->setMovable(false);
 #endif
@@ -1265,7 +1263,7 @@ void MainWindowViewer::toFullScreen()
     fromMaximized = this->isMaximized();
 
     hideToolBars();
-    setFullScreenToolBarActionsVisible(true);
+    setToolBarFullScreenMode(true);
     viewer->hide();
     viewer->fullscreen = true; // TODO, change by the right use of windowState();
     setWindowState(Qt::WindowFullScreen);
@@ -1285,7 +1283,7 @@ void MainWindowViewer::toNormal()
     else
         showNormal();
 
-    setFullScreenToolBarActionsVisible(false);
+    setToolBarFullScreenMode(false);
     if (Configuration::getConfiguration().getShowToolbars())
         showToolBars();
     else
@@ -1319,10 +1317,17 @@ void MainWindowViewer::showToolBars()
     toolbars = true;
 }
 
-void MainWindowViewer::setFullScreenToolBarActionsVisible(bool visible)
+void MainWindowViewer::setToolBarFullScreenMode(bool on)
 {
     for (auto *a : std::as_const(fullScreenToolBarActions))
-        a->setVisible(visible);
+        a->setVisible(on);
+
+#ifndef Y_MAC_UI
+    if (on)
+        qApp->installEventFilter(this);
+    else
+        qApp->removeEventFilter(this);
+#endif
 }
 
 #ifdef Y_MAC_UI
@@ -1331,8 +1336,8 @@ void MainWindowViewer::hideToolBarOverPage() { }
 #else
 bool MainWindowViewer::eventFilter(QObject *watched, QEvent *event)
 {
-    // the window gets each mouse move before the widget under the mouse, which may not track the mouse
-    if (watched == windowHandle() && event->type() == QEvent::MouseMove)
+    // every widget the move goes through passes here, also widgets that don't track the mouse and native child windows
+    if (event->type() == QEvent::MouseMove && watched->isWidgetType() && static_cast<QWidget *>(watched)->window() == this)
         updateToolBarOverPage(static_cast<QMouseEvent *>(event));
 
     return QMainWindow::eventFilter(watched, event);
@@ -1340,11 +1345,11 @@ bool MainWindowViewer::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindowViewer::updateToolBarOverPage(const QMouseEvent *event)
 {
-    if (!fullscreen || toolbars)
+    if (toolbars)
         return;
 
     if (YACReader::shouldShowToolBarOverPage({ .shown = toolBarIsOverPage(),
-                                               .mouseY = event->position().toPoint().y(),
+                                               .mouseY = mapFromGlobal(event->globalPosition().toPoint()).y(),
                                                .toolBarHeight = comicToolBar->sizeHint().height(),
                                                .magnifyingGlassShown = viewer->magnifyingGlassIsVisible(),
                                                .mouseButtonPressed = event->buttons() != Qt::NoButton }))
@@ -1355,14 +1360,14 @@ void MainWindowViewer::updateToolBarOverPage(const QMouseEvent *event)
 
 void MainWindowViewer::showToolBarOverPage()
 {
-    if (toolBarIsOverPage())
-        return;
-
-    // out of the main window layout the toolbar covers the top of the page instead of pushing it down
-    removeToolBar(comicToolBar);
+    if (!toolBarIsOverPage()) {
+        // out of the main window layout the toolbar covers the top of the page instead of pushing it down
+        removeToolBar(comicToolBar);
+        comicToolBar->raise();
+        comicToolBar->show();
+    }
+    // on every move, so it follows a change of the window size or the theme
     comicToolBar->setGeometry(0, 0, width(), comicToolBar->sizeHint().height());
-    comicToolBar->raise();
-    comicToolBar->show();
 }
 
 void MainWindowViewer::hideToolBarOverPage()

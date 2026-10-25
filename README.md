@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with seven changes to the comic reader. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with eight changes to the comic reader. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -8,6 +8,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with seve
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
 | [Bicubic scaling](#bicubic-scaling) | Option | upstream [#620](https://github.com/YACReader/yacreader/pull/620) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
+| [Toolbar in full screen](#toolbar-in-full-screen) | Feature | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
@@ -71,6 +72,21 @@ Options > Image adjustment > Scaling > **Scaling method: Bicubic**
 - **Manga mode:** the directions flip, as they do for ← and →.
 - **Double page mode:** the 5 page jump moves 4 pages, so spreads stay paired.
 - **Changing the keys:** Options > Shortcuts > Edit shortcuts > Reading. If one of these keys is already bound to another action, that jump starts unassigned.
+
+### Toolbar in full screen
+
+Full screen (F) has no title bar and hides the toolbar. Move the mouse to the top of the screen to show the toolbar over the page. It hides again when the mouse moves back down to the page.
+
+| Full screen | Mouse at the top of the screen |
+|---|---|
+| <img src="docs/fork/fullscreen-toolbar-hidden.png" width="400" alt="A page in full screen with no toolbar"> | <img src="docs/fork/fullscreen-toolbar-shown.png" width="400" alt="The toolbar over the top of the same page"> |
+
+<img src="docs/fork/fullscreen-toolbar-buttons.png" width="480" alt="Exit fullscreen mode and Close at the right end of the toolbar">
+
+- **Exit fullscreen and close:** two buttons at the right end of the toolbar, shown only in full screen.
+- **The page stays still:** the toolbar covers the top of the page instead of pushing it down.
+- **Not while** the magnifying glass is on or a mouse button is held, so dragging a page up to the top does not open it.
+- **macOS:** unchanged. In full screen macOS shows its own menu bar and window buttons at the top of the screen.
 
 ### Next file after an unreadable one
 
