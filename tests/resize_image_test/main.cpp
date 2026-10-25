@@ -108,8 +108,8 @@ void ResizeImageTest::fewerLobesSpreadLessFromAnEdge()
     const int lanczos3 = spread(enlargedEdge(ScaleMethod::Lanczos3));
     const int lanczos2 = spread(enlargedEdge(ScaleMethod::Lanczos2));
 
-    QVERIFY2(lanczos2 < lanczos3 && lanczos3 < lanczos4,
-             qPrintable(QString("lanczos2 %1, lanczos3 %2, lanczos4 %3").arg(lanczos2).arg(lanczos3).arg(lanczos4)));
+    QCOMPARE_LT(lanczos2, lanczos3);
+    QCOMPARE_LT(lanczos3, lanczos4);
 }
 
 void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
@@ -117,7 +117,7 @@ void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
     const int lanczos2 = ringing(enlargedEdge(ScaleMethod::Lanczos2));
     const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos4));
 
-    QVERIFY2(lanczos2 < lanczos4, qPrintable(QString("lanczos2 %1, lanczos4 %2").arg(lanczos2).arg(lanczos4)));
+    QCOMPARE_LT(lanczos2, lanczos4);
 }
 
 void ResizeImageTest::readsTheStoredValues()

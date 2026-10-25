@@ -2,6 +2,8 @@
 
 #include "lancir.h"
 
+#include <QVariant>
+
 static QImage scaleImageLancir(const QImage &image, int width, int height, double lobes)
 {
     QImage src = (image.format() == QImage::Format_ARGB32)
