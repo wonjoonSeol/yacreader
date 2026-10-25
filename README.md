@@ -6,7 +6,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six 
 |---|---|---|
 | [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
-| [Bicubic scaling](#bicubic-scaling) | Option | upstream [#620](https://github.com/YACReader/yacreader/pull/620) |
+| [Bicubic scaling](#bicubic-scaling) | Option | [#7](https://github.com/wonjoonSeol/yacreader/pull/7), from upstream [#620](https://github.com/YACReader/yacreader/pull/620) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
