@@ -454,6 +454,7 @@ QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &o
         PlannedMove move;
         move.comicId = entry.comicId;
         move.sourceAbsolute = entry.sourceAbsolute;
+        move.extension = entry.extension;
         move.edited = !overrides.value(entry.sourceAbsolute).destinationRelative.isEmpty();
 
         if (entry.missing) {
@@ -517,8 +518,8 @@ QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &o
 
         const QFileInfo destinationInfo(destination);
         const QString directory = destinationInfo.absolutePath();
-        const QString stem = destinationInfo.completeBaseName();
-        const QString suffix = destinationInfo.suffix().isEmpty() ? QString() : QLatin1Char('.') + destinationInfo.suffix();
+        const QString suffix = move.extension;
+        const QString stem = destinationInfo.fileName().chopped(suffix.size());
 
         QString candidate = destination;
         int counter = 1;

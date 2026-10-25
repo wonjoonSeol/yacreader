@@ -213,18 +213,16 @@ void InitialComicInfoExtractor::extractFromFolder()
         _coverPage = 1;
     }
 
-    QImage cover;
-    if (!cover.load(pages.at(_coverPage - 1).absoluteFilePath())) {
+    if (!_cover.load(pages.at(_coverPage - 1).absoluteFilePath())) {
         QLOG_WARN() << "Extracting cover: unable to load image from extracted cover " << _fileSource;
         _cover.load(":/images/notCover.png");
         return;
     }
 
-    _cover = cover;
-    _coverSize = QPair<int, int>(cover.width(), cover.height());
+    _coverSize = QPair<int, int>(_cover.width(), _cover.height());
     _coverExtracted = true;
     if (_target != "") {
-        saveCover(_target, cover);
+        saveCover(_target, _cover);
     }
 }
 

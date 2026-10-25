@@ -79,6 +79,11 @@ bool moveFile(const QString &source, const QString &destination, QString *reason
         return false;
     }
 
+    if (QFileInfo(source).isDir()) {
+        *reason = translated("%1 (a folder comic is not copied to another drive)").arg(renameError);
+        return false;
+    }
+
     if (!QFile::copy(source, destination)) {
         QFile copyTarget(destination);
         *reason = translated("%1 (copy also failed: %2)").arg(renameError, copyTarget.errorString());

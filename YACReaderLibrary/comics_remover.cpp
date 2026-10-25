@@ -1,9 +1,35 @@
 #include "comics_remover.h"
 
 #include "QsLog.h"
+#include "comic.h"
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
+
+#include <algorithm>
+
+ComicsDeletion::ComicsDeletion(const QStringList &comicPaths)
+{
+    for (int position = 0; position < comicPaths.size(); ++position) {
+        if (QFileInfo(comicPaths.at(position)).isDir()) {
+            folders.append(position);
+            folderImages += FolderComic::pageFiles(comicPaths.at(position)).size();
+        } else {
+            files.append(position);
+        }
+    }
+}
+
+QList<int> ComicsDeletion::deleted(bool deleteFolders) const
+{
+    if (!deleteFolders) {
+        return files;
+    }
+    auto positions = files + folders;
+    std::sort(positions.begin(), positions.end());
+    return positions;
+}
 
 ComicsRemover::ComicsRemover(QModelIndexList &il, QList<QString> &ps, qulonglong parentId, QObject *parent)
     : QObject(parent), indexList(il), paths(ps), parentId(parentId)
@@ -21,7 +47,9 @@ void ComicsRemover::process()
     while (i.hasPrevious() && i2.hasPrevious()) {
         QModelIndex mi = i.previous();
         currentComicPath = i2.previous();
-        if (QFile::moveToTrash(currentComicPath))
+        if (QFileInfo(currentComicPath).isDir())
+            removeFolder(mi.row(), currentComicPath);
+        else if (QFile::moveToTrash(currentComicPath))
             emit remove(mi.row());
         else if (QFile::remove(currentComicPath))
             emit remove(mi.row());
@@ -31,6 +59,16 @@ void ComicsRemover::process()
 
     emit finished();
     emit removedItemsFromFolder(parentId);
+}
+
+void ComicsRemover::removeFolder(int row, const QString &path)
+{
+    if (deleteFoldersPermanently ? QDir(path).removeRecursively() : QFile::moveToTrash(path))
+        emit remove(row);
+    else if (deleteFoldersPermanently)
+        emit removeError();
+    else
+        emit folderNotTrashed(path);
 }
 
 FoldersRemover::FoldersRemover(QModelIndexList &il, QList<QString> &ps, QObject *parent)

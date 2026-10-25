@@ -52,9 +52,7 @@ qint64 comicSize(const QFileInfo &fileInfo)
     return fileInfo.isDir() ? totalSize(FolderComic::pageFiles(fileInfo.absoluteFilePath())) : fileInfo.size();
 }
 
-// The update sorts and merges both lists with this one order. Merging with another order
-// takes items for missing, so they are removed and added again and lose their reading
-// lists and labels. Names the natural order finds equal, like "01" and "1", stay apart.
+// update() must sort and merge with the same order, and the tie-break keeps names like "01" and "1" apart
 int compareNames(const QString &left, const QString &right)
 {
     const int natural = naturalCompare(left, right, Qt::CaseInsensitive);
@@ -451,8 +449,7 @@ namespace {
 QByteArray firstBytes(const QFileInfo &fileInfo)
 {
     QFile file(fileInfo.absoluteFilePath());
-    file.open(QFile::ReadOnly);
-    return file.read(524288);
+    return file.open(QFile::ReadOnly) ? file.read(524288) : QByteArray();
 }
 
 // hash Sha1 del primer 0.5MB + filesize
@@ -463,7 +460,7 @@ QString filePseudoHash(const QFileInfo &fileInfo)
     return QString(crypto.result().toHex().constData()) + QString::number(fileInfo.size());
 }
 
-// Sha1 of the first 0.5MB of the first page and the name and size of every page + the size of all the pages
+// ends like a file hash with the size that ComicDB::getFileSize() reads back, here the size of all the pages
 QString folderPseudoHash(const QFileInfo &folderInfo)
 {
     const QFileInfoList pages = FolderComic::pageFiles(folderInfo.absoluteFilePath());
@@ -587,8 +584,13 @@ void LibraryCreator::update(QDir dirS)
     QFileInfoList listSComics;
     const QFileInfoList entriesS = dirS.entryInfoList();
     for (const QFileInfo &entry : entriesS) {
-        if (!isLibraryDataFolder(entry)) {
-            (isFolder(entry) ? listSFolders : listSComics).append(entry);
+        if (isLibraryDataFolder(entry)) {
+            continue;
+        }
+        if (isFolder(entry)) {
+            listSFolders.append(entry);
+        } else {
+            listSComics.append(entry);
         }
     }
 
