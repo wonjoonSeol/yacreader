@@ -53,9 +53,9 @@ Options > Image adjustment > Scaling > **Scaling method: Bicubic**
 
 <img src="docs/fork/scaling-bicubic-enlarge.png" width="996" alt="The same line art enlarged 3x with Bilinear, Bicubic and Lanczos4">
 
-- **What it is:** a Catmull-Rom cubic (B = 0, C = 1/2) from upstream [#620](https://github.com/YACReader/yacreader/pull/620) by [dichongwu](https://github.com/dichongwu). It rings less than Lanczos: a grey 64/192 edge enlarged 4x goes 9 grey levels past either side within 6 px of the edge, against 16 levels and 13 px with Lanczos (Bilinear: none, 2 px).
-- **Changed in the fork:** it averages the stored sRGB values like the other methods. #620 averages in linear light, which made shrunk line art and screentones lighter than with Bilinear or Lanczos and deepened the dark halo beside enlarged edges.
-- **Speed:** shrinking a 1600x2400 page to 1067x1600 takes about 40 ms split over up to 4 threads, where Lanczos takes about 30 ms on one.
+- **What it is:** a Catmull-Rom cubic (B = 0, C = 1/2) from upstream [#620](https://github.com/YACReader/yacreader/pull/620) by [dichongwu](https://github.com/dichongwu). It rings less than Lanczos4: a grey 64/192 edge enlarged 4x goes 9 grey levels past either side within 6 px of the edge, against 16 levels and 13 px with Lanczos4 (Bilinear: none, 2 px).
+- **Changed in the fork:** it averages the stored sRGB values like the other methods. #620 averages in linear light, which made shrunk line art and screentones lighter than with Bilinear or Lanczos4 and deepened the dark halo beside enlarged edges.
+- **Speed:** shrinking a 1600x2400 page to 1067x1600 takes about 40 ms split over up to 4 threads, where Lanczos4 takes about 30 ms on one.
 - **Setting:** stored as `3`, the same value as in #620.
 
 ### Go 5 or 10 pages
