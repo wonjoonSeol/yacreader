@@ -53,6 +53,8 @@ namespace YACReader {
 enum YACReaderIPCMessages {
     RequestComicInfo = 0,
     SendComicInfo,
+    SendComicRating,
+    SendComicFavorite,
 };
 
 enum YACReaderComicReadStatus {
@@ -116,6 +118,24 @@ struct OpenComicSource {
 
 QDataStream &operator<<(QDataStream &stream, const OpenComicSource &source);
 QDataStream &operator>>(QDataStream &stream, OpenComicSource &source);
+
+struct ComicRatingUpdate {
+    quint64 libraryId;
+    qulonglong comicId;
+    int rating;
+};
+
+QDataStream &operator<<(QDataStream &stream, const ComicRatingUpdate &update);
+QDataStream &operator>>(QDataStream &stream, ComicRatingUpdate &update);
+
+struct ComicFavoriteUpdate {
+    quint64 libraryId;
+    qulonglong comicId;
+    bool favorite;
+};
+
+QDataStream &operator<<(QDataStream &stream, const ComicFavoriteUpdate &update);
+QDataStream &operator>>(QDataStream &stream, ComicFavoriteUpdate &update);
 
 QString getSettingsPath();
 QString getCommonSettingsPath();

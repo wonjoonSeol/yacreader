@@ -1324,3 +1324,14 @@ void LibraryWindow::updateViewsOnComicUpdate(quint64 libraryId, const ComicDB &c
         navigationController->reloadRootContinueReading();
     }
 }
+
+void LibraryWindow::updateViewsOnComicFavoriteChange(quint64 libraryId, qulonglong comicId)
+{
+    if (libraryId != (quint64)libraries.getId(selectedLibrary->currentText()))
+        return;
+
+    if (comicsModel->getMode() == ComicModel::Favorites)
+        navigationController->refreshCurrentSource();
+    else
+        comicsModel->notifyFavoriteChange(comicId);
+}

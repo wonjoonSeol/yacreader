@@ -46,6 +46,7 @@ void YACReaderLocalServer::sendResponse()
     if (worker != 0) {
         clientConnection->moveToThread(worker);
         connect(worker, &YACReaderClientConnectionWorker::comicUpdated, this, &YACReaderLocalServer::comicUpdated);
+        connect(worker, &YACReaderClientConnectionWorker::comicFavoriteChanged, this, &YACReaderLocalServer::comicFavoriteChanged);
         connect(worker, &QThread::finished, worker, &QObject::deleteLater);
         worker->start();
     }
@@ -156,6 +157,7 @@ void YACReaderClientConnectionWorker::run()
         out << (quint32)0;
         out << comic;
         out << siblings;
+        out << getFavoriteComicIds(libraryId);
         out.device()->seek(0);
         out << (quint32)(block.size() - sizeof(quint32));
 
@@ -195,6 +197,18 @@ void YACReaderClientConnectionWorker::run()
         }
         break;
     }
+    case YACReader::SendComicRating: {
+        ComicRatingUpdate update;
+        dataStream >> update;
+        setComicRating(update);
+        break;
+    }
+    case YACReader::SendComicFavorite: {
+        ComicFavoriteUpdate update;
+        dataStream >> update;
+        setComicFavorite(update);
+        break;
+    }
     }
 
     clientConnection->waitForDisconnected();
@@ -224,6 +238,16 @@ void YACReaderClientConnectionWorker::getComicInfoFromReadingList(quint64 librar
     siblings = DBHelper::getReadingListFullContent(libraryId, readingListId, true);
 }
 
+QSet<qulonglong> YACReaderClientConnectionWorker::getFavoriteComicIds(quint64 libraryId)
+{
+    QMutexLocker locker(&dbMutex);
+    QSet<qulonglong> favoriteComicIds;
+    const auto favorites = DBHelper::getFavorites(libraryId);
+    for (const auto &favorite : favorites)
+        favoriteComicIds.insert(favorite.id);
+    return favoriteComicIds;
+}
+
 void YACReaderClientConnectionWorker::updateComic(quint64 libraryId, ComicDB &comic)
 {
     QMutexLocker locker(&dbMutex);
@@ -240,4 +264,18 @@ void YACReaderClientConnectionWorker::updateComic(quint64 libraryId, ComicDB &co
     DBHelper::setComicAsReading(libraryId, nextcomicinfo);
 
     emit comicUpdated(libraryId, comic);
+}
+
+void YACReaderClientConnectionWorker::setComicRating(const ComicRatingUpdate &update)
+{
+    QMutexLocker locker(&dbMutex);
+    DBHelper::setComicRating(update.libraryId, update.comicId, update.rating);
+    emit comicUpdated(update.libraryId, DBHelper::getComicInfo(update.libraryId, update.comicId));
+}
+
+void YACReaderClientConnectionWorker::setComicFavorite(const ComicFavoriteUpdate &update)
+{
+    QMutexLocker locker(&dbMutex);
+    DBHelper::setComicFavorite(update.libraryId, update.comicId, update.favorite);
+    emit comicFavoriteChanged(update.libraryId, update.comicId);
 }

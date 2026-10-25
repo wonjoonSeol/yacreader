@@ -1971,6 +1971,57 @@ bool DBHelper::setComicType(qulonglong comicId, YACReader::FileType type, QSqlDa
     return true;
 }
 
+bool DBHelper::setComicRating(qulonglong comicId, int rating, QSqlDatabase &db)
+{
+    QSqlQuery updateComicInfo(db);
+    updateComicInfo.prepare("UPDATE comic_info SET "
+                            "rating = :rating "
+                            "WHERE id = (SELECT comicInfoId FROM comic WHERE id = :id)");
+    updateComicInfo.bindValue(":rating", rating);
+    updateComicInfo.bindValue(":id", comicId);
+
+    if (!updateComicInfo.exec()) {
+        QLOG_ERROR() << "setComicRating failed for comic" << comicId << ":" << updateComicInfo.lastError().text();
+        return false;
+    }
+
+    return true;
+}
+
+void DBHelper::setComicRating(qulonglong libraryId, qulonglong comicId, int rating)
+{
+    QString libraryPath = DBHelper::getLibraries().getPath(libraryId);
+    QString connectionName = "";
+    {
+        QSqlDatabase db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(libraryPath));
+        DBHelper::setComicRating(comicId, rating, db);
+        connectionName = db.connectionName();
+    }
+    QSqlDatabase::removeDatabase(connectionName);
+}
+
+void DBHelper::setComicFavorite(qulonglong comicId, bool favorite, QSqlDatabase &db)
+{
+    ComicDB comic;
+    comic.id = comicId;
+    if (favorite)
+        DBHelper::insertComicsInFavorites({ comic }, db);
+    else
+        DBHelper::deleteComicsFromFavorites({ comic }, db);
+}
+
+void DBHelper::setComicFavorite(qulonglong libraryId, qulonglong comicId, bool favorite)
+{
+    QString libraryPath = DBHelper::getLibraries().getPath(libraryId);
+    QString connectionName = "";
+    {
+        QSqlDatabase db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(libraryPath));
+        DBHelper::setComicFavorite(comicId, favorite, db);
+        connectionName = db.connectionName();
+    }
+    QSqlDatabase::removeDatabase(connectionName);
+}
+
 bool DBHelper::setFolderFinished(qulonglong folderId, bool finished, QSqlDatabase &db)
 {
     QSqlQuery updateFolder(db);
