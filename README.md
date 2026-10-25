@@ -1,14 +1,15 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with five changes to the comic reader. Each one also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
-| Change | Kind | Preview PR |
+| Change | Kind | PR |
 |---|---|---|
 | [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
+| [Page turns without scaling](#page-turns-without-scaling) | Speed | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
@@ -80,6 +81,22 @@ Removing a comic from the library's Reading list resets its progress to 0. Openi
 |---|---|
 | <img src="docs/fork/reading-list-before.png" width="400" alt="0/10 and Loading, please wait"> | <img src="docs/fork/reading-list-after.png" width="400" alt="Page 1 of 10"> |
 | Shows 0/10, stays on "Loading...please wait!", then crashes | Opens at page 1 |
+
+### Page turns without scaling
+
+In single and double page mode the pages next to the one you read are scaled to the window in the background, so a page turn shows a page that is ready instead of scaling it first.
+
+<img src="docs/fork/prescale-page-turn-time.png" width="700" alt="Time a page turn keeps the reader busy before and after this change, for single and double pages">
+
+| Single page mode | Double page mode |
+|---|---|
+| <img src="docs/fork/prescale-single-page.png" width="400" alt="Page 2 of a sample comic in single page mode"> | <img src="docs/fork/prescale-double-page.png" width="400" alt="Pages 4 and 5 of a sample comic in double page mode"> |
+
+- **What gets ready:** the page shown, the next two and the previous one, in that order. In double page mode the pages are paired the way the next page turns will pair them.
+- **Looks the same:** the pages are pixel for pixel what the reader showed before, in single, double, manga and rotated mode, and in the magnifier.
+- **When a page is not ready yet,** for example right after jumping far or when flipping through double pages faster than they decode, it is scaled when it is shown, as before.
+- **Memory:** the four scaled views around the current page, about 12 MB each for a 1440 x 2160 page.
+- **Continuous scroll** already scaled its pages in the background and is unchanged.
 
 ---
 
