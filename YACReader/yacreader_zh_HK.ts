@@ -333,11 +333,16 @@
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="17"/>
+        <source>Bicubic (fewer halos than Lanczos)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="344"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Restart is needed</source>
         <translation>需要重啟</translation>
     </message>
@@ -547,12 +552,12 @@ If none is active, Escape does nothing.</source>
         <translation>顯示書頁摺疊陰影</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="18"/>
+        <location filename="image_adjustment.cpp" line="19"/>
         <source>Lanczos3 (balanced)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="19"/>
+        <location filename="image_adjustment.cpp" line="20"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -562,7 +567,7 @@ If none is active, Escape does nothing.</source>
         <translation>常規</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Appearance</source>
         <translation>外貌</translation>
     </message>
@@ -587,22 +592,22 @@ If none is active, Escape does nothing.</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Page Flow</source>
         <translation>頁面流</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Image adjustment</source>
         <translation>圖像調整</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="353"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Options</source>
         <translation>選項</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="369"/>
+        <location filename="options_dialog.cpp" line="368"/>
         <source>Comics directory</source>
         <translation>漫畫目錄</translation>
     </message>

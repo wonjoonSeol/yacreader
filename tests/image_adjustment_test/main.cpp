@@ -44,7 +44,7 @@ void ImageAdjustmentTest::listsTheScalingMethodsInOrder_data()
     // Bicubic is listed third but stored as 3, and Lanczos4 fourth but stored as 2
     QTest::newRow("Nearest") << 0 << ScaleMethod::Nearest << "Nearest (fast, low quality)";
     QTest::newRow("Bilinear") << 1 << ScaleMethod::Bilinear << "Bilinear";
-    QTest::newRow("Bicubic") << 2 << ScaleMethod::Bicubic << "Bicubic";
+    QTest::newRow("Bicubic") << 2 << ScaleMethod::Bicubic << "Bicubic (fewer halos than Lanczos)";
     QTest::newRow("Lanczos4") << 3 << ScaleMethod::Lanczos4 << "Lanczos4 (more detail, more halos)";
     QTest::newRow("Lanczos3") << 4 << ScaleMethod::Lanczos3 << "Lanczos3 (balanced)";
     QTest::newRow("Lanczos2") << 5 << ScaleMethod::Lanczos2 << "Lanczos2 (fewer halos, less detail)";

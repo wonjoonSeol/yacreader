@@ -287,7 +287,7 @@
         <translation>Chemin de mes bandes dessinées</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Image adjustment</source>
         <translation>Ajustement de l&apos;image</translation>
     </message>
@@ -312,12 +312,12 @@
         <translation>Contraste</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Appearance</source>
         <translation>Apparence</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="353"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Options</source>
         <translation>Possibilités</translation>
     </message>
@@ -352,7 +352,7 @@
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="369"/>
+        <location filename="options_dialog.cpp" line="368"/>
         <source>Comics directory</source>
         <translation>Répertoire des bandes dessinées</translation>
     </message>
@@ -553,31 +553,31 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="17"/>
-        <source>Lanczos4 (more detail, more halos)</source>
+        <source>Bicubic (fewer halos than Lanczos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="18"/>
-        <source>Lanczos3 (balanced)</source>
+        <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="19"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="20"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Bicubic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Page Flow</source>
         <translation>Flux des pages</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="333"/>
         <source>General</source>
         <translation>Général</translation>
     </message>
@@ -587,7 +587,7 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Luminosité</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="344"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Restart is needed</source>
         <translation>Redémarrage nécessaire</translation>
     </message>

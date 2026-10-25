@@ -14,7 +14,7 @@ QList<ScalingMethodChoice> scalingMethodChoices()
     return {
         { ScaleMethod::Nearest, QT_TRANSLATE_NOOP("OptionsDialog", "Nearest (fast, low quality)") },
         { ScaleMethod::Bilinear, QT_TRANSLATE_NOOP("OptionsDialog", "Bilinear") },
-        { ScaleMethod::Bicubic, QT_TRANSLATE_NOOP("OptionsDialog", "Bicubic") },
+        { ScaleMethod::Bicubic, QT_TRANSLATE_NOOP("OptionsDialog", "Bicubic (fewer halos than Lanczos)") },
         { ScaleMethod::Lanczos4, QT_TRANSLATE_NOOP("OptionsDialog", "Lanczos4 (more detail, more halos)") },
         { ScaleMethod::Lanczos3, QT_TRANSLATE_NOOP("OptionsDialog", "Lanczos3 (balanced)") },
         { ScaleMethod::Lanczos2, QT_TRANSLATE_NOOP("OptionsDialog", "Lanczos2 (fewer halos, less detail)") },

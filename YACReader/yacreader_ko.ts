@@ -302,17 +302,17 @@
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="333"/>
         <source>General</source>
         <translation>일반</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Appearance</source>
         <translation>외관</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="353"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Options</source>
         <translation>환경설정</translation>
     </message>
@@ -573,41 +573,41 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="17"/>
+        <source>Bicubic (fewer halos than Lanczos)</source>
+        <translation>이중 큐빅 (Bicubic, Lanczos보다 헤일로 적음)</translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation>Lanczos4 (디테일 많음, 헤일로 많음)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="18"/>
+        <location filename="image_adjustment.cpp" line="19"/>
         <source>Lanczos3 (balanced)</source>
         <translation>Lanczos3 (균형)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="19"/>
+        <location filename="image_adjustment.cpp" line="20"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation>Lanczos2 (헤일로 적음, 디테일 적음)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Bicubic</source>
-        <translation>이중 큐빅 (Bicubic)</translation>
-    </message>
-    <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Page Flow</source>
         <translation>페이지 플로우</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Image adjustment</source>
         <translation>이미지 조정</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="344"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Restart is needed</source>
         <translation>재시작이 필요합니다</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="369"/>
+        <location filename="options_dialog.cpp" line="368"/>
         <source>Comics directory</source>
         <translation>만화 폴더</translation>
     </message>

@@ -333,11 +333,16 @@
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="17"/>
+        <source>Bicubic (fewer halos than Lanczos)</source>
+        <translation>Bicubic (fewer halos than Lanczos)</translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation>Lanczos4 (more detail, more halos)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="344"/>
+        <location filename="options_dialog.cpp" line="343"/>
         <source>Restart is needed</source>
         <translation>Restart is needed</translation>
     </message>
@@ -562,12 +567,12 @@ If none is active, Escape does nothing.</translation>
         <translation>Show book fold shadow</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="18"/>
+        <location filename="image_adjustment.cpp" line="19"/>
         <source>Lanczos3 (balanced)</source>
         <translation>Lanczos3 (balanced)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="19"/>
+        <location filename="image_adjustment.cpp" line="20"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation>Lanczos2 (fewer halos, less detail)</translation>
     </message>
@@ -577,7 +582,7 @@ If none is active, Escape does nothing.</translation>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="337"/>
+        <location filename="options_dialog.cpp" line="336"/>
         <source>Appearance</source>
         <translation>Appearance</translation>
     </message>
@@ -587,22 +592,22 @@ If none is active, Escape does nothing.</translation>
         <translation>Clear</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Page Flow</source>
         <translation>Page Flow</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Image adjustment</source>
         <translation>Image adjustment</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="353"/>
+        <location filename="options_dialog.cpp" line="352"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="369"/>
+        <location filename="options_dialog.cpp" line="368"/>
         <source>Comics directory</source>
         <translation>Comics directory</translation>
     </message>
