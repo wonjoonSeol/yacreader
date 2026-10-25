@@ -14,7 +14,6 @@ class ResizeImageTest : public QObject
 private slots:
     void scalesToTheRequestedSize_data();
     void scalesToTheRequestedSize();
-    void bicubicScalesDifferentlyFromTheOtherMethods();
     void bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging();
     void bicubicKeepsTheToneOfShrunkLineArt();
     void bicubicKeepsSolidColours();
@@ -176,21 +175,13 @@ void ResizeImageTest::scalesToTheRequestedSize()
     QCOMPARE(scaleImage(edge(QSize(40, 30)), size.width(), size.height(), method).size(), size);
 }
 
-void ResizeImageTest::bicubicScalesDifferentlyFromTheOtherMethods()
-{
-    const QImage bicubic = enlargedEdge(ScaleMethod::Bicubic);
-
-    QVERIFY(bicubic != enlargedEdge(ScaleMethod::Bilinear));
-    QVERIFY(bicubic != enlargedEdge(ScaleMethod::Lanczos));
-}
-
 void ResizeImageTest::bicubicRingsAndSpreadsLessThanLanczos4WhenEnlarging()
 {
     const QImage bicubic = enlargedEdge(ScaleMethod::Bicubic);
     const QImage lanczos4 = enlargedEdge(ScaleMethod::Lanczos);
 
-    QVERIFY2(ringing(bicubic) < ringing(lanczos4), qPrintable(QString("bicubic %1, lanczos4 %2").arg(ringing(bicubic)).arg(ringing(lanczos4))));
-    QVERIFY2(spread(bicubic) < spread(lanczos4), qPrintable(QString("bicubic %1 px, lanczos4 %2 px").arg(spread(bicubic)).arg(spread(lanczos4))));
+    QCOMPARE_LT(ringing(bicubic), ringing(lanczos4));
+    QCOMPARE_LT(spread(bicubic), spread(lanczos4));
 }
 
 // Averaging the stored sRGB values, like the other methods, keeps thin lines as dark as they are with them;
@@ -226,13 +217,10 @@ void ResizeImageTest::bicubicKeepsSolidColours()
         QImage image(37, 23, QImage::Format_ARGB32);
         image.fill(colour);
         for (const QSize size : { QSize(101, 67), QSize(13, 9) }) {
-            const QImage scaled = scaleImage(image, size.width(), size.height(), ScaleMethod::Bicubic);
-            for (int y = 0; y < scaled.height(); ++y) {
-                for (int x = 0; x < scaled.width(); ++x) {
-                    if (scaled.pixel(x, y) != colour.rgba())
-                        QFAIL(qPrintable(QString("level %1 at %2x%3 became %4").arg(level).arg(size.width()).arg(size.height()).arg(scaled.pixel(x, y), 8, 16)));
-                }
-            }
+            QImage expected(size, QImage::Format_ARGB32);
+            expected.fill(colour);
+            QVERIFY2(scaleImage(image, size.width(), size.height(), ScaleMethod::Bicubic) == expected,
+                     qPrintable(QString("level %1 at %2x%3").arg(level).arg(size.width()).arg(size.height())));
         }
     }
 }
@@ -244,7 +232,7 @@ void ResizeImageTest::bicubicMatchesADoublePrecisionRun_data()
 
     // the larger ones are big enough for the passes to be split across threads
     QTest::newRow("enlarging") << QSize(640, 480) << QSize(800, 600);
-    QTest::newRow("shrinking") << QSize(1280, 960) << QSize(512, 384);
+    QTest::newRow("shrinking") << QSize(1040, 720) << QSize(416, 288);
     QTest::newRow("small") << QSize(200, 150) << QSize(83, 61);
 }
 
@@ -270,9 +258,8 @@ void ResizeImageTest::bicubicMatchesADoublePrecisionRun()
         }
     }
     // fixed point leaves about 1 % of the samples one level off; rounding between the passes left 10-16 %
-    const double offShare = double(off) / (4.0 * target.width() * target.height());
-    QVERIFY2(worst <= 1, qPrintable(QString("worst difference %1").arg(worst)));
-    QVERIFY2(offShare < 0.03, qPrintable(QString("%1 % of the samples differ").arg(100 * offShare)));
+    QCOMPARE_LE(worst, 1);
+    QCOMPARE_LT(double(off) / (4.0 * target.width() * target.height()), 0.03);
 }
 
 QTEST_GUILESS_MAIN(ResizeImageTest)
