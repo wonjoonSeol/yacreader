@@ -275,6 +275,7 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
     QVERIFY(writePages(source + "/Solo/Bonus", 1, 9));
     QVERIFY(QDir(source + "/Mixed/Extras").removeRecursively());
     QVERIFY(writePages(source + "/Vol 3/Part", 3, 12));
+    QVERIFY(QFile::remove(source + "/Reprint/p2.png"));
 
     QVERIFY(updateLibrary(source, settings));
 
@@ -285,7 +286,7 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
         { "/Series/Chapter 1", 3 },
         { "/Series/Chapter 3", 5 },
         { "/Series/Chapter 10", 6 },
-        { "/Reprint", 2 },
+        { "/Reprint", 1 },
         { "/Mixed", 2 },
         { "/Vol 2/Part", 1 },
         { "/Vol 3/Part", 3 },
