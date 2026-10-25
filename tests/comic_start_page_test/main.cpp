@@ -63,7 +63,7 @@ int startPageOf(Comic &comic)
 class LibraryComicProbe : public FileComic
 {
 public:
-    using Comic::resolveStartPage;
+    using Comic::resolveFirstPage;
     void setPageCount(int count) { _pages.resize(count); }
     int startPage() const { return _firstPage; }
 };
@@ -156,7 +156,7 @@ void ComicStartPageTest::choosesTheStartPageOfLibraryComics()
     comic.setOpenComicsAt(openComicsAt);
     QVERIFY(comic.load(comicFolder.filePath("1.png"), comicDB));
     comic.setPageCount(pageCount);
-    comic.resolveStartPage();
+    comic.resolveFirstPage();
 
     QCOMPARE(comic.startPage(), expectedPage);
 }

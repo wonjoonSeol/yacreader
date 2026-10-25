@@ -44,7 +44,7 @@ protected:
 
     bool _errorOpening;
 
-    void resolveStartPage();
+    void resolveFirstPage();
 
 public:
     static const QStringList imageExtensions;
