@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QTest>
 
+using YACReader::mouseYInWindow;
 using YACReader::shouldShowToolBarOverPage;
 using YACReader::toolBarOverPageActivationHeight;
 using YACReader::ToolBarOverPageState;
@@ -14,6 +15,7 @@ class ToolBarOverPageTest : public QObject
 private slots:
     void showsTheToolBarUntilTheMouseLeavesIt_data();
     void showsTheToolBarUntilTheMouseLeavesIt();
+    void measuresTheMouseFromTheTopOfTheWindow();
 };
 
 namespace {
@@ -63,6 +65,20 @@ void ToolBarOverPageTest::showsTheToolBarUntilTheMouseLeavesIt()
     QCOMPARE(shouldShowToolBarOverPage(state), expected);
 }
 
-QTEST_GUILESS_MAIN(ToolBarOverPageTest)
+void ToolBarOverPageTest::measuresTheMouseFromTheTopOfTheWindow()
+{
+    QWidget window;
+    window.setGeometry(200, 100, 400, 300);
+    auto *page = new QWidget(&window);
+    page->setGeometry(0, 50, 400, 250);
+
+    // the move reaches the filter at the page, so its position() is 50 px off
+    const QPointF inPage(10, 5);
+    const QMouseEvent move(QEvent::MouseMove, inPage, page->mapToGlobal(inPage), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+
+    QCOMPARE(mouseYInWindow(&window, &move), 55);
+}
+
+QTEST_MAIN(ToolBarOverPageTest)
 
 #include "main.moc"

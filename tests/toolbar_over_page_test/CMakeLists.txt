@@ -10,6 +10,10 @@ target_include_directories(toolbar_over_page_test PRIVATE
 )
 target_link_libraries(toolbar_over_page_test PRIVATE
     Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
     Qt6::Test
 )
 add_test(NAME toolbar_over_page_test COMMAND toolbar_over_page_test)
+# the window test needs a platform, also on machines without a display
+set_tests_properties(toolbar_over_page_test PROPERTIES ENVIRONMENT QT_QPA_PLATFORM=offscreen)

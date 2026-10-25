@@ -60,7 +60,7 @@ Options > Image adjustment > **Continuous scroll**
 
 ### Toolbar in full screen
 
-Full screen (F) has no title bar and hides the toolbar. Move the mouse to the top of the screen to show the toolbar over the page. It hides again when the mouse moves back down to the page.
+Full screen (F) has no title bar and hides the toolbar. Move the mouse to the top of the screen to show the toolbar over the page, where it covers the page number in the top right corner. It hides again when the mouse moves back down to the page or leaves the screen.
 
 | Full screen | Mouse at the top of the screen |
 |---|---|
