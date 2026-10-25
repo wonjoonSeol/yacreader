@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with nine changes to the comic reader. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with nine changes to the comic reader and one to the library. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -13,6 +13,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with nine
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
+| [Folders of images as comics](#folders-of-images-as-comics) | Library | [#10](https://github.com/wonjoonSeol/yacreader/pull/10) |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
@@ -159,6 +160,28 @@ Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
 - **Shrinking** 4x, the overshoot is at most 2 grey levels with any of them.
 - **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5, leaving 3 for the Bicubic method in upstream PR [#620](https://github.com/YACReader/yacreader/pull/620). A stored value the fork does not know falls back to Lanczos4.
 - **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
+
+### Folders of images as comics
+
+YACReaderLibrary reads a folder of images as one comic, like a `.cbz`, without converting anything. Upstream leaves such folders out of the library ([#164](https://github.com/YACReader/yacreader/issues/164)).
+
+<img src="docs/fork/library-image-folders.png" width="600" alt="A series folder whose chapter folders show as comics with covers and page counts">
+
+- **What counts as a comic:** a folder with at least one image directly inside, and no subfolders or comic files (`.cbz`, `.cbr`, `.pdf` and the like). Other files, such as `ComicInfo.xml` or a text file, do not matter. A folder whose name starts with a dot is never a comic.
+- **Layouts:** in `Series/Chapter 1/001.jpg`, Series is a folder and Chapter 1 is a comic. A folder with images and subfolders stays a folder, and its own images are left out.
+- **Like an archive:** cover, page count, `ComicInfo.xml` import when it is turned on, reading progress, and library updates when pages are added or removed.
+
+| Next to archives | Opened from the library |
+|---|---|
+| <img src="docs/fork/library-image-folders-next-to-archives.png" width="400" alt="Two cbz files and a folder of images side by side as comics"> | <img src="docs/fork/reader-folder-comic.png" width="400" alt="YACReader showing page 5 of 9 of a folder comic"> |
+| `Harbor Lights 03` is a folder, the other two are `.cbz` files | Opens at the page where reading stopped |
+
+- **Deleting:** folder comics are kept unless **Also delete the image folders** is checked. Checked, they go to the trash. If the trash refuses a folder, YACReaderLibrary asks before deleting it permanently.
+
+  <img src="docs/fork/delete-folder-comics.png" width="450" alt="The delete confirmation with the Also delete the image folders box">
+
+- **Library updates:** a comic or folder that sorts after a new one by number, such as Chapter 10 after a new Chapter 3, is no longer removed and added again, so it keeps its reading lists and labels. This applies to archives too.
+- **Not covered:** dragging a folder of images onto the library still imports only comic files, and Organize files does not move a folder comic to another drive.
 
 ---
 
