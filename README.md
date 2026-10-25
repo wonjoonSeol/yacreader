@@ -1,25 +1,28 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with eleven changes to the comic reader and one to the library. Each one has a PR. Bicubic scaling comes from an upstream PR that is still open; the closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with thirteen changes, each on its own branch. Eleven are in the comic reader (YACReader). Rating and favorites works in both apps: the reader's toolbar sets them and YACReaderLibrary saves and shows them. Folders of images as comics is a library change: YACReaderLibrary adds the folders, and the reader opens them through the shared comic code (`FolderComic`). The upstream README starts after the line.
 
-| Change | Kind | PR |
-|---|---|---|
-| [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) |
-| [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
-| [Bicubic scaling](#bicubic-scaling) | Option | upstream [#620](https://github.com/YACReader/yacreader/pull/620) |
-| [Image adjustment menu](#image-adjustment-menu) | Feature | [#12](https://github.com/wonjoonSeol/yacreader/pull/12) |
-| [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
-| [Toolbar in full screen](#toolbar-in-full-screen) | Feature | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) |
-| [Rate and favorite comics while reading](#rate-and-favorite-comics-while-reading) | Toolbar | [#9](https://github.com/wonjoonSeol/yacreader/pull/9) |
-| [Page number when the page changes](#page-number-when-the-page-changes) | Display | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) |
-| [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
-| [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
-| [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
-| [Folders of images as comics](#folders-of-images-as-comics) | Library | [#10](https://github.com/wonjoonSeol/yacreader/pull/10) |
+The PR column says where each change stands. A closed preview shows the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. Open and draft PRs in the fork are still being worked on. The two bug fixes are also open upstream, and Bicubic comes from an upstream PR that is still open.
+
+| Change | Kind | App | PR |
+|---|---|---|---|
+| [Choose the page comics open at](#choose-the-page-comics-open-at) | Option | Reader | [#3](https://github.com/wonjoonSeol/yacreader/pull/3) (closed preview) |
+| [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | Reader | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) (closed preview) |
+| [Scaling methods: Bicubic, Lanczos3 and Lanczos2](#scaling-methods) | Option | Reader | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) (open), [#7](https://github.com/wonjoonSeol/yacreader/pull/7) (draft, from upstream [#620](https://github.com/YACReader/yacreader/pull/620)) |
+| [Image adjustment menu](#image-adjustment-menu) | Feature | Reader | [#12](https://github.com/wonjoonSeol/yacreader/pull/12) (draft) |
+| [Go 5 or 10 pages](#go-5-or-10-pages) | Feature | Reader | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) (closed preview) |
+| [Toolbar in full screen](#toolbar-in-full-screen) | Feature | Reader | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) (draft) |
+| [Rate and favorite comics while reading](#rate-and-favorite-comics-while-reading) | Feature | Reader and library | [#9](https://github.com/wonjoonSeol/yacreader/pull/9) (draft) |
+| [Page number when the page changes](#page-number-when-the-page-changes) | Feature | Reader | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) (draft) |
+| [Pages scaled in the background](#pages-scaled-in-the-background) | Feature | Reader | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) (draft) |
+| [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | Reader | upstream [#630](https://github.com/YACReader/yacreader/pull/630) (open), [#1](https://github.com/wonjoonSeol/yacreader/pull/1) (closed preview) |
+| [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | Reader | upstream [#629](https://github.com/YACReader/yacreader/pull/629) (open), [#2](https://github.com/wonjoonSeol/yacreader/pull/2) (closed preview) |
+| [Status messages cut off at both ends](#status-messages-cut-off-at-both-ends) | Bug fix | Reader | none yet |
+| [Folders of images as comics](#folders-of-images-as-comics) | Feature | Library | [#10](https://github.com/wonjoonSeol/yacreader/pull/10) (draft) |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
-**Screenshots** come from the fork's Linux build with generated sample pages. "Upstream" shots run the same steps on upstream `develop` (268288b).
+**Screenshots** come from the fork's Linux build with generated sample pages. "Upstream" shots run the same steps on upstream `develop` (268288b). Each change's screenshots were taken on its own branch, without the other changes, so for example the full screen and folder comic shots have no heart and stars on the toolbar, and the image adjustment menu lists only three scaling methods.
 
 ### Choose the page comics open at
 
@@ -51,18 +54,41 @@ Options > Image adjustment > **Continuous scroll**
 - A page that would end up wider than the window, such as a double page spread, fits the width instead.
 - Comics marked as web comics in the library always fit the width.
 
-### Bicubic scaling
+### Scaling methods
 
-Options > Image adjustment > Scaling > **Scaling method: Bicubic**
+Options > Image adjustment > Scaling > **Scaling method**, also in the [image adjustment menu](#image-adjustment-menu)
 
-<img src="docs/fork/scaling-bicubic-options.png" width="600" alt="Bicubic chosen in the Scaling group in Options, Image adjustment">
+<img src="docs/fork/scaling-options.png" width="600" alt="The Scaling group in Options, Image adjustment, with Lanczos3 selected">
+
+| Method | What you get | Stored as |
+|---|---|---|
+| Nearest, Bilinear | Unchanged from upstream | `0`, `1` |
+| Bicubic | A Catmull-Rom cubic (B = 0, C = 1/2) from upstream [#620](https://github.com/YACReader/yacreader/pull/620) by [dichongwu](https://github.com/dichongwu). Less ringing than the Lanczos methods | `3`, the same value as in #620 |
+| Lanczos4 (default) | Upstream's Lanczos under a new name, 4 lobes. The most fine detail and the most halos around lines | `2`, as before |
+| Lanczos3 | 3 lobes, in between | `4` |
+| Lanczos2 | 2 lobes. The fewest halos of the three, a little less fine detail | `5` |
+
+The same line art enlarged 3x, with the boxed part shown 3x larger again below it. The light bands next to the strokes are the halos:
+
+<img src="docs/fork/scaling-comparison.png" width="900" alt="The same line art enlarged 3x with Lanczos4, Lanczos3 and Lanczos2, with a close-up of the letter A">
 
 <img src="docs/fork/scaling-bicubic-enlarge.png" width="996" alt="The same line art enlarged 3x with Bilinear, Bicubic and Lanczos4">
 
-- **What it is:** a Catmull-Rom cubic (B = 0, C = 1/2) from upstream [#620](https://github.com/YACReader/yacreader/pull/620) by [dichongwu](https://github.com/dichongwu). It rings less than Lanczos4: a grey 64/192 edge enlarged 4x goes 9 grey levels past either side within 6 px of the edge, against 16 levels and 13 px with Lanczos4 (Bilinear: none, 2 px).
-- **Changed in the fork:** it averages the stored sRGB values like the other methods. #620 averages in linear light, which made shrunk line art and screentones lighter than with Bilinear or Lanczos4 and deepened the dark halo beside enlarged edges.
-- **Speed:** shrinking a 1600x2400 page to 1067x1600 takes about 40 ms split over up to 4 threads, where Lanczos4 takes about 30 ms on one.
-- **Setting:** stored as `3`, the same value as in #620.
+Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
+
+| | Bilinear | Bicubic | Lanczos4 | Lanczos3 | Lanczos2 |
+|---|---|---|---|---|---|
+| Overshoot past the edge (grey levels) | 0 | 9 | 16 | 15 | 10 |
+| Pixels from the edge that change | 2 | 6 | 13 | 9 | 6 |
+| Edge rise from 10% to 90% (px) | 3.4 | not measured | 3.0 | 3.0 | 3.0 |
+| Contrast kept on stripes with a 3 px period | 77% | not measured | 98% | 96% | 90% |
+
+- **Edges** are equally steep with the three Lanczos methods. The difference is in the halos and the finest detail.
+- **Shrinking** 4x, the overshoot is at most 2 grey levels with any of the Lanczos methods.
+- **Bicubic in the fork** averages the stored sRGB values like the other methods. #620 averages in linear light, which made shrunk line art and screentones lighter than with Bilinear or Lanczos4 and deepened the dark halo beside enlarged edges.
+- **Speed:** shrinking a 1600x2400 page to 1067x1600 takes about 40 ms with Bicubic, split over up to 4 threads, where Lanczos4 takes about 30 ms on one.
+- **Settings:** a stored value the fork does not know falls back to Lanczos4.
+- **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
 
 ### Image adjustment menu
 
@@ -75,7 +101,7 @@ Right-click the page > **Image adjustment**, or click the arrow next to the Opti
 | Brightness, Contrast, Gamma, Reset | Image options |
 | Enlarge images to fit width/height | Fit options |
 | Continuous scroll > Fit pages to width / height | Continuous scroll |
-| Scaling method > Nearest / Bilinear / Lanczos | Scaling |
+| Scaling method > the [scaling methods](#scaling-methods) of Options | Scaling |
 
 | Moving a slider | The arrow next to Options |
 |---|---|
@@ -146,6 +172,21 @@ Turning a page shows the page number in the top left corner for a moment, then i
 - **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
 - **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides without fading.
 
+### Pages scaled in the background
+
+In single and double page mode, a page turn used to scale the page to the window before showing it, and in double page mode it first drew both pages together at full size. Now the current view, the next two and the previous one are scaled in the background, and a page turn shows the prepared image. The pages look the same as before.
+
+Time a page turn kept the reader busy, median, with 1600x2400 JPEG pages, Fit to page and Lanczos4 (Linux build):
+
+| View | Before | Now |
+|---|---|---|
+| Single page, 960 x 1440 px | 35.7 ms | 0.41 ms |
+| Double page, 1920 x 1440 px | 98.7 ms | 0.50 ms |
+
+- **When it scales again:** after a change of window size, zoom, fit mode or scaling method (from Options or the image adjustment menu), and after rotating, a filter change or opening another comic.
+- **Flipping fast:** at a page every 150 ms, single page mode still had the page ready on 12 of 13 turns. Double page mode fell behind after three spreads and then scaled on the turn, as before.
+- **Continuous scroll** already scaled ahead and is unchanged.
+
 ### Next file after an unreadable one
 
 In a folder with `Comic 1.pdf`, an unreadable `Comic 2.cbz` and `Comic 3.pdf`, going from Comic 1 to the next comic shows this error:
@@ -170,35 +211,9 @@ Removing a comic from the library's Reading list resets its progress to 0. Openi
 | <img src="docs/fork/reading-list-before.png" width="400" alt="0/10 and Loading, please wait"> | <img src="docs/fork/reading-list-after.png" width="400" alt="Page 1 of 10"> |
 | Shows 0/10, stays on "Loading...please wait!", then crashes | Opens at page 1 |
 
-### Lanczos3 and Lanczos2 scaling
+### Status messages cut off at both ends
 
-Options > Image adjustment > **Scaling** > Scaling method
-
-<img src="docs/fork/scaling-options.png" width="600" alt="The Scaling group in Options, Image adjustment, with Lanczos3 selected">
-
-| Method | Lobes | What you get |
-|---|---|---|
-| Lanczos4 (default) | 4 | Upstream's Lanczos under a new name. The most fine detail and the most halos around lines |
-| Lanczos3 | 3 | In between |
-| Lanczos2 | 2 | The fewest halos, a little less fine detail |
-
-The same line art enlarged 3x, with the boxed part shown 3x larger again below it. The light bands next to the strokes are the halos:
-
-<img src="docs/fork/scaling-comparison.png" width="900" alt="The same line art enlarged 3x with Lanczos4, Lanczos3 and Lanczos2, with a close-up of the letter A">
-
-Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
-
-| | Lanczos4 | Lanczos3 | Lanczos2 | Bilinear |
-|---|---|---|---|---|
-| Overshoot past the edge (grey levels) | 16 | 15 | 10 | 0 |
-| Pixels from the edge that change | 13 | 9 | 6 | 2 |
-| Edge rise from 10% to 90% (px) | 3.0 | 3.0 | 3.0 | 3.4 |
-| Contrast kept on stripes with a 3 px period | 98% | 96% | 90% | 77% |
-
-- **Edges** are equally steep with all three. The difference is in the halos and the finest detail.
-- **Shrinking** 4x, the overshoot is at most 2 grey levels with any of them.
-- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5, leaving 3 for the Bicubic method in upstream PR [#620](https://github.com/YACReader/yacreader/pull/620). A stored value the fork does not know falls back to Lanczos4.
-- **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
+The reader's status messages, such as "Press 'O' to open comic.", "Loading...please wait!" and "Page not available!", share one label, which kept the size of the first message it showed. A longer message was then cut off on both sides, because it is centred: in Korean the loading message lost its first and last characters, and Turkish was affected too. The label now fits each new message.
 
 ### Folders of images as comics
 
