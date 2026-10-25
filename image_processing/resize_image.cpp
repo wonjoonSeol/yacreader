@@ -2,6 +2,8 @@
 
 #include "lancir.h"
 
+#include <QVariant>
+
 #include <algorithm>
 #include <cmath>
 #include <thread>

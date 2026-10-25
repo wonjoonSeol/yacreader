@@ -3,7 +3,8 @@
 
 #include <QImage>
 #include <QPixmap>
-#include <QVariant>
+
+class QVariant;
 
 // The values are stored in settings and must not be renumbered.
 enum class ScaleMethod {
