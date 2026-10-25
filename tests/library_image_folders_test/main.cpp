@@ -1,5 +1,4 @@
 #include "comic.h"
-#include "comics_remover.h"
 #include "data_base_management.h"
 #include "library_creator.h"
 #include "yacreader_global.h"
@@ -13,9 +12,12 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QStandardPaths>
-#include <QStringListModel>
 #include <QTemporaryDir>
 #include <QTest>
+
+#include <chrono>
+#include <filesystem>
+#include <utility>
 
 using YACReader::LibraryPaths;
 
@@ -29,8 +31,10 @@ private slots:
     void tellsComicFoldersApart();
     void importsFoldersOfImagesAsComics();
     void updateFollowsTheFoldersOfImages();
-    void deletesFolderComicsOnlyWhenAsked();
-    void deletesFolderComicsForGoodWhenToldTo();
+    void modifiedDatesFollowThePages();
+    void hashesFollowThePages();
+    void folderUpdateOfAFolderThatBecameAComic();
+    void sortsPagesWithoutTies();
 };
 
 namespace {
@@ -41,6 +45,7 @@ struct ComicRow {
     QString hash;
     QString coverSize;
     QString title;
+    qint64 added;
 };
 
 QSize pageSize(int page)
@@ -71,7 +76,17 @@ bool writeFile(const QString &path, const QByteArray &content)
     return file.open(QIODevice::WriteOnly) && file.write(content) == content.size();
 }
 
-bool runUntil(LibraryCreator &creator, void (LibraryCreator::*finishedSignal)())
+bool setLastModifiedInAnHour(const QString &path)
+{
+    const std::filesystem::path file(path.toStdU16String());
+    std::error_code error;
+    const auto lastModified = std::filesystem::last_write_time(file, error);
+    std::filesystem::last_write_time(file, lastModified + std::chrono::hours(1), error);
+    return !error;
+}
+
+template<typename FinishedSignal>
+bool runUntil(LibraryCreator &creator, FinishedSignal finishedSignal)
 {
     QSignalSpy finished(&creator, finishedSignal);
     creator.start();
@@ -99,11 +114,11 @@ QMap<QString, ComicRow> comicsByPath(const QString &source)
     {
         auto db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(source));
         connectionName = db.connectionName();
-        QSqlQuery query("SELECT c.id, c.path, ci.numPages, ci.hash, ci.originalCoverSize, ci.title "
+        QSqlQuery query("SELECT c.id, c.path, ci.numPages, ci.hash, ci.originalCoverSize, ci.title, ci.added "
                         "FROM comic c INNER JOIN comic_info ci ON c.comicInfoId = ci.id",
                         db);
         while (query.next()) {
-            comics.insert(query.value(1).toString(), { query.value(0).toULongLong(), query.value(2).toInt(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString() });
+            comics.insert(query.value(1).toString(), { query.value(0).toULongLong(), query.value(2).toInt(), query.value(3).toString(), query.value(4).toString(), query.value(5).toString(), query.value(6).toLongLong() });
         }
     }
     QSqlDatabase::removeDatabase(connectionName);
@@ -162,6 +177,8 @@ bool buildLibrary(const QString &source)
         { "/Series/Chapter 1", 2, 2 },
         { "/Reprint", 2, 2, "p" },
         { "/Series/Chapter 2", 4, 3 },
+        // how a Synology NAS keeps thumbnails, in a folder in every folder
+        { "/Series/Chapter 2/@eaDir/1.png", 1, 13 },
         { "/Series/Chapter 10", 6, 2 },
         { "/Mixed", 2, 4 },
         { "/Mixed/Extras", 5, 5 },
@@ -204,13 +221,20 @@ void LibraryImageFoldersTest::tellsComicFoldersApart_data()
     QTest::addColumn<bool>("isComic");
 
     QTest::newRow("images") << "Chapter" << QStringList { "1.png", "2.jpg" } << true;
+    QTest::newRow("upper case extension") << "Chapter" << QStringList { "1.PNG" } << true;
     QTest::newRow("images and other files") << "Chapter" << QStringList { "1.png", "notes.txt", "ComicInfo.xml" } << true;
     QTest::newRow("no images") << "Chapter" << QStringList { "notes.txt" } << false;
+    QTest::newRow("only dot files") << "Chapter" << QStringList { "._1.png" } << false;
     QTest::newRow("empty") << "Chapter" << QStringList { } << false;
     QTest::newRow("images and a subfolder") << "Chapter" << QStringList { "1.png", "Extras/1.png" } << false;
+    QTest::newRow("images and a hidden subfolder") << "Chapter" << QStringList { "1.png", ".thumbnails/1.png" } << true;
+    QTest::newRow("images and a NAS metadata subfolder") << "Chapter" << QStringList { "1.png", "@eaDir/1.png/SYNOPHOTO_THUMB_M.jpg" } << true;
+    QTest::newRow("images and macOS metadata") << "Chapter" << QStringList { "1.png", "__MACOSX/._1.png" } << true;
     QTest::newRow("images and an archive") << "Chapter" << QStringList { "1.png", "Book.cbz" } << false;
     QTest::newRow("images and a PDF") << "Chapter" << QStringList { "1.png", "Book.pdf" } << false;
+    QTest::newRow("folder named like an archive") << "Book.cbz" << QStringList { "1.png" } << true;
     QTest::newRow("dot folder") << ".thumbnails" << QStringList { "1.png" } << false;
+    QTest::newRow("NAS metadata folder") << "@eaDir" << QStringList { "1.png" } << false;
 }
 
 void LibraryImageFoldersTest::tellsComicFoldersApart()
@@ -302,47 +326,94 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
     QCOMPARE(folders.value("/Vol 10"), foldersBefore.value("/Vol 10"));
 }
 
-void LibraryImageFoldersTest::deletesFolderComicsOnlyWhenAsked()
+void LibraryImageFoldersTest::modifiedDatesFollowThePages()
 {
     QTemporaryDir root;
     QVERIFY(root.isValid());
-    QVERIFY(writePages(root.filePath("Chapter 1"), 2, 1));
-    QVERIFY(writeFile(root.filePath("Book.cbz"), "book"));
-    QVERIFY(writePages(root.filePath("Chapter 2"), 3, 2));
-    QVERIFY(writeFile(root.filePath("Chapter 2/notes.txt"), "notes"));
+    const auto source = root.path();
+    QVERIFY(writePages(source + "/Chapter", 3, 1));
+    QVERIFY(writePages(source + "/Edited", 2, 2));
+    QSettings settings(root.filePath("settings.ini"), QSettings::IniFormat);
+    settings.setValue(COMPARE_MODIFIED_DATE_ON_LIBRARY_UPDATES, true);
+    QVERIFY(createLibrary(source, settings));
+    const auto before = comicsByPath(source);
 
-    const ComicsDeletion deletion({ root.filePath("Chapter 1"), root.filePath("Book.cbz"), root.filePath("Chapter 2") });
+    // a new ComicInfo.xml makes the folder newer, an edited page makes only the page newer
+    QVERIFY(writeFile(source + "/Chapter/ComicInfo.xml", "<ComicInfo/>"));
+    QVERIFY(setLastModifiedInAnHour(source + "/Chapter"));
+    QVERIFY(setLastModifiedInAnHour(source + "/Edited/2.png"));
 
-    QCOMPARE(deletion.files, QList<int>({ 1 }));
-    QCOMPARE(deletion.folders, QList<int>({ 0, 2 }));
-    QCOMPARE(deletion.folderImages, 5);
-    QCOMPARE(deletion.deleted(false), QList<int>({ 1 }));
-    QCOMPARE(deletion.deleted(true), QList<int>({ 0, 1, 2 }));
+    QVERIFY(updateLibrary(source, settings));
+
+    // a replaced comic is dated like what changed it, an hour from now
+    const auto comics = comicsByPath(source);
+    QCOMPARE(comics.value("/Chapter").added, before.value("/Chapter").added);
+    QVERIFY(comics.value("/Edited").added > before.value("/Edited").added + 1800);
 }
 
-void LibraryImageFoldersTest::deletesFolderComicsForGoodWhenToldTo()
+void LibraryImageFoldersTest::hashesFollowThePages()
 {
     QTemporaryDir root;
     QVERIFY(root.isValid());
-    QVERIFY(writePages(root.filePath("Chapter 1"), 2, 1));
-    QVERIFY(writePages(root.filePath("Chapter 2"), 3, 2));
+    const auto source = root.path();
+    // the same first page, names and sizes, only the bytes of the last page differ
+    for (const auto &[folder, lastPage] : { std::pair { "/First", 'a' }, std::pair { "/Second", 'b' } }) {
+        QVERIFY(writePages(source + folder, 1, 1));
+        QVERIFY(writeFile(source + folder + "/2.png", QByteArray(100, lastPage)));
+    }
+    // the same pages, with a name in the two Unicode forms macOS and other systems keep it in
+    for (const auto &[folder, form] : { std::pair { "/Composed", QString::NormalizationForm_C }, std::pair { "/Decomposed", QString::NormalizationForm_D } }) {
+        QVERIFY(writePages(source + folder, 1, 3, QString::fromUtf8("café ").normalized(form)));
+    }
+    QSettings settings(root.filePath("settings.ini"), QSettings::IniFormat);
 
-    QStringListModel model({ "Chapter 1", "Chapter 2" });
-    QModelIndexList indexes { model.index(0), model.index(1) };
-    QList<QString> paths { root.filePath("Chapter 1"), root.filePath("Chapter 2") };
-    ComicsRemover remover(indexes, paths, 1);
-    remover.setDeleteFoldersPermanently(true);
-    QSignalSpy removed(&remover, &ComicsRemover::remove);
-    QSignalSpy notTrashed(&remover, &ComicsRemover::folderNotTrashed);
-    QSignalSpy failed(&remover, &ComicsRemover::removeError);
+    QVERIFY(createLibrary(source, settings));
 
-    remover.process();
+    const auto comics = comicsByPath(source);
+    QCOMPARE(comics.size(), 4);
+    QVERIFY(comics.value("/First").hash != comics.value("/Second").hash);
+    QCOMPARE(comics.value("/Composed").hash, comics.value("/Decomposed").hash);
+}
 
-    QCOMPARE(removed.count(), 2);
-    QCOMPARE(notTrashed.count(), 0);
-    QCOMPARE(failed.count(), 0);
-    QVERIFY(!QFileInfo::exists(root.filePath("Chapter 1")));
-    QVERIFY(!QFileInfo::exists(root.filePath("Chapter 2")));
+void LibraryImageFoldersTest::folderUpdateOfAFolderThatBecameAComic()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    const auto source = root.path();
+    QVERIFY(writePages(source + "/Arc/Part 1", 2, 1));
+    QVERIFY(writePages(source + "/Arc/Part 2", 3, 2));
+    QSettings settings(root.filePath("settings.ini"), QSettings::IniFormat);
+    QVERIFY(createLibrary(source, settings));
+    const auto arcId = folderIdsByPath(source).value("/Arc");
+    QVERIFY(arcId > 1);
+
+    QVERIFY(QDir(source + "/Arc/Part 1").removeRecursively());
+    QVERIFY(QDir(source + "/Arc/Part 2").removeRecursively());
+    QVERIFY(writePages(source + "/Arc", 4, 3));
+
+    LibraryCreator creator(&settings);
+    creator.updateFolder(source, LibraryPaths::libraryDataPath(source), source + "/Arc", arcId);
+    QVERIFY(runUntil(creator, &LibraryCreator::updatedCurrentFolder));
+
+    QCOMPARE(pageCounts(comicsByPath(source)), (QMap<QString, int> { { "/Arc", 4 } }));
+    QVERIFY(folderIdsByPath(source).isEmpty());
+}
+
+void LibraryImageFoldersTest::sortsPagesWithoutTies()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    for (const auto &name : { "1.png", "01.png", "2.PNG", "10.png", "._1.png" }) {
+        QVERIFY(writeFile(root.filePath(name), "page"));
+    }
+
+    QStringList names;
+    for (const QFileInfo &page : FolderComic::pageFiles(root.path())) {
+        names.append(page.fileName());
+    }
+
+    // "01" and "1" are equal for the collator, the strict order keeps them in a fixed order
+    QCOMPARE(names, QStringList({ "01.png", "1.png", "2.PNG", "10.png" }));
 }
 
 QTEST_GUILESS_MAIN(LibraryImageFoldersTest)

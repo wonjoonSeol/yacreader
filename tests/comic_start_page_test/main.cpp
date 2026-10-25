@@ -26,6 +26,8 @@ private slots:
     void choosesTheStartPageOfLibraryComics();
     void opensLibraryFolderComicsAtTheSavedPage_data();
     void opensLibraryFolderComicsAtTheSavedPage();
+    void keepsTheLastPageOfLibraryFolderComicsInRange_data();
+    void keepsTheLastPageOfLibraryFolderComicsInRange();
     void reopenedComicStartsFromTheSavedProgress_data();
     void reopenedComicStartsFromTheSavedProgress();
     void saveBookmarksRecordsTheLastReadPageAndItsImage();
@@ -164,16 +166,48 @@ void ComicStartPageTest::choosesTheStartPageOfLibraryComics()
 void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage_data()
 {
     QTest::addColumn<int>("currentPage");
+    QTest::addColumn<OpenComicsAt>("openComicsAt");
     QTest::addColumn<int>("expectedPage");
 
-    QTest::newRow("on a middle page") << 3 << 2;
-    QTest::newRow("never opened") << 0 << 0;
+    QTest::newRow("on a middle page") << 3 << OpenComicsAt::LastReadPage << 2;
+    QTest::newRow("never opened") << 0 << OpenComicsAt::LastReadPage << 0;
+    QTest::newRow("finished, first page if finished") << pageCount << OpenComicsAt::FirstPageIfFinished << 0;
+    QTest::newRow("on a middle page, first page if finished") << 3 << OpenComicsAt::FirstPageIfFinished << 2;
+    QTest::newRow("on a middle page, first page") << 3 << OpenComicsAt::FirstPage << 0;
 }
 
 void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage()
 {
     QFETCH(int, currentPage);
+    QFETCH(OpenComicsAt, openComicsAt);
     QFETCH(int, expectedPage);
+
+    ComicDB comicDB;
+    comicDB.info.currentPage = currentPage;
+
+    FolderComic comic;
+    comic.setOpenComicsAt(openComicsAt);
+    QVERIFY(comic.load(comicFolder.path(), comicDB));
+
+    QCOMPARE(startPageOf(comic), expectedPage);
+    QVERIFY(!comic.hasBeenAnErrorOpening());
+    QCOMPARE(comic.numPages(), static_cast<unsigned int>(pageCount));
+}
+
+void ComicStartPageTest::keepsTheLastPageOfLibraryFolderComicsInRange_data()
+{
+    QTest::addColumn<int>("currentPage");
+    QTest::addColumn<int>("expectedLastPage");
+
+    QTest::newRow("never opened") << 0 << 0;
+    QTest::newRow("below zero") << -5 << 0;
+    QTest::newRow("on a middle page") << 3 << 2;
+}
+
+void ComicStartPageTest::keepsTheLastPageOfLibraryFolderComicsInRange()
+{
+    QFETCH(int, currentPage);
+    QFETCH(int, expectedLastPage);
 
     ComicDB comicDB;
     comicDB.info.currentPage = currentPage;
@@ -181,9 +215,7 @@ void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage()
     FolderComic comic;
     QVERIFY(comic.load(comicFolder.path(), comicDB));
 
-    QCOMPARE(startPageOf(comic), expectedPage);
-    QVERIFY(!comic.hasBeenAnErrorOpening());
-    QCOMPARE(comic.numPages(), static_cast<unsigned int>(pageCount));
+    QCOMPARE(comic.bm->getLastPage(), expectedLastPage);
 }
 
 void ComicStartPageTest::reopenedComicStartsFromTheSavedProgress_data()

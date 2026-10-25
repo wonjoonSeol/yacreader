@@ -9,6 +9,7 @@
 #include <QHash>
 #include <QPair>
 #include <QSet>
+#include <QStorageInfo>
 
 #include <algorithm>
 #include <utility>
@@ -79,26 +80,28 @@ bool moveFile(const QString &source, const QString &destination, QString *reason
         return false;
     }
 
+    // a folder comic is only ever renamed, never copied
     if (QFileInfo(source).isDir()) {
-        *reason = translated("%1 (a folder comic is not copied to another drive)").arg(renameError);
+        const bool otherDrive = QStorageInfo(source).rootPath() != QStorageInfo(QFileInfo(destination).absolutePath()).rootPath();
+        *reason = otherDrive ? translated(QT_TRANSLATE_NOOP("OrganizeFiles", "%1 (a folder comic cannot be moved to another drive)")).arg(renameError) : renameError;
         return false;
     }
 
     if (!QFile::copy(source, destination)) {
         QFile copyTarget(destination);
-        *reason = translated("%1 (copy also failed: %2)").arg(renameError, copyTarget.errorString());
+        *reason = translated(QT_TRANSLATE_NOOP("OrganizeFiles", "%1 (copy also failed: %2)")).arg(renameError, copyTarget.errorString());
         return false;
     }
 
     if (QFileInfo(destination).size() != QFileInfo(source).size()) {
         QFile::remove(destination);
-        *reason = translated("the copy did not have the same size as the original");
+        *reason = translated(QT_TRANSLATE_NOOP("OrganizeFiles", "the copy did not have the same size as the original"));
         return false;
     }
 
     if (!QFile::remove(source)) {
         QFile::remove(destination);
-        *reason = translated("the original could not be deleted after it was copied");
+        *reason = translated(QT_TRANSLATE_NOOP("OrganizeFiles", "the original could not be deleted after it was copied"));
         return false;
     }
 

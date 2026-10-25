@@ -24,17 +24,32 @@
 using namespace std;
 using namespace YACReader;
 
+// An entry of a library folder: a folder that holds comics, or a comic, which is a file or a folder of images.
+// A folder comic keeps what one listing found in it, for its size, hash, cover and date.
+struct LibraryEntry {
+    QFileInfo info;
+    std::optional<FolderComicContents> folderComic;
+
+    bool holdsComics() const { return info.isDir() && !folderComic; }
+};
+
 namespace {
 
-bool isLibraryDataFolder(const QFileInfo &fileInfo)
+// .yacreaderlibrary is a metadata folder too, so the scan never enters it
+QList<LibraryEntry> libraryEntries(QDir dir, const QStringList &nameFilter)
 {
-    return fileInfo.isDir() && fileInfo.fileName() == ".yacreaderlibrary";
-}
-
-// a folder of images is a comic like an archive, any other folder holds comics and folders
-bool isFolder(const QFileInfo &fileInfo)
-{
-    return fileInfo.isDir() && !Comic::folderIsComic(fileInfo.absoluteFilePath());
+    dir.setNameFilters(nameFilter);
+    dir.setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+    QList<LibraryEntry> entries;
+    const QFileInfoList infos = dir.entryInfoList();
+    for (const QFileInfo &info : infos) {
+        if (!info.isDir()) {
+            entries.append({ info, std::nullopt });
+        } else if (!Comic::isMetadataFolder(info.fileName())) {
+            entries.append({ info, FolderComic::comicContents(info.absoluteFilePath()) });
+        }
+    }
+    return entries;
 }
 
 qint64 totalSize(const QFileInfoList &files)
@@ -47,26 +62,32 @@ qint64 totalSize(const QFileInfoList &files)
 }
 
 // the pages of a folder comic take the place of the archive file
-qint64 comicSize(const QFileInfo &fileInfo)
+qint64 comicSize(const LibraryEntry &entry)
 {
-    return fileInfo.isDir() ? totalSize(FolderComic::pageFiles(fileInfo.absoluteFilePath())) : fileInfo.size();
+    return entry.folderComic ? totalSize(entry.folderComic->pages) : entry.info.size();
 }
 
-// update() must sort and merge with the same order, and the tie-break keeps names like "01" and "1" apart
-int compareNames(const QString &left, const QString &right)
+// a folder's own date changes when other files such as ComicInfo.xml come and go, and not when a page is edited
+QDateTime comicLastModified(const LibraryEntry &entry)
 {
-    const int natural = naturalCompare(left, right, Qt::CaseInsensitive);
-    return natural != 0 ? natural : QString::localeAwareCompare(left, right);
+    if (!entry.folderComic) {
+        return entry.info.lastModified();
+    }
+    QDateTime newest;
+    for (const QFileInfo &page : entry.folderComic->pages) {
+        newest = std::max(newest, page.lastModified());
+    }
+    return newest;
 }
 
-bool sourceLessThan(const QFileInfo &left, const QFileInfo &right)
+bool sourceLessThan(const LibraryEntry &left, const LibraryEntry &right)
 {
-    return compareNames(left.fileName(), right.fileName()) < 0;
+    return naturalCompareStrict(left.info.fileName(), right.info.fileName()) < 0;
 }
 
 bool libraryLessThan(const LibraryItem *left, const LibraryItem *right)
 {
-    return compareNames(left->name, right->name) < 0;
+    return naturalCompareStrict(left->name, right->name) < 0;
 }
 
 }
@@ -136,6 +157,12 @@ void LibraryCreator::updateFolder(const QString &source, const QString &target, 
         folders = relativeFolderPath.split('/');
     }
 
+    // a folder that has become a folder comic is now a comic of its parent, so the parent is updated
+    const bool folderBecameComic = !folders.isEmpty() && Comic::folderIsComic(sourceFolder);
+    if (folderBecameComic) {
+        folders.removeLast();
+    }
+
     QLOG_DEBUG() << "folders found in relative path : " << folders << "-" << relativeFolderPath;
     QString connectionName = "";
     {
@@ -164,7 +191,10 @@ void LibraryCreator::updateFolder(const QString &source, const QString &target, 
 
     QLOG_DEBUG() << "Relative path : " << relativeFolderPath;
 
-    _sourceFolder = sourceFolder;
+    _sourceFolder = folderBecameComic ? QFileInfo(sourceFolder).absolutePath() : sourceFolder;
+    if (folderBecameComic) {
+        _folderDestinationId = _currentPathFolders.last().id;
+    }
 
     processLibrary(source, target);
 }
@@ -404,16 +434,11 @@ qulonglong LibraryCreator::insertFolders()
 
 void LibraryCreator::create(QDir dir)
 {
-    dir.setNameFilters(_nameFilter);
-    dir.setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
+    const QList<LibraryEntry> entries = libraryEntries(dir, _nameFilter);
+    for (const LibraryEntry &entry : entries) {
         if (stopRunning)
             return;
-        QFileInfo fileInfo = list.at(i);
-        if (isLibraryDataFolder(fileInfo)) {
-            continue;
-        }
+        const QFileInfo &fileInfo = entry.info;
 #ifdef Q_OS_MACOS
         QStringList src = _source.split("/");
         QString filePath = fileInfo.absoluteFilePath();
@@ -425,7 +450,7 @@ void LibraryCreator::create(QDir dir)
 #else
         QString relativePath = QDir::cleanPath(fileInfo.absoluteFilePath()).remove(_source);
 #endif
-        if (isFolder(fileInfo)) {
+        if (entry.holdsComics()) {
             QLOG_TRACE() << "Parsing folder" << fileInfo.canonicalPath();
             // se añade al path actual el folder, aún no se sabe si habrá que añadirlo a la base de datos
             _currentPathFolders.append(Folder(fileInfo.fileName(), relativePath));
@@ -434,7 +459,7 @@ void LibraryCreator::create(QDir dir)
             _currentPathFolders.pop_back();
         } else {
             QLOG_TRACE() << "Parsing file" << fileInfo.filePath();
-            insertComic(relativePath, fileInfo);
+            insertComic(relativePath, entry);
         }
     }
 }
@@ -460,32 +485,35 @@ QString filePseudoHash(const QFileInfo &fileInfo)
     return QString(crypto.result().toHex().constData()) + QString::number(fileInfo.size());
 }
 
-// ends like a file hash with the size that ComicDB::getFileSize() reads back, here the size of all the pages
-QString folderPseudoHash(const QFileInfo &folderInfo)
+// Sha1 of the first 0.5MB of the first and last pages and of the name and size of every page, then, like a
+// file hash, the size that ComicDB::getFileSize() reads back, here the size of all the pages
+QString folderPseudoHash(const QFileInfoList &pages)
 {
-    const QFileInfoList pages = FolderComic::pageFiles(folderInfo.absoluteFilePath());
     QCryptographicHash crypto(QCryptographicHash::Sha1);
-    if (!pages.isEmpty()) {
-        crypto.addData(firstBytes(pages.first()));
+    crypto.addData(firstBytes(pages.first()));
+    if (pages.size() > 1) {
+        crypto.addData(firstBytes(pages.last()));
     }
     for (const QFileInfo &page : pages) {
-        crypto.addData(page.fileName().toUtf8() + '/' + QByteArray::number(page.size()) + '\n');
+        // macOS keeps names decomposed, NFC gives the same hash everywhere
+        crypto.addData(page.fileName().normalized(QString::NormalizationForm_C).toUtf8() + '/' + QByteArray::number(page.size()) + '\n');
     }
     return QString(crypto.result().toHex().constData()) + QString::number(totalSize(pages));
 }
 
-}
-
-QString pseudoHash(const QFileInfo &fileInfo)
+QString pseudoHash(const LibraryEntry &entry)
 {
-    return fileInfo.isDir() ? folderPseudoHash(fileInfo) : filePseudoHash(fileInfo);
+    return entry.folderComic ? folderPseudoHash(entry.folderComic->pages) : filePseudoHash(entry.info);
 }
 
-void LibraryCreator::insertComic(const QString &relativePath, const QFileInfo &fileInfo)
+}
+
+void LibraryCreator::insertComic(const QString &relativePath, const LibraryEntry &entry)
 {
     auto _database = QSqlDatabase::database(_databaseConnection);
 
-    QString hash = pseudoHash(fileInfo);
+    const QFileInfo &fileInfo = entry.info;
+    QString hash = pseudoHash(entry);
 
     ComicDB comic = DBHelper::loadComic(fileInfo.fileName(), relativePath, hash, _database);
     int numPages = 0;
@@ -494,6 +522,9 @@ void LibraryCreator::insertComic(const QString &relativePath, const QFileInfo &f
 
     auto coverPath = LibraryPaths::coverPathFromLibraryDataPath(_target, hash);
     YACReader::InitialComicInfoExtractor ie(QDir::cleanPath(fileInfo.absoluteFilePath()), coverPath, comic.info.coverPage.toInt(), settings->value(IMPORT_COMIC_INFO_XML_METADATA, false).toBool());
+    if (entry.folderComic) {
+        ie.setFolderComic(*entry.folderComic);
+    }
 
     // A comic_info row without pages describes a file that never produced a comic, so it
     // is no proof that the file is one: check it again instead of taking the shortcut.
@@ -533,14 +564,15 @@ void LibraryCreator::insertComic(const QString &relativePath, const QFileInfo &f
     }
 }
 
-void LibraryCreator::replaceComic(const QString &relativePath, const QFileInfo &fileInfo, ComicDB *comic)
+void LibraryCreator::replaceComic(const QString &relativePath, const LibraryEntry &entry, ComicDB *comic)
 {
     auto _database = QSqlDatabase::database(_databaseConnection);
 
     DBHelper::removeFromDB(comic, _database);
-    insertComic(relativePath, fileInfo);
+    insertComic(relativePath, entry);
 
-    QString hash = pseudoHash(fileInfo);
+    const QFileInfo &fileInfo = entry.info;
+    QString hash = pseudoHash(entry);
 
     ComicDB insertedComic = DBHelper::loadComic(fileInfo.fileName(), relativePath, hash, _database);
 
@@ -564,7 +596,7 @@ void LibraryCreator::replaceComic(const QString &relativePath, const QFileInfo &
     insertedComic.info.coverSizeRatio = coverRatio;
     insertedComic.info.id = id;
     insertedComic.info.coverPage = 1;
-    insertedComic.info.added = fileInfo.lastModified().toSecsSinceEpoch();
+    insertedComic.info.added = comicLastModified(entry).toSecsSinceEpoch();
 
     DBHelper::update(&(insertedComic.info), _database);
 }
@@ -578,30 +610,25 @@ void LibraryCreator::update(QDir dirS)
     auto _database = QSqlDatabase::database(_databaseConnection);
     // QLOG_TRACE() << "Updating" << dirS.absolutePath();
     // QLOG_TRACE() << "Getting info from dir" << dirS.absolutePath();
-    dirS.setNameFilters(_nameFilter);
-    dirS.setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
-    QFileInfoList listSFolders;
-    QFileInfoList listSComics;
-    const QFileInfoList entriesS = dirS.entryInfoList();
-    for (const QFileInfo &entry : entriesS) {
-        if (isLibraryDataFolder(entry)) {
-            continue;
-        }
-        if (isFolder(entry)) {
+    QList<LibraryEntry> listSFolders;
+    QList<LibraryEntry> listSComics;
+    const QList<LibraryEntry> entriesS = libraryEntries(dirS, _nameFilter);
+    for (const LibraryEntry &entry : entriesS) {
+        if (entry.holdsComics()) {
             listSFolders.append(entry);
         } else {
             listSComics.append(entry);
         }
     }
 
+    // both lists are sorted with the order the merge below compares names by
     std::sort(listSFolders.begin(), listSFolders.end(), sourceLessThan);
     std::sort(listSComics.begin(), listSComics.end(), sourceLessThan);
 
-    QFileInfoList listS;
+    // like the library list, the source list has its folders first
+    QList<LibraryEntry> listS;
     listS.append(listSFolders);
     listS.append(listSComics);
-    // like the library list, the source list has its folders first
-    const auto isFolderS = [&listSFolders](int index) { return index < listSFolders.size(); };
     // QLOG_DEBUG() << "---------------------------------------------------------";
     // for (const QFileInfo &info : listS)
     //	QLOG_DEBUG() << info.fileName();
@@ -657,8 +684,9 @@ void LibraryCreator::update(QDir dirS)
                     qDeleteAll(listD);
                     return;
                 }
-                QFileInfo fileInfoS = listS.at(i);
-                if (isFolderS(i)) // create folder
+                const LibraryEntry &entryS = listS.at(i);
+                const QFileInfo &fileInfoS = entryS.info;
+                if (entryS.holdsComics()) // create folder
                 {
 #ifdef Q_OS_MACOS
                     QStringList src = _source.split("/");
@@ -688,17 +716,18 @@ void LibraryCreator::update(QDir dirS)
 
                     QString path = QDir::cleanPath(fileInfoS.absoluteFilePath()).remove(_source);
 #endif
-                    insertComic(path, fileInfoS);
+                    insertComic(path, entryS);
                 }
             }
             updated = true;
         }
         if (!updated) {
-            QFileInfo fileInfoS = listS.at(i);
+            const LibraryEntry &entryS = listS.at(i);
+            const QFileInfo &fileInfoS = entryS.info;
             LibraryItem *fileInfoD = listD.at(j);
 
-            int comparation = compareNames(fileInfoS.fileName(), fileInfoD->name);
-            if (isFolderS(i) && fileInfoD->isDir())
+            int comparation = naturalCompareStrict(fileInfoS.fileName(), fileInfoD->name);
+            if (entryS.holdsComics() && fileInfoD->isDir())
                 if (comparation == 0) // same folder, update
                 {
                     _currentPathFolders.append(*static_cast<Folder *>(fileInfoD)); // fileInfoD conoce su padre y su id
@@ -729,7 +758,7 @@ void LibraryCreator::update(QDir dirS)
                     j++;
                 }
             else // one of them(or both) is a comic
-                if (isFolderS(i)) // this folder doesn't exist on library
+                if (entryS.holdsComics()) // this folder doesn't exist on library
                 {
 #ifdef Q_OS_MACOS
                     QStringList src = _source.split("/");
@@ -765,7 +794,7 @@ void LibraryCreator::update(QDir dirS)
 #else
                         QString path = QDir::cleanPath(fileInfoS.absoluteFilePath()).remove(_source);
 #endif
-                        insertComic(path, fileInfoS);
+                        insertComic(path, entryS);
                         i++;
                     } else {
                         if (comparation > 0) // delete thumbnail
@@ -775,10 +804,10 @@ void LibraryCreator::update(QDir dirS)
                         } else // comic with the same name
                         {
                             auto comicDB = static_cast<ComicDB *>(fileInfoD);
-                            auto lastModified = fileInfoS.lastModified().toSecsSinceEpoch();
+                            auto lastModified = comicLastModified(entryS).toSecsSinceEpoch();
                             auto added = comicDB->info.added.toULongLong();
 
-                            auto sizeHasChanged = comicDB->getFileSize() != comicSize(fileInfoS);
+                            auto sizeHasChanged = comicDB->getFileSize() != comicSize(entryS);
                             auto hasBeenModified = added > 0 && added < lastModified && checkModifiedDatesOnUpdate;
 
                             if (sizeHasChanged || hasBeenModified) {
@@ -793,8 +822,8 @@ void LibraryCreator::update(QDir dirS)
 #else
                                 QString path = QDir::cleanPath(fileInfoS.absoluteFilePath()).remove(_source);
 #endif
-                                replaceComic(path, fileInfoS, comicDB);
-                                QLOG_INFO() << "Repaced" << QDir::cleanPath(fileInfoS.absoluteFilePath()).remove(_source) << " last modified:  " << fileInfoS.lastModified() << " added: " << QDateTime::fromSecsSinceEpoch(added);
+                                replaceComic(path, entryS, comicDB);
+                                QLOG_INFO() << "Repaced" << QDir::cleanPath(fileInfoS.absoluteFilePath()).remove(_source) << " last modified:  " << QDateTime::fromSecsSinceEpoch(lastModified) << " added: " << QDateTime::fromSecsSinceEpoch(added);
                             } else if (added == 0) { // this file was added before `added` existed on the db, `added` will be updated to match the modified date so future modifications can be detected.
                                 if (lastModified > 0) {
                                     comicDB->info.added = lastModified;

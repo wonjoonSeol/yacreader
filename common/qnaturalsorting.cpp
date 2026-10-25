@@ -185,6 +185,12 @@ int naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cas
     static const Compare compare = naturalCollationIsSupported() ? naturalCompareCollator : naturalCompareFallback;
     return compare(s1, s2, caseSensitivity);
 }
+int naturalCompareStrict(const QString &s1, const QString &s2)
+{
+    const int natural = naturalCompare(s1, s2, Qt::CaseInsensitive);
+    return natural != 0 ? natural : QString::localeAwareCompare(s1, s2);
+}
+
 bool naturalSortLessThanCS(const QString &left, const QString &right)
 {
     return (naturalCompare(left, right, Qt::CaseSensitive) < 0);
