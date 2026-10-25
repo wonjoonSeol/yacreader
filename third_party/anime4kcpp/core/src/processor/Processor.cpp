@@ -25,10 +25,7 @@ namespace ac::core::detail
     }
     static inline auto findModel(const char* model) noexcept -> std::variant<
         model::ACNetLegacy,
-        model::ACNet<8>,
-        model::ARNet<8>,
-        model::ArtCNN<16>, model::ArtCNN<32>,
-        model::FSRCNNX<8>, model::FSRCNNX<16>
+        model::ACNet<8>
     >
     {
         if (model)
@@ -37,90 +34,6 @@ namespace ac::core::detail
 
             for (char& ch : modelString) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 
-            if (modelString.find("fsrcnnx") != std::string::npos)
-            {
-                if (modelString.find("f16") != std::string::npos)
-                {
-                    auto variant = ac::core::model::FSRCNNX<16>::Variant::B4_NORMAL;
-
-                    if (modelString.find("distort") != std::string::npos || modelString.find("dp") != std::string::npos)
-                        variant = ac::core::model::FSRCNNX<16>::Variant::B4_DISTORT_PLUS;
-
-                    return ac::core::model::FSRCNNX<16>{ variant };
-                }
-
-                auto variant = ac::core::model::FSRCNNX<8>::Variant::B4_NORMAL;
-
-                if (modelString.find("distort") != std::string::npos || modelString.find("dp") != std::string::npos)
-                    variant = ac::core::model::FSRCNNX<8>::Variant::B4_DISTORT_PLUS;
-
-                return ac::core::model::FSRCNNX<8>{ variant };
-            }
-            if (modelString.find("artcnn") != std::string::npos)
-            {
-                if (modelString.find("f32") != std::string::npos)
-                {
-                    auto variant = ac::core::model::ArtCNN<32>::Variant::C4_NORMAL;
-
-                    if (modelString.find("dn") != std::string::npos) variant = ac::core::model::ArtCNN<32>::Variant::C4_DN;
-                    else if (modelString.find("ds") != std::string::npos) variant = ac::core::model::ArtCNN<32>::Variant::C4_DS;
-
-                    return ac::core::model::ArtCNN<32>{ variant };
-                }
-
-                auto variant = ac::core::model::ArtCNN<16>::Variant::C4_NORMAL;
-
-                if (modelString.find("dn") != std::string::npos) variant = ac::core::model::ArtCNN<16>::Variant::C4_DN;
-                else if (modelString.find("ds") != std::string::npos) variant = ac::core::model::ArtCNN<16>::Variant::C4_DS;
-
-                return ac::core::model::ArtCNN<16>{ variant };
-            }
-            if (modelString.find("arnet") != std::string::npos) // ARNet
-            {
-                if (modelString.find("box") != std::string::npos)
-                {
-                    if (modelString.find("hdn") != std::string::npos)
-                    {
-                        auto variant = ac::core::model::ARNet<8>::Variant::B8_BOX_HDN;
-
-                        if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_BOX_HDN;
-                        else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_BOX_HDN;
-                        else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_BOX_HDN;
-                        else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_BOX_HDN;
-
-                        return ac::core::model::ARNet<8>{ variant };
-                    }
-
-                    auto variant = ac::core::model::ARNet<8>::Variant::B8_BOX;
-
-                    if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_BOX;
-                    else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_BOX;
-                    else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_BOX;
-                    else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_BOX;
-
-                    return ac::core::model::ARNet<8>{ variant };
-                }
-                if (modelString.find("hdn") != std::string::npos)
-                {
-                    auto variant = ac::core::model::ARNet<8>::Variant::B8_HDN;
-
-                    if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_HDN;
-                    else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_HDN;
-                    else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_HDN;
-                    else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_HDN;
-
-                    return ac::core::model::ARNet<8>{ variant };
-                }
-
-                auto variant = ac::core::model::ARNet<8>::Variant::B8_NORMAL;
-
-                if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_NORMAL;
-                else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_NORMAL;
-                else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_NORMAL;
-                else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_NORMAL;
-
-                return ac::core::model::ARNet<8>{ variant };
-            }
             if (modelString.find("acnet") != std::string::npos) // ACNet
             {
                 if (modelString.find("legacy") != std::string::npos)  // ACNetLegcay

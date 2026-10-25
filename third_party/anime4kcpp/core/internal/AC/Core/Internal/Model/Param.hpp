@@ -8,9 +8,6 @@
 namespace ac::core::model::param
 {
 #include "AC/Core/Internal/Model/Param/ACNet.p"
-#include "AC/Core/Internal/Model/Param/ARNet.p"
-#include "AC/Core/Internal/Model/Param/ArtCNN.p"
-#include "AC/Core/Internal/Model/Param/FSRCNNX.p"
 }
 
 #endif
