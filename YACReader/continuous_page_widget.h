@@ -44,8 +44,8 @@ public:
     // The same for the running ACNet task, with a null image when it did not upscale.
     void deliverUpscaledImage(QImage image);
 
-    // The ACNet model that sharpens pages shown larger than their size, or none.
-    // A change drops the scaled pages.
+    // The ACNet model that sharpens enlarged pages (see acnetUpscales), or none.
+    // Turning it off or changing it drops the scaled pages.
     void setAcnetModel(std::optional<AcnetModel> model);
 
 public slots:

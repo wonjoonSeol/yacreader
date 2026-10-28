@@ -458,8 +458,11 @@ void ContinuousPageWidget::setAcnetModel(std::optional<AcnetModel> model)
     if (acnetModel == model) {
         return;
     }
+    // Turning it on only needs the paint that starts it
+    if (acnetModel) {
+        resetScaledCache();
+    }
     acnetModel = model;
-    resetScaledCache();
     update();
 }
 

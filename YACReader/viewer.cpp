@@ -524,8 +524,8 @@ void Viewer::applyContinuousPageFit()
     continuousViewModel->setPageFit(fitToHeight ? ContinuousViewModel::PageFit::Height : ContinuousViewModel::PageFit::Width);
 }
 
-// One reading of the settings for both modes. The prescaler's keys do not include it, so a change drops the
-// prepared pages.
+// One reading of the settings for both modes. The prescaler's keys do not include it, so turning ACNet off or changing
+// its model drops the prepared pages.
 void Viewer::applyAcnetOptions()
 {
     Configuration &configuration = Configuration::getConfiguration();
