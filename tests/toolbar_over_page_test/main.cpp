@@ -3,9 +3,8 @@
 #include <QObject>
 #include <QTest>
 
-using YACReader::mouseYInWindow;
+using YACReader::mouseOverActivationHeight;
 using YACReader::shouldShowToolBarOverPage;
-using YACReader::toolBarOverPageActivationHeight;
 using YACReader::ToolBarOverPageState;
 
 class ToolBarOverPageTest : public QObject
@@ -13,72 +12,57 @@ class ToolBarOverPageTest : public QObject
     Q_OBJECT
 
 private slots:
-    void showsTheToolBarUntilTheMouseLeavesIt_data();
-    void showsTheToolBarUntilTheMouseLeavesIt();
-    void measuresTheMouseFromTheTopOfTheWindow();
+    void showsTheToolBarUntilTheMouseMovesBelowIt_data();
+    void showsTheToolBarUntilTheMouseMovesBelowIt();
 };
 
 namespace {
 
 // taller than the band that shows the toolbar, so the two limits differ
 constexpr int toolBarHeight = 40;
-static_assert(toolBarHeight > toolBarOverPageActivationHeight);
+static_assert(toolBarHeight > mouseOverActivationHeight);
 
 }
 
-void ToolBarOverPageTest::showsTheToolBarUntilTheMouseLeavesIt_data()
+void ToolBarOverPageTest::showsTheToolBarUntilTheMouseMovesBelowIt_data()
 {
     QTest::addColumn<bool>("shown");
     QTest::addColumn<int>("mouseY");
-    QTest::addColumn<bool>("magnifyingGlassShown");
+    QTest::addColumn<bool>("canReveal");
     QTest::addColumn<bool>("mouseButtonPressed");
     QTest::addColumn<bool>("expected");
 
-    QTest::newRow("hidden, mouse at the top of the screen") << false << 0 << false << false << true;
-    QTest::newRow("hidden, mouse at the bottom of the band") << false << toolBarOverPageActivationHeight - 1 << false << false << true;
-    QTest::newRow("hidden, mouse below the band") << false << toolBarOverPageActivationHeight << false << false << false;
-    QTest::newRow("hidden, mouse below the band but where the toolbar would be") << false << 30 << false << false << false;
-    QTest::newRow("hidden, mouse at the top with the magnifying glass") << false << 0 << true << false << false;
-    QTest::newRow("hidden, mouse dragged to the top") << false << 0 << false << true << false;
-    QTest::newRow("shown, mouse below the band but on the toolbar") << true << 30 << false << false << true;
-    QTest::newRow("shown, mouse at the bottom of the toolbar") << true << toolBarHeight - 1 << false << false << true;
-    QTest::newRow("shown, mouse just below the toolbar") << true << toolBarHeight << false << false << false;
-    QTest::newRow("shown, mouse on the page") << true << 500 << false << false << false;
-    QTest::newRow("shown, mouse on the toolbar with the magnifying glass") << true << 30 << true << false << true;
-    QTest::newRow("shown, mouse dragged on the toolbar") << true << 30 << false << true << true;
+    QTest::newRow("hidden, mouse at the top of the screen") << false << 0 << true << false << true;
+    QTest::newRow("hidden, mouse at the bottom of the band") << false << mouseOverActivationHeight - 1 << true << false << true;
+    QTest::newRow("hidden, mouse below the band") << false << mouseOverActivationHeight << true << false << false;
+    QTest::newRow("hidden, mouse below the band but where the toolbar would be") << false << 30 << true << false << false;
+    QTest::newRow("hidden, mouse at the top while it can't reveal") << false << 0 << false << false << false;
+    QTest::newRow("hidden, mouse dragged to the top") << false << 0 << true << true << false;
+    QTest::newRow("shown, mouse below the band but on the toolbar") << true << 30 << true << false << true;
+    QTest::newRow("shown, mouse at the bottom of the toolbar") << true << toolBarHeight - 1 << true << false << true;
+    QTest::newRow("shown, mouse just below the toolbar") << true << toolBarHeight << true << false << false;
+    QTest::newRow("shown, mouse on the page") << true << 500 << true << false << false;
+    QTest::newRow("shown, mouse on the toolbar while it can't reveal") << true << 30 << false << false << true;
+    QTest::newRow("shown, mouse dragged on the toolbar") << true << 30 << true << true << true;
 }
 
-void ToolBarOverPageTest::showsTheToolBarUntilTheMouseLeavesIt()
+void ToolBarOverPageTest::showsTheToolBarUntilTheMouseMovesBelowIt()
 {
     QFETCH(bool, shown);
     QFETCH(int, mouseY);
-    QFETCH(bool, magnifyingGlassShown);
+    QFETCH(bool, canReveal);
     QFETCH(bool, mouseButtonPressed);
     QFETCH(bool, expected);
 
     const ToolBarOverPageState state { .shown = shown,
                                        .mouseY = mouseY,
                                        .toolBarHeight = toolBarHeight,
-                                       .magnifyingGlassShown = magnifyingGlassShown,
+                                       .canReveal = canReveal,
                                        .mouseButtonPressed = mouseButtonPressed };
 
     QCOMPARE(shouldShowToolBarOverPage(state), expected);
 }
 
-void ToolBarOverPageTest::measuresTheMouseFromTheTopOfTheWindow()
-{
-    QWidget window;
-    window.setGeometry(200, 100, 400, 300);
-    auto *page = new QWidget(&window);
-    page->setGeometry(0, 50, 400, 250);
-
-    // the move reaches the filter at the page, so its position() is 50 px off
-    const QPointF inPage(10, 5);
-    const QMouseEvent move(QEvent::MouseMove, inPage, page->mapToGlobal(inPage), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
-
-    QCOMPARE(mouseYInWindow(&window, &move), 55);
-}
-
-QTEST_MAIN(ToolBarOverPageTest)
+QTEST_GUILESS_MAIN(ToolBarOverPageTest)
 
 #include "main.moc"

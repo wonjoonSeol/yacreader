@@ -14,6 +14,8 @@ qt_add_executable(YACReader WIN32
     main_window_viewer.h
     main_window_viewer.cpp
     toolbar_over_page.h
+    toolbar_overlay.h
+    toolbar_overlay.cpp
     continuous_page_widget.h
     continuous_page_widget.cpp
     continuous_page_provider.h

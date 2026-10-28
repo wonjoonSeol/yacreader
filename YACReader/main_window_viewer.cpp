@@ -11,7 +11,7 @@
 #include "qnaturalsorting.h"
 #include "shortcuts_manager.h"
 #include "theme_manager.h"
-#include "toolbar_over_page.h"
+#include "toolbar_overlay.h"
 #include "viewer.h"
 #include "whats_new_controller.h"
 #include "width_slider.h"
@@ -188,7 +188,8 @@ void MainWindowViewer::syncModeActions(bool manga, bool continuousScroll)
 
 MainWindowViewer::~MainWindowViewer()
 {
-    qApp->removeEventFilter(this);
+    // first, so its application filter doesn't see the events of a window being destroyed
+    delete toolBarOverlay;
     delete settings;
     delete viewer;
     delete had;
@@ -735,7 +736,10 @@ void MainWindowViewer::createToolBars()
     auto *closeTBAction = wrappedToolbarAction(exitAction);
     comicToolBar->addAction(closeTBAction);
     fullScreenToolBarActions = { fullScreenSeparator, exitFullScreenTBAction, closeTBAction };
-    setToolBarFullScreenMode(false);
+    setFullScreenToolBarActionsVisible(false);
+
+    // the window manager can take the window out of full screen without toNormal
+    toolBarOverlay = new ToolBarOverlay(this, comicToolBar, [this] { return isFullScreen() && !viewer->magnifyingGlassIsVisible(); });
 
     comicToolBar->setMovable(false);
 #endif
@@ -1265,7 +1269,9 @@ void MainWindowViewer::toFullScreen()
     fromMaximized = this->isMaximized();
 
     hideToolBars();
-    setToolBarFullScreenMode(true);
+    setFullScreenToolBarActionsVisible(true);
+    if (toolBarOverlay)
+        toolBarOverlay->setActive(true);
     viewer->hide();
     viewer->fullscreen = true; // TODO, change by the right use of windowState();
     setWindowState(Qt::WindowFullScreen);
@@ -1285,11 +1291,11 @@ void MainWindowViewer::toNormal()
     else
         showNormal();
 
-    setToolBarFullScreenMode(false);
+    setFullScreenToolBarActionsVisible(false);
+    if (toolBarOverlay)
+        toolBarOverlay->setActive(false);
     if (Configuration::getConfiguration().getShowToolbars())
         showToolBars();
-    else
-        hideToolBars();
     viewer->show();
     if (viewer->magnifyingGlassIsVisible())
         viewer->showMagnifyingGlass();
@@ -1307,94 +1313,24 @@ void MainWindowViewer::toggleToolBars()
 void MainWindowViewer::hideToolBars()
 {
     // hide all
-    hideToolBarOverPage();
     this->comicToolBar->hide();
     toolbars = false;
 }
 
 void MainWindowViewer::showToolBars()
 {
-    hideToolBarOverPage();
+    // in full screen the toolbar can be over the page, out of the layout
+    if (toolBarOverlay)
+        toolBarOverlay->dock();
     this->comicToolBar->show();
     toolbars = true;
 }
 
-void MainWindowViewer::setToolBarFullScreenMode(bool on)
+void MainWindowViewer::setFullScreenToolBarActionsVisible(bool visible)
 {
     for (auto *a : std::as_const(fullScreenToolBarActions))
-        a->setVisible(on);
-
-#ifndef Y_MAC_UI
-    if (on)
-        qApp->installEventFilter(this);
-    else
-        qApp->removeEventFilter(this);
-#endif
+        a->setVisible(visible);
 }
-
-#ifdef Y_MAC_UI
-// The native toolbar can't be laid over the page. In full screen macOS shows the menu bar and the window buttons when the mouse is at the top of the screen.
-void MainWindowViewer::hideToolBarOverPage() { }
-#else
-bool MainWindowViewer::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::MouseMove) {
-        // every widget the move goes through passes here, also widgets that don't track the mouse and native child windows
-        if (watched->isWidgetType() && static_cast<QWidget *>(watched)->window() == this)
-            updateToolBarOverPage(static_cast<QMouseEvent *>(event));
-    } else if (watched == this) {
-        // opening one of the toolbar menus also makes the mouse leave the window
-        const bool mouseLeft = event->type() == QEvent::Leave && !QApplication::activePopupWidget();
-        // the next move at the top shows it again as wide as the window
-        const bool resized = event->type() == QEvent::Resize;
-        if (mouseLeft || resized)
-            hideToolBarOverPage();
-    }
-
-    return QMainWindow::eventFilter(watched, event);
-}
-
-void MainWindowViewer::updateToolBarOverPage(const QMouseEvent *event)
-{
-    // the window manager can take the window out of full screen without toNormal
-    if (!isFullScreen() || toolbars)
-        return;
-
-    const bool shown = toolBarIsOverPage();
-    const bool shouldShow = YACReader::shouldShowToolBarOverPage({ .shown = shown,
-                                                                   .mouseY = YACReader::mouseYInWindow(this, event),
-                                                                   .toolBarHeight = comicToolBar->sizeHint().height(),
-                                                                   .magnifyingGlassShown = viewer->magnifyingGlassIsVisible(),
-                                                                   .mouseButtonPressed = event->buttons() != Qt::NoButton });
-    if (shouldShow == shown)
-        return;
-
-    shouldShow ? showToolBarOverPage() : hideToolBarOverPage();
-}
-
-void MainWindowViewer::showToolBarOverPage()
-{
-    // out of the main window layout the toolbar covers the top of the page instead of pushing it down
-    removeToolBar(comicToolBar);
-    comicToolBar->setGeometry(0, 0, width(), comicToolBar->sizeHint().height());
-    comicToolBar->raise();
-    comicToolBar->show();
-}
-
-void MainWindowViewer::hideToolBarOverPage()
-{
-    if (!toolBarIsOverPage())
-        return;
-
-    comicToolBar->hide();
-    addToolBar(comicToolBar);
-}
-
-bool MainWindowViewer::toolBarIsOverPage() const
-{
-    return toolBarArea(comicToolBar) == Qt::NoToolBarArea;
-}
-#endif
 
 void MainWindowViewer::fitToWidth()
 {

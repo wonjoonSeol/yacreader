@@ -30,6 +30,8 @@ class EditShortcutsDialog;
 
 namespace YACReader {
 
+class ToolBarOverlay;
+
 class MainWindowViewer : public QMainWindow, protected Themable
 {
     Q_OBJECT
@@ -112,6 +114,8 @@ private:
 #else
     QToolBar *comicToolBar;
 #endif
+    // in full screen, shows the hidden toolbar over the page when the mouse reaches the top of the screen; null on macOS, where the toolbar is native
+    ToolBarOverlay *toolBarOverlay = nullptr;
 
     //! Actions
     QAction *openAction;
@@ -177,14 +181,8 @@ private:
     void createActions();
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
-    // except on macOS, in full screen the toolbar has exit and close buttons, and moving the mouse to the top of the screen shows it over the page
-    void setToolBarFullScreenMode(bool on);
-    void hideToolBarOverPage();
-#ifndef Y_MAC_UI
-    void updateToolBarOverPage(const QMouseEvent *event);
-    void showToolBarOverPage();
-    bool toolBarIsOverPage() const;
-#endif
+    // the exit and close buttons at the end of the toolbar, only in full screen and not on macOS
+    void setFullScreenToolBarActionsVisible(bool visible);
     void refreshRecentFilesActionList();
     void clearRecentFiles();
     void getSiblingComics(QString path, QString currentComic);
@@ -221,9 +219,6 @@ protected:
 public:
     MainWindowViewer();
     ~MainWindowViewer() override;
-#ifndef Y_MAC_UI
-    bool eventFilter(QObject *watched, QEvent *event) override;
-#endif
 };
 
 }
