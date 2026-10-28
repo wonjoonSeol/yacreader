@@ -93,8 +93,7 @@ public slots:
 
 signals:
     void changedOptions();
-    // the cover and book fold options of Double page changed, or the dialog was saved; the other
-    // image options are reported by Configuration
+    // the cover or book fold option of Double page changed; Configuration reports the other image options
     void changedImageOptions();
     // void fitToWidthRatioChanged(float ratio);
 };

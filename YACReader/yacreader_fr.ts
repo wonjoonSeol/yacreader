@@ -287,7 +287,7 @@
         <translation>Chemin de mes bandes dessinées</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="306"/>
+        <location filename="options_dialog.cpp" line="305"/>
         <location filename="image_adjustment_menu.cpp" line="15"/>
         <source>Image adjustment</source>
         <translation>Ajustement de l&apos;image</translation>
@@ -313,12 +313,12 @@
         <translation>Contraste</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="307"/>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Appearance</source>
         <translation>Apparence</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="323"/>
+        <location filename="options_dialog.cpp" line="322"/>
         <source>Options</source>
         <translation>Possibilités</translation>
     </message>
@@ -353,7 +353,7 @@
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="339"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Comics directory</source>
         <translation>Répertoire des bandes dessinées</translation>
     </message>
@@ -547,27 +547,37 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Méthode de mise à l&apos;échelle</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="15"/>
+        <location filename="image_adjustment.cpp" line="14"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Le plus proche (rapide, mauvaise qualité)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="16"/>
+        <location filename="image_adjustment.cpp" line="15"/>
         <source>Bilinear</source>
         <translation>Bilinéaire</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="17"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (meilleure qualité)</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="305"/>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="304"/>
         <source>Page Flow</source>
         <translation>Flux des pages</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
+        <location filename="options_dialog.cpp" line="303"/>
         <source>General</source>
         <translation>Général</translation>
     </message>
@@ -577,7 +587,7 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Luminosité</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="314"/>
+        <location filename="options_dialog.cpp" line="313"/>
         <source>Restart is needed</source>
         <translation>Redémarrage nécessaire</translation>
     </message>

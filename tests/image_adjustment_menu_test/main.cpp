@@ -138,9 +138,10 @@ void ImageAdjustmentMenuTest::menuChangesShowInOptions()
     QVERIFY(!configuration.getEnlargeImages());
     QVERIFY(!dialogWidget<QCheckBox>("Enlarge images to fit width/height")->isChecked());
 
-    menuAction("Bilinear")->trigger();
-    QCOMPARE(configuration.getScalingMethod(), ScaleMethod::Bilinear);
-    QCOMPARE(scalingMethodCombo()->currentText(), QString("Bilinear"));
+    // stored as 4, listed fourth
+    menuAction("Lanczos3 (balanced)")->trigger();
+    QCOMPARE(configuration.getScalingMethod(), ScaleMethod::Lanczos3);
+    QCOMPARE(scalingMethodCombo()->currentText(), QString("Lanczos3 (balanced)"));
 
     filterSpinBox(menu.get(), "Brightness")->setValue(15);
     QTRY_COMPARE(configuration.getFilterLevel(brightnessSpec), 15);
@@ -157,9 +158,10 @@ void ImageAdjustmentMenuTest::optionsChangesShowInMenu()
     QVERIFY(!menuAction("Enlarge images to fit width/height")->isChecked());
 
     auto *combo = scalingMethodCombo();
-    combo->setCurrentIndex(combo->findText("Nearest (fast, low quality)"));
-    QVERIFY(menuAction("Nearest (fast, low quality)")->isChecked());
-    QVERIFY(!menuAction("Lanczos (better quality)")->isChecked());
+    // stored as 5, listed fifth
+    combo->setCurrentIndex(combo->findText("Lanczos2 (fewer halos, less detail)"));
+    QVERIFY(menuAction("Lanczos2 (fewer halos, less detail)")->isChecked());
+    QVERIFY(!menuAction("Lanczos4 (more detail, more halos)")->isChecked());
 
     filterSpinBox(dialog.get(), "Contrast")->setValue(120);
     QTRY_COMPARE(filterSpinBox(menu.get(), "Contrast")->value(), 120);
@@ -215,7 +217,7 @@ void ImageAdjustmentMenuTest::choosingTheCheckedEntryStoresNothing()
     QSignalSpy imageOptionsChanged(&Configuration::getConfiguration(), &Configuration::imageOptionsChanged);
 
     menuAction("Fit pages to width")->trigger();
-    menuAction("Lanczos (better quality)")->trigger();
+    menuAction("Lanczos4 (more detail, more halos)")->trigger();
     QCOMPARE(imageOptionsChanged.count(), 0);
 
     menuAction("Fit pages to height")->trigger();

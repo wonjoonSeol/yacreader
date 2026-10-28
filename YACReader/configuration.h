@@ -160,7 +160,13 @@ public:
     EscapeKeyBehavior getEscapeKeyBehavior() { return static_cast<EscapeKeyBehavior>(settings->value(ESCAPE_KEY_BEHAVIOR, EscapeKeyBehavior::EscapeQuits).toInt()); }
     void setEscapeKeyBehavior(EscapeKeyBehavior behavior) { settings->setValue(ESCAPE_KEY_BEHAVIOR, static_cast<int>(behavior)); }
 
-    ScaleMethod getScalingMethod() { return static_cast<ScaleMethod>(settings->value(SCALING_METHOD, static_cast<int>(ScaleMethod::Lanczos)).toInt()); }
+    // A missing, non-numeric or unknown value, such as one a newer build stored, reads as the default
+    ScaleMethod getScalingMethod()
+    {
+        bool ok = false;
+        const auto method = scaleMethodFromInt(settings->value(SCALING_METHOD).toInt(&ok));
+        return ok && method ? *method : defaultScaleMethod;
+    }
     void setScalingMethod(ScaleMethod method);
 
 signals:

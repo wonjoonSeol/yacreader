@@ -61,16 +61,17 @@ void ImageAdjustmentMenu::addFitOptions()
 void ImageAdjustmentMenu::addScalingMethods()
 {
     auto *scalingMenu = addMenu(QCoreApplication::translate("OptionsDialog", "Scaling method"));
-    auto *scalingMethods = new QActionGroup(this);
+    scalingMethods = new QActionGroup(this);
     for (const auto &choice : scalingMethodChoices()) {
         auto *action = scalingMenu->addAction(choice.text());
         action->setCheckable(true);
+        // the stored value, as the Options combo items hold it, since it is not the position
+        action->setData(static_cast<int>(choice.method));
         scalingMethods->addAction(action);
-        connect(action, &QAction::triggered, this, [method = choice.method] {
-            Configuration::getConfiguration().setScalingMethod(method);
-        });
-        scalingMethodActions << action;
     }
+    connect(scalingMethods, &QActionGroup::triggered, this, [](QAction *action) {
+        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(action->data().toInt()));
+    });
 }
 
 void ImageAdjustmentMenu::showStoredOptions()
@@ -83,7 +84,9 @@ void ImageAdjustmentMenu::showStoredOptions()
     else
         continuousScrollFitToWidthAction->setChecked(true);
 
-    const int scalingMethodIndex = scalingMethodChoiceIndex(scalingMethodChoices(), configuration.getScalingMethod());
-    for (int i = 0; i < scalingMethodActions.size(); i++)
-        scalingMethodActions.at(i)->setChecked(i == scalingMethodIndex);
+    const int scalingMethod = static_cast<int>(configuration.getScalingMethod());
+    for (auto *action : scalingMethods->actions()) {
+        if (action->data().toInt() == scalingMethod)
+            action->setChecked(true);
+    }
 }

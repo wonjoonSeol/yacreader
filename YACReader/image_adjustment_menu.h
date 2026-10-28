@@ -1,10 +1,10 @@
 #ifndef IMAGE_ADJUSTMENT_MENU_H
 #define IMAGE_ADJUSTMENT_MENU_H
 
-#include <QList>
 #include <QMenu>
 
 class QAction;
+class QActionGroup;
 
 // The options of Options > Image adjustment that are worth changing while reading. Like Options, it
 // stores them in Configuration and shows what Configuration reports, so the two always agree.
@@ -23,7 +23,7 @@ private:
     QAction *enlargeImagesAction;
     QAction *continuousScrollFitToWidthAction;
     QAction *continuousScrollFitToHeightAction;
-    QList<QAction *> scalingMethodActions;
+    QActionGroup *scalingMethods;
 };
 
 #endif // IMAGE_ADJUSTMENT_MENU_H

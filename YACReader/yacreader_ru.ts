@@ -287,7 +287,7 @@
         <translation>Папка комиксов</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="306"/>
+        <location filename="options_dialog.cpp" line="305"/>
         <location filename="image_adjustment_menu.cpp" line="15"/>
         <source>Image adjustment</source>
         <translation>Настройка изображения</translation>
@@ -313,12 +313,12 @@
         <translation>Контраст</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="307"/>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>Appearance</source>
         <translation>Появление</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="323"/>
+        <location filename="options_dialog.cpp" line="322"/>
         <source>Options</source>
         <translation>Настройки</translation>
     </message>
@@ -353,7 +353,7 @@
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="339"/>
+        <location filename="options_dialog.cpp" line="338"/>
         <source>Comics directory</source>
         <translation>Папка комиксов</translation>
     </message>
@@ -547,27 +547,37 @@ If none is active, Escape does nothing.</source>
         <translation>Метод масштабирования</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="15"/>
+        <location filename="image_adjustment.cpp" line="14"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Ближайший (быстро, низкое качество)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="16"/>
+        <location filename="image_adjustment.cpp" line="15"/>
         <source>Bilinear</source>
         <translation>Билинейный</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="17"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Ланцос (лучшее качество)</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="305"/>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="304"/>
         <source>Page Flow</source>
         <translation>Поток Страниц</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
+        <location filename="options_dialog.cpp" line="303"/>
         <source>General</source>
         <translation>Общие</translation>
     </message>
@@ -577,7 +587,7 @@ If none is active, Escape does nothing.</source>
         <translation>Яркость</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="314"/>
+        <location filename="options_dialog.cpp" line="313"/>
         <source>Restart is needed</source>
         <translation>Требуется перезагрузка</translation>
     </message>
