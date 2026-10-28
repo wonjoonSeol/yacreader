@@ -1,0 +1,786 @@
+diff --git a/core/include/AC/Core/Model.hpp b/core/include/AC/Core/Model.hpp
+index 5a2ad85f..b55432f0 100644
+--- a/core/include/AC/Core/Model.hpp
++++ b/core/include/AC/Core/Model.hpp
+@@ -2,8 +2,5 @@
+ #define AC_CORE_MODEL_HPP
+ 
+ #include "AC/Core/Model/ACNet.hpp"
+-#include "AC/Core/Model/ARNet.hpp"
+-#include "AC/Core/Model/ArtCNN.hpp"
+-#include "AC/Core/Model/FSRCNNX.hpp"
+ 
+ #endif
+diff --git a/core/internal/AC/Core/Internal/Model/Param.hpp b/core/internal/AC/Core/Internal/Model/Param.hpp
+index 05f8b960..d0adf732 100644
+--- a/core/internal/AC/Core/Internal/Model/Param.hpp
++++ b/core/internal/AC/Core/Internal/Model/Param.hpp
+@@ -8,9 +8,6 @@
+ namespace ac::core::model::param
+ {
+ #include "AC/Core/Internal/Model/Param/ACNet.p"
+-#include "AC/Core/Internal/Model/Param/ARNet.p"
+-#include "AC/Core/Internal/Model/Param/ArtCNN.p"
+-#include "AC/Core/Internal/Model/Param/FSRCNNX.p"
+ }
+ 
+ #endif
+diff --git a/core/src/ImageResize.cpp b/core/src/ImageResize.cpp
+index cbe84dfd..30c08bcf 100644
+--- a/core/src/ImageResize.cpp
++++ b/core/src/ImageResize.cpp
+@@ -26,7 +26,11 @@ extern const decltype(&stbir_resize_extended) stbir_resize_extended_wasm;
+ 
+ namespace ac::core::detail
+ {
+-   const auto stbir_resize_extended_auto = []() {
++   // YACReader: chosen on first use instead of during static initialisation, so a program that
++   // links the library does not probe the CPU (ruapu_init) when it starts.
++   static auto stbir_resize_extended_auto()
++   {
++    static const auto chosen = []() {
+         // x86
+ #   ifdef AC_CORE_WITH_AVX2
+         if (ac::core::simd::supportAVX2()) return stbir_resize_extended_avx2;
+@@ -48,6 +52,8 @@ namespace ac::core::detail
+         // generic
+         return stbir_resize_extended;
+     }();
++    return chosen;
++   }
+ 
+     static inline float sinc(const float x) noexcept
+     {
+@@ -269,7 +275,7 @@ namespace ac::core::detail
+         stbir_set_edgemodes(&ctx, STBIR_EDGE_CLAMP, STBIR_EDGE_CLAMP);
+         stbir_set_filter_callbacks(&ctx, filter, support, filter, support);
+ 
+-        stbir_resize_extended_auto(&ctx);
++        stbir_resize_extended_auto()(&ctx);
+     }
+ }
+ 
+diff --git a/core/src/Model.cpp b/core/src/Model.cpp
+index 52b339c8..91ee986f 100644
+--- a/core/src/Model.cpp
++++ b/core/src/Model.cpp
+@@ -118,209 +118,3 @@ ac::core::model::ACNet<F>::ACNet(const Variant v) noexcept
+ }
+ 
+ template class ac::core::model::ACNet<8>;
+-
+-template<int F>
+-ac::core::model::ARNet<F>::ARNet(const Variant v) noexcept
+-{
+-    if constexpr (F == 8)
+-    {
+-        switch (v)
+-        {
+-        case Variant::B8_NORMAL:
+-            this->blockNum = 8;
+-            this->kptr = param::ARNet_F8B8_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B8_NHWC_biases;
+-            this->aptr = param::ARNet_F8B8_NHWC_alphas;
+-            break;
+-        case Variant::B8_HDN:
+-            this->blockNum = 8;
+-            this->kptr = param::ARNet_F8B8_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B8_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B8_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B8_BOX:
+-            this->blockNum = 8;
+-            this->kptr = param::ARNet_F8B8_Box_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B8_Box_NHWC_biases;
+-            this->aptr = param::ARNet_F8B8_Box_NHWC_alphas;
+-            break;
+-        case Variant::B8_BOX_HDN:
+-            this->blockNum = 8;
+-            this->kptr = param::ARNet_F8B8_Box_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B8_Box_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B8_Box_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B16_NORMAL:
+-            this->blockNum = 16;
+-            this->kptr = param::ARNet_F8B16_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B16_NHWC_biases;
+-            this->aptr = param::ARNet_F8B16_NHWC_alphas;
+-            break;
+-        case Variant::B16_HDN:
+-            this->blockNum = 16;
+-            this->kptr = param::ARNet_F8B16_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B16_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B16_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B16_BOX:
+-            this->blockNum = 16;
+-            this->kptr = param::ARNet_F8B16_Box_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B16_Box_NHWC_biases;
+-            this->aptr = param::ARNet_F8B16_Box_NHWC_alphas;
+-            break;
+-        case Variant::B16_BOX_HDN:
+-            this->blockNum = 16;
+-            this->kptr = param::ARNet_F8B16_Box_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B16_Box_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B16_Box_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B32_NORMAL:
+-            this->blockNum = 32;
+-            this->kptr = param::ARNet_F8B32_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B32_NHWC_biases;
+-            this->aptr = param::ARNet_F8B32_NHWC_alphas;
+-            break;
+-        case Variant::B32_HDN:
+-            this->blockNum = 32;
+-            this->kptr = param::ARNet_F8B32_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B32_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B32_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B32_BOX:
+-            this->blockNum = 32;
+-            this->kptr = param::ARNet_F8B32_Box_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B32_Box_NHWC_biases;
+-            this->aptr = param::ARNet_F8B32_Box_NHWC_alphas;
+-            break;
+-        case Variant::B32_BOX_HDN:
+-            this->blockNum = 32;
+-            this->kptr = param::ARNet_F8B32_Box_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B32_Box_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B32_Box_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B64_NORMAL:
+-            this->blockNum = 64;
+-            this->kptr = param::ARNet_F8B64_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B64_NHWC_biases;
+-            this->aptr = param::ARNet_F8B64_NHWC_alphas;
+-            break;
+-        case Variant::B64_HDN:
+-            this->blockNum = 64;
+-            this->kptr = param::ARNet_F8B64_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B64_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B64_HDN_NHWC_alphas;
+-            break;
+-        case Variant::B64_BOX:
+-            this->blockNum = 64;
+-            this->kptr = param::ARNet_F8B64_Box_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B64_Box_NHWC_biases;
+-            this->aptr = param::ARNet_F8B64_Box_NHWC_alphas;
+-            break;
+-        case Variant::B64_BOX_HDN:
+-            this->blockNum = 64;
+-            this->kptr = param::ARNet_F8B64_Box_HDN_NHWC_kernels;
+-            this->bptr = param::ARNet_F8B64_Box_HDN_NHWC_biases;
+-            this->aptr = param::ARNet_F8B64_Box_HDN_NHWC_alphas;
+-            break;
+-        }
+-    }
+-    else static_assert(F == 8, "Unsupported ARNet model");
+-}
+-
+-template class ac::core::model::ARNet<8>;
+-
+-template<int F>
+-ac::core::model::ArtCNN<F>::ArtCNN(const Variant v) noexcept
+-{
+-    if constexpr (F == 16)
+-    {
+-        switch (v)
+-        {
+-        case Variant::C4_NORMAL:
+-            this->blockNum = 4;
+-            this->kptr = param::ArtCNN_C4F16_NHWC_kernels;
+-            this->bptr = param::ArtCNN_C4F16_NHWC_biases;
+-            break;
+-        case Variant::C4_DN:
+-            this->blockNum = 4;
+-            this->kptr = param::ArtCNN_C4F16_DN_NHWC_kernels;
+-            this->bptr = param::ArtCNN_C4F16_DN_NHWC_biases;
+-            break;
+-        case Variant::C4_DS:
+-            this->blockNum = 4;
+-            this->kptr = param::ArtCNN_C4F16_DS_NHWC_kernels;
+-            this->bptr = param::ArtCNN_C4F16_DS_NHWC_biases;
+-            break;
+-        }
+-    }
+-    else if constexpr (F == 32)
+-    {
+-        switch (v)
+-        {
+-        case Variant::C4_NORMAL:
+-            this->blockNum = 4;
+-            this->kptr = param::ArtCNN_C4F32_NHWC_kernels;
+-            this->bptr = param::ArtCNN_C4F32_NHWC_biases;
+-            break;
+-        case Variant::C4_DN:
+-            this->blockNum = 4;
+-            this->kptr = param::ArtCNN_C4F32_DN_NHWC_kernels;
+-            this->bptr = param::ArtCNN_C4F32_DN_NHWC_biases;
+-            break;
+-        case Variant::C4_DS:
+-            this->blockNum = 4;
+-            this->kptr = param::ArtCNN_C4F32_DS_NHWC_kernels;
+-            this->bptr = param::ArtCNN_C4F32_DS_NHWC_biases;
+-            break;
+-        }
+-    }
+-    else static_assert(F == 32, "Unsupported ArtCNN model");
+-}
+-
+-template class ac::core::model::ArtCNN<16>;
+-template class ac::core::model::ArtCNN<32>;
+-
+-template<int F>
+-ac::core::model::FSRCNNX<F>::FSRCNNX(const Variant v) noexcept
+-{
+-    if constexpr (F == 8)
+-    {
+-        switch (v)
+-        {
+-        case Variant::B4_NORMAL:
+-            this->blockNum = 4;
+-            this->kptr = param::FSRCNNX_F8_NHWC_kernels;
+-            this->bptr = param::FSRCNNX_F8_NHWC_biases;
+-            this->aptr = param::FSRCNNX_F8_NHWC_alphas;
+-            break;
+-        case Variant::B4_DISTORT_PLUS:
+-            this->blockNum = 4;
+-            this->kptr = param::FSRCNNX_F8_DistortPlus_NHWC_kernels;
+-            this->bptr = param::FSRCNNX_F8_DistortPlus_NHWC_biases;
+-            this->aptr = param::FSRCNNX_F8_DistortPlus_NHWC_alphas;
+-            break;
+-        }
+-    }
+-    else if constexpr (F == 16)
+-    {
+-        switch (v)
+-        {
+-        case Variant::B4_NORMAL:
+-            this->blockNum = 4;
+-            this->kptr = param::FSRCNNX_F16_NHWC_kernels;
+-            this->bptr = param::FSRCNNX_F16_NHWC_biases;
+-            this->aptr = param::FSRCNNX_F16_NHWC_alphas;
+-            break;
+-        case Variant::B4_DISTORT_PLUS:
+-            this->blockNum = 4;
+-            this->kptr = param::FSRCNNX_F16_DistortPlus_NHWC_kernels;
+-            this->bptr = param::FSRCNNX_F16_DistortPlus_NHWC_biases;
+-            this->aptr = param::FSRCNNX_F16_DistortPlus_NHWC_alphas;
+-            break;
+-        }
+-    }
+-    else static_assert(F == 16, "Unsupported FSRCNNX model");
+-}
+-
+-template class ac::core::model::FSRCNNX<8>;
+-template class ac::core::model::FSRCNNX<16>;
+diff --git a/core/src/processor/Processor.cpp b/core/src/processor/Processor.cpp
+index c703cf5e..8b7dfbff 100644
+--- a/core/src/processor/Processor.cpp
++++ b/core/src/processor/Processor.cpp
+@@ -25,10 +25,7 @@ namespace ac::core::detail
+     }
+     static inline auto findModel(const char* model) noexcept -> std::variant<
+         model::ACNetLegacy,
+-        model::ACNet<8>,
+-        model::ARNet<8>,
+-        model::ArtCNN<16>, model::ArtCNN<32>,
+-        model::FSRCNNX<8>, model::FSRCNNX<16>
++        model::ACNet<8>
+     >
+     {
+         if (model)
+@@ -37,90 +34,6 @@ namespace ac::core::detail
+ 
+             for (char& ch : modelString) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+ 
+-            if (modelString.find("fsrcnnx") != std::string::npos)
+-            {
+-                if (modelString.find("f16") != std::string::npos)
+-                {
+-                    auto variant = ac::core::model::FSRCNNX<16>::Variant::B4_NORMAL;
+-
+-                    if (modelString.find("distort") != std::string::npos || modelString.find("dp") != std::string::npos)
+-                        variant = ac::core::model::FSRCNNX<16>::Variant::B4_DISTORT_PLUS;
+-
+-                    return ac::core::model::FSRCNNX<16>{ variant };
+-                }
+-
+-                auto variant = ac::core::model::FSRCNNX<8>::Variant::B4_NORMAL;
+-
+-                if (modelString.find("distort") != std::string::npos || modelString.find("dp") != std::string::npos)
+-                    variant = ac::core::model::FSRCNNX<8>::Variant::B4_DISTORT_PLUS;
+-
+-                return ac::core::model::FSRCNNX<8>{ variant };
+-            }
+-            if (modelString.find("artcnn") != std::string::npos)
+-            {
+-                if (modelString.find("f32") != std::string::npos)
+-                {
+-                    auto variant = ac::core::model::ArtCNN<32>::Variant::C4_NORMAL;
+-
+-                    if (modelString.find("dn") != std::string::npos) variant = ac::core::model::ArtCNN<32>::Variant::C4_DN;
+-                    else if (modelString.find("ds") != std::string::npos) variant = ac::core::model::ArtCNN<32>::Variant::C4_DS;
+-
+-                    return ac::core::model::ArtCNN<32>{ variant };
+-                }
+-
+-                auto variant = ac::core::model::ArtCNN<16>::Variant::C4_NORMAL;
+-
+-                if (modelString.find("dn") != std::string::npos) variant = ac::core::model::ArtCNN<16>::Variant::C4_DN;
+-                else if (modelString.find("ds") != std::string::npos) variant = ac::core::model::ArtCNN<16>::Variant::C4_DS;
+-
+-                return ac::core::model::ArtCNN<16>{ variant };
+-            }
+-            if (modelString.find("arnet") != std::string::npos) // ARNet
+-            {
+-                if (modelString.find("box") != std::string::npos)
+-                {
+-                    if (modelString.find("hdn") != std::string::npos)
+-                    {
+-                        auto variant = ac::core::model::ARNet<8>::Variant::B8_BOX_HDN;
+-
+-                        if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_BOX_HDN;
+-                        else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_BOX_HDN;
+-                        else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_BOX_HDN;
+-                        else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_BOX_HDN;
+-
+-                        return ac::core::model::ARNet<8>{ variant };
+-                    }
+-
+-                    auto variant = ac::core::model::ARNet<8>::Variant::B8_BOX;
+-
+-                    if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_BOX;
+-                    else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_BOX;
+-                    else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_BOX;
+-                    else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_BOX;
+-
+-                    return ac::core::model::ARNet<8>{ variant };
+-                }
+-                if (modelString.find("hdn") != std::string::npos)
+-                {
+-                    auto variant = ac::core::model::ARNet<8>::Variant::B8_HDN;
+-
+-                    if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_HDN;
+-                    else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_HDN;
+-                    else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_HDN;
+-                    else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_HDN;
+-
+-                    return ac::core::model::ARNet<8>{ variant };
+-                }
+-
+-                auto variant = ac::core::model::ARNet<8>::Variant::B8_NORMAL;
+-
+-                if (modelString.find("b8") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B8_NORMAL;
+-                else if (modelString.find("b16") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B16_NORMAL;
+-                else if (modelString.find("b32") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B32_NORMAL;
+-                else if (modelString.find("b64") != std::string::npos) variant = ac::core::model::ARNet<8>::Variant::B64_NORMAL;
+-
+-                return ac::core::model::ARNet<8>{ variant };
+-            }
+             if (modelString.find("acnet") != std::string::npos) // ACNet
+             {
+                 if (modelString.find("legacy") != std::string::npos)  // ACNetLegcay
+diff --git a/core/src/processor/cpu/CPUProcessor.cpp b/core/src/processor/cpu/CPUProcessor.cpp
+index e5b0fa9b..c10f8221 100644
+--- a/core/src/processor/cpu/CPUProcessor.cpp
++++ b/core/src/processor/cpu/CPUProcessor.cpp
+@@ -1,4 +1,5 @@
+ #include <memory>
++#include <new>
+ #include <sstream>
+ #include <string>
+ #include <utility>
+@@ -747,6 +748,8 @@ namespace ac::core::cpu
+         {
+             if (buffer.empty() || buffer.width() != width || buffer.height() != height || buffer.type() != type)
+                 buffer.create(width, height, channels, type);
++            // YACReader: the convolutions would write through a null pointer.
++            if (buffer.empty()) throw std::bad_alloc{};
+ 
+             return buffer;
+         }
+@@ -1441,287 +1444,6 @@ AC_CORE_EXPORT std::shared_ptr<ac::core::Processor> ac::core::Processor::create<
+     return std::make_shared<cpu::CPUProcessor<model::ACNet<8>>>(idx, model);
+ }
+ 
+-
+-template<>
+-class ac::core::cpu::CPUProcessor<ac::core::model::ARNet<8>> : public ac::core::cpu::CPUProcessorSeqCNN<ac::core::model::ARNet<8>>
+-{
+-public:
+-    CPUProcessor(int arch, const model::ARNet<8>& model) noexcept;
+-    ~CPUProcessor() noexcept override;
+-
+-private:
+-    void process(const Image& src, Image& dst) override;
+-
+-private:
+-    util::ThreadLocal<ImageBuffer> tmp1ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> tmp2ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> featImageBuffers{};
+-};
+-
+-ac::core::cpu::CPUProcessor<ac::core::model::ARNet<8>>::CPUProcessor(const int arch, const model::ARNet<8>& model) noexcept : CPUProcessorSeqCNN(arch, model) {}
+-ac::core::cpu::CPUProcessor<ac::core::model::ARNet<8>>::~CPUProcessor() noexcept = default;
+-
+-void ac::core::cpu::CPUProcessor<ac::core::model::ARNet<8>>::process(const Image& src, Image& dst)
+-{
+-    auto& tmp1ImageBuffer = tmp1ImageBuffers.local();
+-    auto& tmp2ImageBuffer = tmp2ImageBuffers.local();
+-    auto& featImageBuffer = featImageBuffers.local();
+-
+-    auto& tmp1 = tmp1ImageBuffer.get(src.width(), src.height(), 8, ac::core::Image::Float32);
+-    auto& tmp2 = tmp2ImageBuffer.get(src.width(), src.height(), 8, ac::core::Image::Float32);
+-    auto& feat = featImageBuffer.get(src.width(), src.height(), 8, ac::core::Image::Float32);
+-
+-    int l = 0;
+-    //head
+-    conv3x3_1to8_identity(src, feat, model.kernel(l), model.bias(l)); l++;
+-    //body
+-    conv3x3_8to8_prelu(feat, tmp1, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-    conv3x3_8to8_identity_residual(tmp1, tmp2, model.kernel(l), model.bias(l), feat, 0.2f); l++;
+-    for (int i = 0; i < model.blocks() - 2; i++)
+-    {
+-        conv3x3_8to8_prelu(tmp2, tmp1, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-        conv3x3_8to8_identity_residual(tmp1, tmp2, model.kernel(l), model.bias(l), tmp2, 0.2f); l++;
+-    }
+-    conv3x3_8to8_prelu(tmp2, tmp1, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-    conv3x3_8to8_identity_residual_conv1x1_8to8_prelu_add(tmp1, tmp2,
+-        model.kernel(l), model.bias(l), tmp2, 0.2f,
+-        model.kernel(l + 1), model.bias(l + 1), model.alpha(l + 1), feat); l += 2;
+-    // upscale
+-    conv3x3_8to4_identity_pixelshuffle_4to1_add(tmp2, dst, model.kernel(l), model.bias(l), src);
+-}
+-
+-template<>
+-AC_CORE_EXPORT std::shared_ptr<ac::core::Processor> ac::core::Processor::create<ac::core::Processor::CPU, ac::core::model::ARNet<8>>(const int idx, const model::ARNet<8>& model)
+-{
+-    return std::make_shared<cpu::CPUProcessor<model::ARNet<8>>>(idx, model);
+-}
+-
+-
+-template<>
+-class ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<16>> : public ac::core::cpu::CPUProcessorSeqCNN<ac::core::model::ArtCNN<16>>
+-{
+-public:
+-    CPUProcessor(int arch, const model::ArtCNN<16>& model) noexcept;
+-    ~CPUProcessor() noexcept override;
+-
+-private:
+-    void process(const Image& src, Image& dst) override;
+-
+-private:
+-    util::ThreadLocal<ImageBuffer> tmp1ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> tmp2ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> featImageBuffers{};
+-};
+-
+-ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<16>>::CPUProcessor(const int arch, const model::ArtCNN<16>& model) noexcept : CPUProcessorSeqCNN(arch, model) {}
+-ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<16>>::~CPUProcessor() noexcept = default;
+-
+-void ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<16>>::process(const Image& src, Image& dst)
+-{
+-    auto& tmp1ImageBuffer = tmp1ImageBuffers.local();
+-    auto& tmp2ImageBuffer = tmp2ImageBuffers.local();
+-    auto& featImageBuffer = featImageBuffers.local();
+-
+-    auto& tmp1 = tmp1ImageBuffer.get(src.width(), src.height(), 16, ac::core::Image::Float32);
+-    auto& tmp2 = tmp2ImageBuffer.get(src.width(), src.height(), 16, ac::core::Image::Float32);
+-    auto& feat = featImageBuffer.get(src.width(), src.height(), 16, ac::core::Image::Float32);
+-
+-    auto tmpI = &tmp2;
+-    auto tmpO = &tmp1;
+-    int l = 0;
+-    // head
+-    conv3x3_1to16_identity(src, feat, model.kernel(l), model.bias(l)); l++;
+-    // body
+-    conv3x3_16to16_relu(feat, *tmpO, model.kernel(l), model.bias(l)); l++;
+-    std::swap(tmpI, tmpO);
+-    for (int i = 0; i < model.blocks() - 1; i++)
+-    {
+-        conv3x3_16to16_relu(*tmpI, *tmpO, model.kernel(l), model.bias(l)); l++;
+-        std::swap(tmpI, tmpO);
+-    }
+-    conv3x3_16to16_identity_add(*tmpI, *tmpO, model.kernel(l), model.bias(l), feat); l++;
+-    std::swap(tmpI, tmpO);
+-    // upscale
+-    conv3x3_16to4_identity_pixelshuffle_4to1(*tmpI, dst, model.kernel(l), model.bias(l));
+-}
+-
+-template<>
+-AC_CORE_EXPORT std::shared_ptr<ac::core::Processor> ac::core::Processor::create<ac::core::Processor::CPU, ac::core::model::ArtCNN<16>>(const int idx, const model::ArtCNN<16>& model)
+-{
+-    return std::make_shared<cpu::CPUProcessor<model::ArtCNN<16>>>(idx, model);
+-}
+-
+-
+-template<>
+-class ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<32>> : public ac::core::cpu::CPUProcessorSeqCNN<ac::core::model::ArtCNN<32>>
+-{
+-public:
+-    CPUProcessor(int arch, const model::ArtCNN<32>& model) noexcept;
+-    ~CPUProcessor() noexcept override;
+-
+-private:
+-    void process(const Image& src, Image& dst) override;
+-
+-private:
+-    util::ThreadLocal<ImageBuffer> tmp1ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> tmp2ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> featImageBuffers{};
+-};
+-
+-ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<32>>::CPUProcessor(const int arch, const model::ArtCNN<32>& model) noexcept : CPUProcessorSeqCNN(arch, model) {}
+-ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<32>>::~CPUProcessor() noexcept = default;
+-
+-void ac::core::cpu::CPUProcessor<ac::core::model::ArtCNN<32>>::process(const Image& src, Image& dst)
+-{
+-    auto& tmp1ImageBuffer = tmp1ImageBuffers.local();
+-    auto& tmp2ImageBuffer = tmp2ImageBuffers.local();
+-    auto& featImageBuffer = featImageBuffers.local();
+-
+-    auto& tmp1 = tmp1ImageBuffer.get(src.width(), src.height(), 32, ac::core::Image::Float32);
+-    auto& tmp2 = tmp2ImageBuffer.get(src.width(), src.height(), 32, ac::core::Image::Float32);
+-    auto& feat = featImageBuffer.get(src.width(), src.height(), 32, ac::core::Image::Float32);
+-
+-    auto tmpI = &tmp2;
+-    auto tmpO = &tmp1;
+-    int l = 0;
+-    // head
+-    conv3x3_1to32_identity(src, feat, model.kernel(l), model.bias(l)); l++;
+-    // body
+-    conv3x3_32to32_relu(feat, *tmpO, model.kernel(l), model.bias(l)); l++;
+-    std::swap(tmpI, tmpO);
+-    for (int i = 0; i < model.blocks() - 1; i++)
+-    {
+-        conv3x3_32to32_relu(*tmpI, *tmpO, model.kernel(l), model.bias(l)); l++;
+-        std::swap(tmpI, tmpO);
+-    }
+-    conv3x3_32to32_identity_add(*tmpI, *tmpO, model.kernel(l), model.bias(l), feat); l++;
+-    std::swap(tmpI, tmpO);
+-    // upscale
+-    conv3x3_32to4_identity_pixelshuffle_4to1(*tmpI, dst, model.kernel(l), model.bias(l));
+-}
+-
+-template<>
+-AC_CORE_EXPORT std::shared_ptr<ac::core::Processor> ac::core::Processor::create<ac::core::Processor::CPU, ac::core::model::ArtCNN<32>>(const int idx, const model::ArtCNN<32>& model)
+-{
+-    return std::make_shared<cpu::CPUProcessor<model::ArtCNN<32>>>(idx, model);
+-}
+-
+-
+-template<>
+-class ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<8>> : public ac::core::cpu::CPUProcessorSeqCNN<ac::core::model::FSRCNNX<8>>
+-{
+-public:
+-    CPUProcessor(int arch, const model::FSRCNNX<8>& model) noexcept;
+-    ~CPUProcessor() noexcept override;
+-
+-private:
+-    void process(const Image& src, Image& dst) override;
+-
+-private:
+-    util::ThreadLocal<ImageBuffer> tmp1ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> tmp2ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> featImageBuffers{};
+-};
+-
+-ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<8>>::CPUProcessor(const int arch, const model::FSRCNNX<8>& model) noexcept : CPUProcessorSeqCNN(arch, model) {}
+-ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<8>>::~CPUProcessor() noexcept = default;
+-
+-void ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<8>>::process(const Image& src, Image& dst)
+-{
+-    auto& tmp1ImageBuffer = tmp1ImageBuffers.local();
+-    auto& tmp2ImageBuffer = tmp2ImageBuffers.local();
+-    auto& featImageBuffer = featImageBuffers.local();
+-
+-    auto& tmp1 = tmp1ImageBuffer.get(src.width(), src.height(), 8, ac::core::Image::Float32);
+-    auto& tmp2 = tmp2ImageBuffer.get(src.width(), src.height(), 8, ac::core::Image::Float32);
+-    auto& feat = featImageBuffer.get(src.width(), src.height(), 8, ac::core::Image::Float32);
+-
+-    auto tmpI = &tmp2;
+-    auto tmpO = &tmp1;
+-    int l = 0;
+-    // head
+-    conv5x5_1to8_identity(src, feat, model.kernel(l), model.bias(l)); l++;
+-    // body
+-    conv3x3_8to8_prelu(feat, *tmpO, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-    std::swap(tmpI, tmpO);
+-    for (int i = 0; i < model.blocks() - 2; i++)
+-    {
+-        conv3x3_8to8_prelu(*tmpI, *tmpO, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-        std::swap(tmpI, tmpO);
+-    }
+-    conv3x3_8to8_prelu_conv1x1_8to8_add_prelu(
+-        *tmpI, *tmpO,
+-        model.kernel(l), model.bias(l), model.alpha(l),
+-        model.kernel(l + 1), model.bias(l + 1), model.alpha(l + 1), feat); l += 2;
+-    std::swap(tmpI, tmpO);
+-    // upscale
+-    conv3x3_8to4_identity_pixelshuffle_4to1(*tmpI, dst, model.kernel(l), model.bias(l));
+-}
+-
+-template<>
+-AC_CORE_EXPORT std::shared_ptr<ac::core::Processor> ac::core::Processor::create<ac::core::Processor::CPU, ac::core::model::FSRCNNX<8>>(const int idx, const model::FSRCNNX<8>& model)
+-{
+-    return std::make_shared<cpu::CPUProcessor<model::FSRCNNX<8>>>(idx, model);
+-}
+-
+-
+-template<>
+-class ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<16>> : public ac::core::cpu::CPUProcessorSeqCNN<ac::core::model::FSRCNNX<16>>
+-{
+-public:
+-    CPUProcessor(int arch, const model::FSRCNNX<16>& model) noexcept;
+-    ~CPUProcessor() noexcept override;
+-
+-private:
+-    void process(const Image& src, Image& dst) override;
+-
+-private:
+-    util::ThreadLocal<ImageBuffer> tmp1ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> tmp2ImageBuffers{};
+-    util::ThreadLocal<ImageBuffer> featImageBuffers{};
+-};
+-
+-ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<16>>::CPUProcessor(const int arch, const model::FSRCNNX<16>& model) noexcept : CPUProcessorSeqCNN(arch, model) {}
+-ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<16>>::~CPUProcessor() noexcept = default;
+-
+-void ac::core::cpu::CPUProcessor<ac::core::model::FSRCNNX<16>>::process(const Image& src, Image& dst)
+-{
+-    auto& tmp1ImageBuffer = tmp1ImageBuffers.local();
+-    auto& tmp2ImageBuffer = tmp2ImageBuffers.local();
+-    auto& featImageBuffer = featImageBuffers.local();
+-
+-    auto& tmp1 = tmp1ImageBuffer.get(src.width(), src.height(), 16, ac::core::Image::Float32);
+-    auto& tmp2 = tmp2ImageBuffer.get(src.width(), src.height(), 16, ac::core::Image::Float32);
+-    auto& feat = featImageBuffer.get(src.width(), src.height(), 16, ac::core::Image::Float32);
+-
+-    auto tmpI = &tmp2;
+-    auto tmpO = &tmp1;
+-    int l = 0;
+-    // head
+-    conv5x5_1to16_identity(src, feat, model.kernel(l), model.bias(l)); l++;
+-    // body
+-    conv3x3_16to16_prelu(feat, *tmpO, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-    std::swap(tmpI, tmpO);
+-    for (int i = 0; i < model.blocks() - 2; i++)
+-    {
+-        conv3x3_16to16_prelu(*tmpI, *tmpO, model.kernel(l), model.bias(l), model.alpha(l)); l++;
+-        std::swap(tmpI, tmpO);
+-    }
+-    conv3x3_16to16_prelu_conv1x1_16to16_add_prelu(
+-        *tmpI, *tmpO,
+-        model.kernel(l), model.bias(l), model.alpha(l),
+-        model.kernel(l + 1), model.bias(l + 1), model.alpha(l + 1), feat); l += 2;
+-    std::swap(tmpI, tmpO);
+-    // upscale
+-    conv3x3_16to4_identity_pixelshuffle_4to1(*tmpI, dst, model.kernel(l), model.bias(l));
+-}
+-
+-template<>
+-AC_CORE_EXPORT std::shared_ptr<ac::core::Processor> ac::core::Processor::create<ac::core::Processor::CPU, ac::core::model::FSRCNNX<16>>(const int idx, const model::FSRCNNX<16>& model)
+-{
+-    return std::make_shared<cpu::CPUProcessor<model::FSRCNNX<16>>>(idx, model);
+-}
+-
+ template<>
+ AC_CORE_EXPORT const char* ac::core::Processor::info<ac::core::Processor::CPU>()
+ {
+diff --git a/util/parallel/include/AC/Util/Parallel.hpp b/util/parallel/include/AC/Util/Parallel.hpp
+index d4d9584b..83b687ae 100644
+--- a/util/parallel/include/AC/Util/Parallel.hpp
++++ b/util/parallel/include/AC/Util/Parallel.hpp
+@@ -5,6 +5,8 @@
+ #   include <ppl.h>
+ #elif defined(AC_DEP_PARALLEL_OPENMP)
+ #else
++#   include <algorithm>
++#   include <atomic>
+ #   include "AC/Util/ThreadPool.hpp"
+ #endif
+ 
+@@ -12,6 +14,29 @@ namespace ac::util
+ {
+     template <typename IndexType, typename F>
+     void parallelFor(IndexType first, IndexType last, F&& func);
++
++#if !defined(AC_DEP_PARALLEL_PPL) && !defined(AC_DEP_PARALLEL_OPENMP)
++    // YACReader: the most threads a parallelFor call uses, 0 for all hardware threads. The pool takes its size from
++    // it on first use, so it also caps the threads of calls that run at the same time.
++    inline std::atomic<unsigned int> parallelForThreads{ 0 };
++
++    namespace detail
++    {
++        inline unsigned int parallelForThreadLimit() noexcept
++        {
++            const unsigned int hardwareThreads = ThreadPool::hardwareThreads();
++            const unsigned int limit = parallelForThreads.load(std::memory_order_relaxed);
++            return limit ? std::min(limit, hardwareThreads) : hardwareThreads;
++        }
++
++        // YACReader: one pool shared by every parallelFor instantiation instead of one each.
++        inline ThreadPool& parallelForPool()
++        {
++            static ThreadPool pool{ parallelForThreadLimit() };
++            return pool;
++        }
++    }
++#endif
+ }
+ 
+ template <typename IndexType, typename F>
+@@ -23,39 +48,23 @@ inline void ac::util::parallelFor(const IndexType first, const IndexType last, F
+ #   pragma omp parallel for schedule(guided)
+     for (IndexType i = first; i < last; i++) func(i);
+ #else
+-    static const std::size_t threads = ThreadPool::hardwareThreads();
+-    auto range = last - first;
+-    if (range > 0)
++    const auto threads = static_cast<IndexType>(detail::parallelForThreadLimit());
++    const IndexType range = last - first;
++    const IndexType tasks = std::min(threads, range);
++    if (tasks > 1)
+     {
+-        if (threads > 1 && range > 1)
++        auto& pool = detail::parallelForPool();
++        std::vector<std::future<void>> futures{};
++        futures.reserve(static_cast<std::size_t>(tasks));
++        for (IndexType t = 0; t < tasks; t++)
+         {
+-            static ThreadPool pool{ threads + 1 };
+-
+-            auto blocks = range / threads;
+-            auto remain = range % threads;
+-
+-            std::vector<std::future<void>> tasks{};
+-            tasks.reserve(static_cast<decltype(tasks.size())>(threads + remain));
+-
+-            IndexType i = first;
+-            if (blocks)
+-                while (i < (last - remain))
+-                {
+-                    auto next = i + static_cast<IndexType>(blocks);
+-                    tasks.emplace_back(pool.exec([&](const IndexType startIdx, const IndexType endIdx) { for (IndexType idx = startIdx; idx < endIdx; idx++) func(idx); }, i, next));
+-                    i = next;
+-                }
+-            if (remain)
+-                while (i < last)
+-                {
+-                    tasks.emplace_back(pool.exec(func, i));
+-                    i++;
+-                }
+-
+-            for (auto&& task : tasks) task.wait();
++            const IndexType begin = first + range * t / tasks;
++            const IndexType end = first + range * (t + 1) / tasks;
++            futures.emplace_back(pool.exec([&func](const IndexType startIdx, const IndexType endIdx) { for (IndexType idx = startIdx; idx < endIdx; idx++) func(idx); }, begin, end));
+         }
+-        else for (IndexType i = first; i < last; i++) func(i);
++        for (auto&& future : futures) future.wait();
+     }
++    else for (IndexType i = first; i < last; i++) func(i);
+ #endif
+ }
+ 
