@@ -270,8 +270,10 @@ private:
     void goToRelativePage(int offset);
     void applyContinuousPageFit();
     bool continuousModelActive() const;
-    QString currentPagesInformation();
-    // Render's page changes and the continuous scroll both end here, once the view is on the new page
+    QString currentPagesInformation() const;
+    bool pageCounterAllowed() const;
+    // Render's page changes, the continuous scroll and Go to page in continuous scroll end here, once the
+    // view is on the new page
     void onReadingPageChanged();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();

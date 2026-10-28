@@ -840,13 +840,13 @@ If none is active, Escape does nothing.</source>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1945"/>
+        <location filename="viewer.cpp" line="1948"/>
         <source>Page not available!</source>
         <translation>Страница недоступна!</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1916"/>
+        <location filename="viewer.cpp" line="1919"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Нажмите &quot;O&quot; чтобы открыть комикс.</translation>
     </message>
@@ -856,7 +856,7 @@ If none is active, Escape does nothing.</source>
         <translation>Ошибка открытия комикса</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2289"/>
         <source>Cover!</source>
         <translation>Начало!</translation>
     </message>
@@ -876,12 +876,12 @@ If none is active, Escape does nothing.</source>
         <translation>Не найдено</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Last page!</source>
         <translation>Конец!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1934"/>
+        <location filename="viewer.cpp" line="1937"/>
         <source>Loading...please wait!</source>
         <translation>Загрузка... Пожалуйста подождите!</translation>
     </message>

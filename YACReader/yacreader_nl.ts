@@ -841,12 +841,12 @@ Als geen enkele modus actief is, doet de Escape-toets niets.</translation>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1916"/>
+        <location filename="viewer.cpp" line="1919"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Druk &apos;O&apos; om een strip te openen.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2289"/>
         <source>Cover!</source>
         <translation>Omslag!</translation>
     </message>
@@ -861,12 +861,12 @@ Als geen enkele modus actief is, doet de Escape-toets niets.</translation>
         <translation>Niet gevonden</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Last page!</source>
         <translation>Laatste pagina!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1934"/>
+        <location filename="viewer.cpp" line="1937"/>
         <source>Loading...please wait!</source>
         <translation>Inladen...even wachten!</translation>
     </message>
@@ -881,7 +881,7 @@ Als geen enkele modus actief is, doet de Escape-toets niets.</translation>
         <translation>CRC-fout</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1945"/>
+        <location filename="viewer.cpp" line="1948"/>
         <source>Page not available!</source>
         <translation>Pagina niet beschikbaar!</translation>
     </message>

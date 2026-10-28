@@ -840,13 +840,13 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1945"/>
+        <location filename="viewer.cpp" line="1948"/>
         <source>Page not available!</source>
         <translation>Pagina non disponibile!</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1916"/>
+        <location filename="viewer.cpp" line="1919"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Premi &quot;O&quot; per aprire il fumettto.</translation>
     </message>
@@ -856,7 +856,7 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <translation>Errore nell&apos;apertura</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2289"/>
         <source>Cover!</source>
         <translation>Copertina!</translation>
     </message>
@@ -876,12 +876,12 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <translation>Non trovato</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Last page!</source>
         <translation>Ultima pagina!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1934"/>
+        <location filename="viewer.cpp" line="1937"/>
         <source>Loading...please wait!</source>
         <translation>In caricamento...Attendi!</translation>
     </message>

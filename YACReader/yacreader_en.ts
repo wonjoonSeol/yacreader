@@ -841,7 +841,7 @@ If none is active, Escape does nothing.</translation>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1916"/>
+        <location filename="viewer.cpp" line="1919"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Press &apos;O&apos; to open comic.</translation>
     </message>
@@ -866,22 +866,22 @@ If none is active, Escape does nothing.</translation>
         <translation>CRC Error</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1934"/>
+        <location filename="viewer.cpp" line="1937"/>
         <source>Loading...please wait!</source>
         <translation>Loading...please wait!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1945"/>
+        <location filename="viewer.cpp" line="1948"/>
         <source>Page not available!</source>
         <translation>Page not available!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2289"/>
         <source>Cover!</source>
         <translation>Cover!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Last page!</source>
         <translation>Last page!</translation>
     </message>

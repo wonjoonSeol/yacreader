@@ -840,13 +840,13 @@ Wenn keiner aktiv ist, geschieht beim Drücken der Escape-Taste nichts.</transla
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1945"/>
+        <location filename="viewer.cpp" line="1948"/>
         <source>Page not available!</source>
         <translation>Seite nicht verfügbar!</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1916"/>
+        <location filename="viewer.cpp" line="1919"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>&apos;O&apos; drücken, um Comic zu öffnen.</translation>
     </message>
@@ -856,7 +856,7 @@ Wenn keiner aktiv ist, geschieht beim Drücken der Escape-Taste nichts.</transla
         <translation>Fehler beim Öffnen des Comics</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2289"/>
         <source>Cover!</source>
         <translation>Titelseite!</translation>
     </message>
@@ -876,12 +876,12 @@ Wenn keiner aktiv ist, geschieht beim Drücken der Escape-Taste nichts.</transla
         <translation>Nicht gefunden</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Last page!</source>
         <translation>Letzte Seite!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1934"/>
+        <location filename="viewer.cpp" line="1937"/>
         <source>Loading...please wait!</source>
         <translation>Ladevorgang... Bitte warten!</translation>
     </message>

@@ -495,12 +495,13 @@ void Viewer::goTo(unsigned int page)
 {
     direction = 1; // in "go to" direction is always fordward
 
-    // Render follows the continuous scroll lazily, so it may already be on the page while the scroll is not.
-    // Once synced, Render reports the page change, and onRenderPageChanged scrolls there.
-    syncRenderToContinuousReadingProgress();
-    if (continuousModelActive() && render->getIndex() == page) {
-        // the reading page already: back to its top
+    if (continuousModelActive()) {
+        // Render follows the scroll lazily: it may already be on the page and report no change, or report
+        // the change before the scroll has moved. So the scroll goes first, then Render catches up in one
+        // move, without a stop at the old reading page.
+        lastCenterPage = static_cast<int>(page);
         scrollToCurrentContinuousPage();
+        syncRenderToContinuousPage();
         onReadingPageChanged();
         return;
     }
@@ -1438,8 +1439,7 @@ void Viewer::informationSwitch()
     // informationLabel->move(QPoint((width()-informationLabel->width())/2,0));
     information = !information;
     Configuration::getConfiguration().setShowInformation(information);
-    // the page information label shows the pages now
-    if (information) {
+    if (!pageCounterAllowed()) {
         pageCounter->hide();
     }
     // TODO it shouldn't be neccesary
@@ -1471,12 +1471,18 @@ bool Viewer::continuousModelActive() const
     return continuousScroll && continuousViewModel->numPages() > 0;
 }
 
-QString Viewer::currentPagesInformation()
+QString Viewer::currentPagesInformation() const
 {
     if (continuousModelActive()) {
         return YACReader::pagesInformation(continuousViewModel->readingProgressPage(), continuousViewModel->numPages());
     }
     return render->getCurrentPagesInformation();
+}
+
+bool Viewer::pageCounterAllowed() const
+{
+    // the page information label already shows the pages
+    return !information && Configuration::getConfiguration().getShowPageCounter();
 }
 
 void Viewer::onReadingPageChanged()
@@ -1492,8 +1498,7 @@ void Viewer::onReadingPageChanged()
         continuousReadingPage = continuousViewModel->readingProgressPage();
     }
     const bool pageTurned = pageCounterTrigger.pageTurned(render->getIndex(), continuousReadingPage);
-    // the page information label already shows the pages
-    if (pageTurned && !information && Configuration::getConfiguration().getShowPageCounter()) {
+    if (pageTurned && pageCounterAllowed()) {
         pageCounter->flash(currentPagesInformation());
     }
 }
@@ -1636,9 +1641,7 @@ void Viewer::setBookmark(bool set)
     if (!render->hasLoadedComic())
         return;
 
-    const int page = continuousModelActive()
-            ? continuousViewModel->readingProgressPage()
-            : static_cast<int>(render->getIndex());
+    const int page = getCurrentPageNumber();
     if (set)
         render->setBookmark(page);
     else
@@ -1817,7 +1820,7 @@ void Viewer::scrollToCurrentContinuousPage()
 
 void Viewer::syncRenderToContinuousReadingProgress()
 {
-    if (!continuousScroll || continuousViewModel->numPages() <= 0) {
+    if (!continuousModelActive()) {
         return;
     }
 
@@ -2223,7 +2226,7 @@ void Viewer::updateConfig(QSettings *settings)
     mglass->setCircular(Configuration::getConfiguration().getMagnifyingGlassCircular());
     mglass->setRing(Configuration::getConfiguration().getMagnifyingGlassRing());
     magnifierEdgeEase = Configuration::getConfiguration().getMagnifyingGlassEdgeEase();
-    if (!Configuration::getConfiguration().getShowPageCounter()) {
+    if (!pageCounterAllowed()) {
         pageCounter->hide();
     }
 
