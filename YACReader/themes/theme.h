@@ -140,6 +140,8 @@ struct ToolbarTheme {
     QIcon showInfoAction18x18;
     QIcon closeAction;
     QIcon closeAction18x18;
+    QIcon exitFullScreenAction;
+    QIcon exitFullScreenAction18x18;
     QIcon showDictionaryAction;
     QIcon showDictionaryAction18x18;
     QIcon adjustToFullSizeAction;

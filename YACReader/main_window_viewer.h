@@ -27,8 +27,11 @@ class ShortcutsDialog;
 class YACReaderSliderAction;
 class YACReaderSlider;
 class EditShortcutsDialog;
+class ImageAdjustmentMenu;
 
 namespace YACReader {
+
+class ToolBarOverlay;
 
 class MainWindowViewer : public QMainWindow, protected Themable
 {
@@ -102,6 +105,7 @@ private:
     Viewer *viewer;
     // GoToDialog * goToDialog;
     OptionsDialog *optionsDialog;
+    ImageAdjustmentMenu *imageAdjustmentMenu;
     HelpAboutDialog *had;
     // ShortcutsDialog * shortcutsDialog;
     EditShortcutsDialog *editShortcutsDialog;
@@ -112,6 +116,8 @@ private:
 #else
     QToolBar *comicToolBar;
 #endif
+    // in full screen, shows the hidden toolbar over the page when the mouse reaches the top of the screen; null on macOS, where the toolbar is native
+    ToolBarOverlay *toolBarOverlay = nullptr;
 
     //! Actions
     QAction *openAction;
@@ -141,6 +147,7 @@ private:
     QAction *showInfoAction;
     QAction *closeAction; // owns the Escape key; dispatches quit vs. cancel-mode
     QAction *exitAction; // File▸Close menu command, always quits
+    QAction *toggleFullScreenAction;
 
     // Cancels the topmost active mode (magnifier, translator, go-to-flow, fullscreen).
     // Returns true if a mode was cancelled, false if none was active.
@@ -162,6 +169,7 @@ private:
 
     QList<QAction *> mglassActions;
     QList<QAction *> loadedComicActions;
+    QList<QAction *> fullScreenToolBarActions;
 
     QToolButton *openToolButton;
 
@@ -175,6 +183,8 @@ private:
     void createActions();
     QAction *addActionWithShortcut(const QString &text, const QString &shortcutKey);
     void createToolBars();
+    // the exit and close buttons at the end of the toolbar, only in full screen and not on macOS
+    void setFullScreenToolBarActionsVisible(bool visible);
     void refreshRecentFilesActionList();
     void clearRecentFiles();
     void getSiblingComics(QString path, QString currentComic);
@@ -184,6 +194,8 @@ private:
     void syncModeActions(bool manga, bool continuousScroll);
     void applySavedReaderMode();
     void applyLibraryReaderMode(YACReader::FileType type);
+    // the current comic's own brightness, contrast and gamma, or the defaults where it has none
+    void applyComicFilterLevels();
 
     //! Manejadores de evento:
     // void resizeEvent(QResizeEvent * event);

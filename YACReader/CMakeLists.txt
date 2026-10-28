@@ -13,6 +13,9 @@ qt_add_executable(YACReader WIN32
     magnifying_glass.cpp
     main_window_viewer.h
     main_window_viewer.cpp
+    toolbar_over_page.h
+    toolbar_overlay.h
+    toolbar_overlay.cpp
     continuous_page_widget.h
     continuous_page_widget.cpp
     continuous_page_provider.h
@@ -21,10 +24,22 @@ qt_add_executable(YACReader WIN32
     continuous_view_model.cpp
     mouse_handler.h
     mouse_handler.cpp
+    page_fit.h
+    page_fit.cpp
+    page_prescaler.h
+    page_prescaler.cpp
+    page_view.h
+    page_view.cpp
     viewer.h
     viewer.cpp
     options_dialog.h
     options_dialog.cpp
+    image_adjustment.h
+    image_adjustment.cpp
+    image_adjustment_menu.h
+    image_adjustment_menu.cpp
+    image_filter_slider.h
+    image_filter_slider.cpp
     bookmarks_dialog.h
     bookmarks_dialog.cpp
     render.h
@@ -33,8 +48,14 @@ qt_add_executable(YACReader WIN32
     translator.cpp
     goto_flow_widget.h
     goto_flow_widget.cpp
+    info_box_widget.h
+    info_box_widget.cpp
     page_label_widget.h
     page_label_widget.cpp
+    pages_information.h
+    page_counter_trigger.h
+    page_counter_widget.h
+    page_counter_widget.cpp
     goto_flow_toolbar.h
     goto_flow_toolbar.cpp
     width_slider.h
@@ -96,6 +117,7 @@ set(yacreader_image_files
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/close.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doublePage.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doubleMangaPage.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/exitFullScreen.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/fitToPage.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/flow.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/full.svg
@@ -125,6 +147,7 @@ set(yacreader_image_files
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/close_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doublePage_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doubleMangaPage_18x18.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/exitFullScreen_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/fitToPage_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/flow_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/full_18x18.svg
