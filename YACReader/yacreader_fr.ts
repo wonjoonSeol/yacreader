@@ -152,7 +152,7 @@
 <context>
     <name>ContinuousPageWidget</name>
     <message>
-        <location filename="continuous_page_widget.cpp" line="321"/>
+        <location filename="continuous_page_widget.cpp" line="277"/>
         <source>Loading page %1</source>
         <translation>Chargement de la page %1</translation>
     </message>
@@ -856,13 +856,13 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1946"/>
+        <location filename="viewer.cpp" line="1967"/>
         <source>Page not available!</source>
         <translation>Page non disponible !</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1917"/>
+        <location filename="viewer.cpp" line="1938"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Appuyez sur &quot;O&quot; pour ouvrir une bande dessinée.</translation>
     </message>
@@ -872,7 +872,7 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Erreur d&apos;ouverture de la bande dessinée</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Cover!</source>
         <translation>Couverture!</translation>
     </message>
@@ -892,12 +892,12 @@ Si aucun n’est actif, la touche Échap ne fait rien.</translation>
         <translation>Introuvable</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2317"/>
         <source>Last page!</source>
         <translation>Dernière page!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1935"/>
+        <location filename="viewer.cpp" line="1956"/>
         <source>Loading...please wait!</source>
         <translation>Chargement... Patientez</translation>
     </message>

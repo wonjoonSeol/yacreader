@@ -41,8 +41,6 @@ public:
     void deliverScaledImage(int pageIndex, quint64 generation, QImage scaledImage,
                             qint64 sourceCacheKey, QSize sourceSize, QSize targetSize,
                             QSize targetPixelSize, qreal devicePixelRatio);
-    // The same for the running ACNet task, with a null image when it did not upscale.
-    void deliverUpscaledImage(QImage image);
 
     // The ACNet model that sharpens enlarged pages (see acnetUpscales), or none.
     // Turning it off or changing it drops the scaled pages.
@@ -55,6 +53,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
     void applyTheme(const Theme &theme) override;
 
 private:
@@ -128,7 +127,7 @@ private:
     };
 
     // The ACNet task in flight. It stays here until its result arrives, even once the
-    // result is no longer wanted, so two never run at once.
+    // result is no longer wanted (cancelled), so two never run at once.
     struct RunningUpscale {
         int pageIndex = -1;
         // the plain scale the result replaces, if it is still the page's image then
@@ -142,6 +141,8 @@ private:
     void enqueueScale(int pageIndex, const QImage *source, const QSize &targetSize, const QSize &targetPixelSize, qreal dpr);
     // Starts ACNet on the next cached page that needs it, unless a task is running.
     void startNextUpscale();
+    // The running ACNet task's result, null when it did not upscale. Runs on the GUI thread.
+    void deliverUpscaledImage(QImage image);
     QList<int> upscaleOrder() const;
     // Drops the whole scaled cache and discards/ignores any in-flight work.
     void resetScaledCache();

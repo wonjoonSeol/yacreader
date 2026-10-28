@@ -152,7 +152,7 @@
 <context>
     <name>ContinuousPageWidget</name>
     <message>
-        <location filename="continuous_page_widget.cpp" line="321"/>
+        <location filename="continuous_page_widget.cpp" line="277"/>
         <source>Loading page %1</source>
         <translation>正在載入頁面 %1</translation>
     </message>
@@ -857,7 +857,7 @@ If none is active, Escape does nothing.</source>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1917"/>
+        <location filename="viewer.cpp" line="1938"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>按下 &apos;O&apos; 以打開漫畫.</translation>
     </message>
@@ -882,22 +882,22 @@ If none is active, Escape does nothing.</source>
         <translation>CRC 校驗失敗</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1935"/>
+        <location filename="viewer.cpp" line="1956"/>
         <source>Loading...please wait!</source>
         <translation>載入中... 請稍候!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1946"/>
+        <location filename="viewer.cpp" line="1967"/>
         <source>Page not available!</source>
         <translation>頁面不可用!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2286"/>
+        <location filename="viewer.cpp" line="2303"/>
         <source>Cover!</source>
         <translation>封面!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2300"/>
+        <location filename="viewer.cpp" line="2317"/>
         <source>Last page!</source>
         <translation>尾頁!</translation>
     </message>

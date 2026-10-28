@@ -82,50 +82,6 @@ private:
     ScaleMethod m_method;
 };
 
-// ACNet's pass over a page already shown with the plain scale. It hands its result back like
-// PageScaleTask; the widget knows which page it is for, since one runs at a time.
-class PageUpscaleTask : public QRunnable
-{
-public:
-    PageUpscaleTask(ContinuousPageWidget *widget, QImage source, QSize targetPixelSize, qreal devicePixelRatio,
-                    ScaleMethod method, AcnetModel model, std::shared_ptr<const std::atomic_bool> cancelled)
-        : m_widget(widget),
-          m_source(std::move(source)),
-          m_targetPixelSize(targetPixelSize),
-          m_devicePixelRatio(devicePixelRatio),
-          m_method(method),
-          m_model(model),
-          m_cancelled(std::move(cancelled))
-    {
-        setAutoDelete(true);
-    }
-
-    void run() override
-    {
-        QImage upscaled = scaleImageWithAcnet(m_source, m_targetPixelSize, m_method, m_model, *m_cancelled);
-        if (!upscaled.isNull()) {
-            upscaled.setDevicePixelRatio(m_devicePixelRatio);
-        }
-
-        ContinuousPageWidget *widget = m_widget;
-        QMetaObject::invokeMethod(
-                widget,
-                [widget, upscaled = std::move(upscaled)]() mutable {
-                    widget->deliverUpscaledImage(std::move(upscaled));
-                },
-                Qt::QueuedConnection);
-    }
-
-private:
-    ContinuousPageWidget *m_widget;
-    QImage m_source;
-    QSize m_targetPixelSize;
-    qreal m_devicePixelRatio;
-    ScaleMethod m_method;
-    AcnetModel m_model;
-    std::shared_ptr<const std::atomic_bool> m_cancelled;
-};
-
 ContinuousPageWidget::ContinuousPageWidget(QWidget *parent)
     : QWidget(parent)
 {
@@ -434,11 +390,9 @@ void ContinuousPageWidget::deliverScaledImage(int pageIndex, quint64 generation,
     startNextUpscale();
 }
 
+// Only the running task delivers, so runningUpscale is set
 void ContinuousPageWidget::deliverUpscaledImage(QImage image)
 {
-    if (!runningUpscale) {
-        return;
-    }
     const RunningUpscale upscale = *std::exchange(runningUpscale, std::nullopt);
 
     const auto entry = scaledPageCache.pages.find(upscale.pageIndex);
@@ -479,21 +433,41 @@ void ContinuousPageWidget::startNextUpscale()
         }
         return;
     }
-    if (!acnetModel || !provider) {
+    // Hidden while the reader is in single or double page mode, which upscales its own pages
+    if (!acnetModel || !provider || !isVisible()) {
         return;
     }
 
     for (const int pageIndex : upscaleOrder()) {
         const auto entry = scaledPageCache.pages.constFind(pageIndex);
+        if (entry == scaledPageCache.pages.cend() || entry->upscaled || !acnetUpscales(entry->sourceSize, entry->targetPixelSize)) {
+            continue;
+        }
         const QImage *source = provider->image(pageIndex);
-        if (entry == scaledPageCache.pages.cend() || entry->upscaled || !source || source->isNull() || source->cacheKey() != entry->sourceCacheKey || !acnetUpscales(source->size(), entry->targetPixelSize)) {
+        if (!source || source->cacheKey() != entry->sourceCacheKey) {
             continue;
         }
 
         runningUpscale = RunningUpscale { pageIndex, entry->scaledImage.cacheKey(), std::make_shared<std::atomic_bool>(false) };
-        upscalePool.start(new PageUpscaleTask(this, *source, entry->targetPixelSize, entry->targetDevicePixelRatio,
-                                              Configuration::getConfiguration().getScalingMethod(), *acnetModel, runningUpscale->cancelled));
+        // The widget waits for the pool when it is destroyed, so `this` outlives the task
+        upscalePool.start([this, source = *source, targetPixelSize = entry->targetPixelSize, dpr = entry->targetDevicePixelRatio,
+                           method = Configuration::getConfiguration().getScalingMethod(), model = *acnetModel, cancelled = runningUpscale->cancelled] {
+            QImage upscaled = scaleImageWithAcnet(source, targetPixelSize, method, model, *cancelled);
+            if (!upscaled.isNull()) {
+                upscaled.setDevicePixelRatio(dpr);
+            }
+            QMetaObject::invokeMethod(
+                    this, [this, upscaled = std::move(upscaled)]() mutable { deliverUpscaledImage(std::move(upscaled)); }, Qt::QueuedConnection);
+        });
         return;
+    }
+}
+
+void ContinuousPageWidget::hideEvent(QHideEvent *event)
+{
+    QWidget::hideEvent(event);
+    if (runningUpscale) {
+        *runningUpscale->cancelled = true;
     }
 }
 

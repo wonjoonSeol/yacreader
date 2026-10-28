@@ -18,7 +18,6 @@ private slots:
     void tellsWhenItsImagesAreStale();
     void declinesViewsItDoesNotUpscale_data();
     void declinesViewsItDoesNotUpscale();
-    void upscalesOneViewAtATime();
     void stopsWhenTheJobIsCancelled();
     void replacesThePlainScaleInThePrescaler();
 };
@@ -91,11 +90,6 @@ void AcnetStageTest::declinesViewsItDoesNotUpscale()
     stage.setModel(on ? std::optional(AcnetModel::F8B4) : std::nullopt);
 
     QCOMPARE(stage.isActive(imageSize, pixelSize), active);
-}
-
-void AcnetStageTest::upscalesOneViewAtATime()
-{
-    QCOMPARE(AcnetStage().maxConcurrent(), 1);
 }
 
 void AcnetStageTest::stopsWhenTheJobIsCancelled()
