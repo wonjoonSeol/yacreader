@@ -15,7 +15,7 @@ struct ScalingMethodChoice {
     QString text() const;
 };
 
-// In the order Options > Image adjustment lists them
+// In the order Options > Image adjustment and the image adjustment menu list them
 const QList<ScalingMethodChoice> &scalingMethodChoices();
 
 // The combo items hold their methods as data, because from Lanczos3 on a method's position is not its stored value

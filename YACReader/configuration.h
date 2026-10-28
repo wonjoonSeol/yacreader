@@ -32,14 +32,34 @@ enum EscapeKeyBehavior {
     EscapeCancelsMode = 1
 };
 
+// A brightness, contrast or gamma level of Options > Image adjustment
+struct ImageFilterSpec {
+    const char *settingsKey;
+    int minimum;
+    int maximum;
+    int defaultValue;
+
+    // A comic stores -1 when it has no level of its own
+    constexpr int levelOrDefault(int comicLevel) const { return comicLevel == -1 ? defaultValue : comicLevel; }
+    // What a comic stores for level: still -1 if it had none and level is the default
+    constexpr int toComicLevel(int level, int comicLevel) const { return comicLevel == -1 && level == defaultValue ? -1 : level; }
+};
+
+inline constexpr ImageFilterSpec brightnessSpec { BRIGHTNESS, 0, 100, 0 };
+inline constexpr ImageFilterSpec contrastSpec { CONTRAST, 0, 250, 100 };
+inline constexpr ImageFilterSpec gammaSpec { GAMMA, 0, 250, 100 };
+
 class Configuration : public QObject
 {
     Q_OBJECT
 
 private:
-    QSettings *settings;
+    QSettings *settings = nullptr;
 
     Configuration();
+
+    // Stores value unless it equals current, what the getter reads, and returns whether it stored it
+    bool storeIfChanged(const char *key, const QVariant &current, const QVariant &value);
 
 public:
     static Configuration &getConfiguration()
@@ -92,9 +112,13 @@ public:
     bool getContinuousScroll() { return settings->value(CONTINUOUS_SCROLL, false).toBool(); }
     void setContinuousScroll(bool b) { settings->setValue(CONTINUOUS_SCROLL, b); }
     bool getContinuousScrollFitToHeight() { return settings->value(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, false).toBool(); }
-    void setContinuousScrollFitToHeight(bool b) { settings->setValue(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, b); }
+    void setContinuousScrollFitToHeight(bool b);
     bool getEnlargeImages() { return settings->value(ENLARGE_IMAGES, true).toBool(); }
-    void setEnlargeImages(bool b) { settings->setValue(ENLARGE_IMAGES, b); }
+    void setEnlargeImages(bool b);
+    int getFilterLevel(const ImageFilterSpec &filter) { return settings->value(filter.settingsKey, filter.defaultValue).toInt(); }
+    void setFilterLevel(const ImageFilterSpec &filter, int level);
+    // Emits filtersChanged once for the three, so the pages are filtered again once
+    void setFilterLevels(int brightness, int contrast, int gamma);
 
     QColor getBackgroundColor(const QColor &color) { return settings->value(BACKGROUND_COLOR, color).value<QColor>(); }
     void setBackgroundColor(const QColor &color) { settings->setValue(BACKGROUND_COLOR, color); }
@@ -141,11 +165,18 @@ public:
         const auto method = scaleMethodFromInt(settings->value(SCALING_METHOD).toInt(&ok));
         return ok && method ? *method : defaultScaleMethod;
     }
-    void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
+    void setScalingMethod(ScaleMethod method);
     bool getAcnetUpscaling() { return settings->value(ANIME4K_UPSCALING, false).toBool(); }
     void setAcnetUpscaling(bool b) { settings->setValue(ANIME4K_UPSCALING, b); }
     AcnetModel getAcnetModel() { return settings->value(ANIME4K_MODEL, 0).toInt() == static_cast<int>(AcnetModel::F8B8Hdn) ? AcnetModel::F8B8Hdn : AcnetModel::F8B4; }
     void setAcnetModel(AcnetModel model) { settings->setValue(ANIME4K_MODEL, static_cast<int>(model)); }
+
+signals:
+    // Options > Image adjustment and the image adjustment menu store through the setters above
+    // and both show what these report, so they agree. A setter emits only when the value changes.
+    // The enlarge, continuous scroll fit or scaling method option changed
+    void imageOptionsChanged();
+    void filtersChanged(int brightness, int contrast, int gamma);
 };
 
 }
