@@ -37,6 +37,24 @@ ComicsRemover::ComicsRemover(QModelIndexList &il, QList<QString> &ps, qulonglong
 {
 }
 
+namespace {
+
+// what Windows and macOS leave in the folders they show, deleted with the pages so that the folder can go
+bool isSystemFile(const QString &fileName)
+{
+    return fileName == QStringLiteral(".DS_Store") || fileName.startsWith(QStringLiteral("._")) ||
+            fileName.compare(QStringLiteral("Thumbs.db"), Qt::CaseInsensitive) == 0 ||
+            fileName.compare(QStringLiteral("desktop.ini"), Qt::CaseInsensitive) == 0;
+}
+
+// hidden and system files too: Windows marks Thumbs.db and desktop.ini as both
+QFileInfoList everythingIn(const QString &path)
+{
+    return QDir(path).entryInfoList(QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
+}
+
+}
+
 void ComicsRemover::process()
 {
     for (int position = indexList.size() - 1; position >= 0; --position) {
@@ -45,7 +63,7 @@ void ComicsRemover::process()
         if (QFileInfo(path).isDir()) {
             removeFolder(position, row, path);
         } else {
-            removeFile(row, path);
+            removeFile(position, row, path);
         }
     }
 
@@ -53,7 +71,7 @@ void ComicsRemover::process()
     emit removedItemsFromFolder(parentId);
 }
 
-void ComicsRemover::removeFile(int row, const QString &path)
+void ComicsRemover::removeFile(int position, int row, const QString &path)
 {
     if (trash(path)) {
         emit remove(row);
@@ -61,7 +79,7 @@ void ComicsRemover::removeFile(int row, const QString &path)
         emit fileDeletedPermanently();
         emit remove(row);
     } else {
-        emit removeError();
+        emit removeError(position);
     }
 }
 
@@ -70,7 +88,7 @@ void ComicsRemover::removeFolder(int position, int row, const QString &path)
     // a folder that holds more than a comic by now, like a subfolder or an archive, is left alone
     const auto contents = FolderComic::comicContents(path);
     if (!contents) {
-        emit removeError();
+        emit removeError(position);
         return;
     }
 
@@ -83,21 +101,22 @@ void ComicsRemover::removeFolder(int position, int row, const QString &path)
         return;
     }
 
-    switch (deletePermanently(path, *contents)) {
+    QStringList leftovers;
+    switch (deletePermanently(path, *contents, &leftovers)) {
     case PermanentDeletion::Deleted:
         emit remove(row);
         break;
     case PermanentDeletion::FilesLeft:
         emit remove(row);
-        emit folderNotEmptied(position);
+        emit folderNotEmptied(position, leftovers);
         break;
     case PermanentDeletion::Failed:
-        emit removeError();
+        emit removeError(position);
         break;
     }
 }
 
-ComicsRemover::PermanentDeletion ComicsRemover::deletePermanently(const QString &path, const FolderComicContents &contents)
+ComicsRemover::PermanentDeletion ComicsRemover::deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers)
 {
     const QFileInfo folder(path);
     if (folder.isSymbolicLink() || folder.isJunction()) {
@@ -113,7 +132,19 @@ ComicsRemover::PermanentDeletion ComicsRemover::deletePermanently(const QString 
     if (!contents.comicInfoPath.isEmpty()) {
         QFile::remove(contents.comicInfoPath);
     }
-    return QDir().rmdir(path) ? PermanentDeletion::Deleted : PermanentDeletion::FilesLeft;
+    for (const QFileInfo &entry : everythingIn(path)) {
+        if (entry.isFile() && isSystemFile(entry.fileName())) {
+            QFile::remove(entry.absoluteFilePath());
+        }
+    }
+    if (QDir().rmdir(path)) {
+        return PermanentDeletion::Deleted;
+    }
+
+    for (const QFileInfo &entry : everythingIn(path)) {
+        leftovers->append(entry.fileName());
+    }
+    return PermanentDeletion::FilesLeft;
 }
 
 FoldersRemover::FoldersRemover(QModelIndexList &il, QList<QString> &ps, QObject *parent)

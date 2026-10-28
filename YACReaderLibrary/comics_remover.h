@@ -27,24 +27,27 @@ class ComicsRemover : public QObject
     Q_OBJECT
 public:
     enum class FolderDeletion {
+        // the whole folder, with everything in it
         ToTrash,
-        // for the folders the trash refused: their pages and ComicInfo.xml are deleted, other files stay
+        // for the folders the trash refused: their pages, ComicInfo.xml and the files Windows and macOS
+        // leave, like Thumbs.db or .DS_Store, are deleted, and the folder only when nothing else is left
         Permanently
     };
     using Trash = std::function<bool(const QString &path)>;
 
-    explicit ComicsRemover(QModelIndexList &indexList, QList<QString> &paths, qulonglong parentId, FolderDeletion folderDeletion = FolderDeletion::ToTrash, QObject *parent = nullptr);
+    explicit ComicsRemover(QModelIndexList &indexList, QList<QString> &paths, qulonglong parentId, FolderDeletion folderDeletion, QObject *parent = nullptr);
     // the system trash unless a test replaces it
     void setTrash(Trash trash) { this->trash = std::move(trash); }
 
 signals:
     void remove(int);
-    void removeError();
+    // positions in the lists given to the constructor
+    void removeError(int position);
     // a comic file the trash refused, which is deleted for good as it always was
     void fileDeletedPermanently();
-    // positions in the lists given to the constructor
     void folderNotTrashed(int position);
-    void folderNotEmptied(int position);
+    // with the names of what is left in the folder
+    void folderNotEmptied(int position, const QStringList &leftovers);
     void finished();
     void removedItemsFromFolder(qulonglong);
 
@@ -58,9 +61,9 @@ private:
         Failed
     };
 
-    void removeFile(int row, const QString &path);
+    void removeFile(int position, int row, const QString &path);
     void removeFolder(int position, int row, const QString &path);
-    PermanentDeletion deletePermanently(const QString &path, const FolderComicContents &contents);
+    PermanentDeletion deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers);
 
     QModelIndexList indexList;
     QList<QString> paths;

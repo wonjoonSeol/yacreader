@@ -18,10 +18,10 @@ DeleteComicsQuestion::DeleteComicsQuestion(const ComicsDeletion &deletion, QWidg
         return;
     }
 
-    setInformativeText(QCoreApplication::translate("LibraryWindow", "Folder comics stay on your disk and in the library unless you also delete their image folders."));
+    setInformativeText(QCoreApplication::translate("LibraryWindow", "Folder comics stay on your disk and in the library unless the box below is checked. Checked, each image folder goes to the trash with everything in it."));
     const auto folders = QCoreApplication::translate("LibraryWindow", "%n folder(s)", nullptr, deletion.folders.size());
     const auto images = QCoreApplication::translate("LibraryWindow", "%n image(s)", nullptr, deletion.folderImages);
-    deleteFoldersBox = new QCheckBox(QCoreApplication::translate("LibraryWindow", "Also delete the image folders (%1, %2)").arg(folders, images));
+    deleteFoldersBox = new QCheckBox(QCoreApplication::translate("LibraryWindow", "Also move the image folders to the trash (%1, %2)").arg(folders, images));
     setCheckBox(deleteFoldersBox);
 
     if (deletion.files.isEmpty()) {
