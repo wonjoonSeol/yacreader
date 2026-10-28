@@ -1,6 +1,7 @@
 #ifndef __CONFIGURATION_H
 #define __CONFIGURATION_H
 
+#include "acnet_upscale.h"
 #include "page_fit.h"
 #include "resize_image.h"
 #include "yacreader_global_gui.h"
@@ -167,6 +168,10 @@ public:
         return ok && method ? *method : defaultScaleMethod;
     }
     void setScalingMethod(ScaleMethod method);
+    bool getAcnetUpscaling() { return settings->value(ANIME4K_UPSCALING, false).toBool(); }
+    void setAcnetUpscaling(bool b) { settings->setValue(ANIME4K_UPSCALING, b); }
+    AcnetModel getAcnetModel() { return settings->value(ANIME4K_MODEL, 0).toInt() == static_cast<int>(AcnetModel::F8B8Hdn) ? AcnetModel::F8B8Hdn : AcnetModel::F8B4; }
+    void setAcnetModel(AcnetModel model) { settings->setValue(ANIME4K_MODEL, static_cast<int>(model)); }
 
 signals:
     // Options > Image adjustment and the image adjustment menu store through the setters above

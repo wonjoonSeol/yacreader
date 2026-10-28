@@ -27,8 +27,10 @@
 #include <QTimer>
 #include <QWheelEvent>
 
+#include <memory>
 #include <optional>
 
+class AcnetStage;
 class ComicPageLabel;
 class ComicDB;
 class Comic;
@@ -173,6 +175,7 @@ private:
     // drawn from currentImages the first time it is needed, see fullPage()
     mutable QPixmap currentFullPage;
     PagePrescaler *prescaler = nullptr;
+    std::shared_ptr<AcnetStage> acnetStage;
     QTimer *prescaleTimer = nullptr;
     BookmarksDialog *bd;
     bool wheelStop;
@@ -289,6 +292,7 @@ private:
     PageFitOptions pageFitOptions() const;
     void requestPrescale(int delayMs);
     void schedulePrescale();
+    void applyAcnetOptions();
     void showImprovedPage(const PrescaleKey &key);
     void invalidateScaledPages();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.

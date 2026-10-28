@@ -97,7 +97,7 @@ The repo builds three applications that share a common set of static libraries:
 - **Theme system**: `theme_manager.h/cpp` is NOT part of `common_gui` because it depends on app-specific `Theme` structs. Each app (`YACReader/themes/`, `YACReaderLibrary/themes/`) defines its own `theme.h` and includes `theme_manager` directly.
 - **Compile-time app identity**: `YACREADER` or `YACREADER_LIBRARY` defines distinguish shared source compiled into different apps.
 - **PDF backend**: resolved at configure time into an `INTERFACE` target `pdf_backend_iface` (see `cmake/PdfBackend.cmake`); `comic_backend` and `common_all` link against this interface.
-- **Third-party code**: `third_party/` contains QsLog, KDToolBox, QtWebApp, QrCode — each has its own `.clang-format` to prevent reformatting.
+- **Third-party code**: `third_party/` contains QsLog, KDToolBox, QtWebApp, QrCode and a trimmed Anime4KCPP (ACNet upscaler, its changes in `third_party/anime4kcpp/yacreader.patch`); each has its own `.clang-format` to prevent reformatting.
 - **Runtime dependencies**: Qt binaries must be in `PATH`; third-party DLLs/dylibs must be next to the executable. Check an existing YACReader installation for the required files.
 
 ### PRs

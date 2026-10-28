@@ -269,15 +269,43 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutImageV->addWidget(doublePageBox);
 
     auto scalingBox = new QGroupBox(tr("Scaling"));
-    auto scalingLayout = new QHBoxLayout();
-    scalingLayout->addWidget(new QLabel(tr("Scaling method")));
+    auto scalingLayout = new QVBoxLayout();
+    auto scalingMethodLayout = new QHBoxLayout();
+    scalingMethodLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
     addScalingMethodItems(scalingMethodCombo);
     connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this] {
         Configuration::getConfiguration().setScalingMethod(selectedScalingMethod(scalingMethodCombo));
     });
-    scalingLayout->addWidget(scalingMethodCombo);
-    scalingLayout->addStretch();
+    scalingMethodLayout->addWidget(scalingMethodCombo);
+    scalingMethodLayout->addStretch();
+    scalingLayout->addLayout(scalingMethodLayout);
+    auto acnetLayout = new QHBoxLayout();
+    acnetUpscalingCheckBox = new QCheckBox(tr("Upscale small pages with Anime4K (ACNet)"));
+    acnetUpscalingCheckBox->setToolTip(tr("Pages shown at 1.5 times their own size or more, up to 4 megapixels, are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory."));
+    acnetModelCombo = new QComboBox();
+    acnetModelCombo->addItem(tr("F8B4 (faster)"));
+    acnetModelCombo->addItem(tr("F8B8-HDN (slower, more denoising)"));
+    auto acnetModelRow = new QWidget();
+    auto acnetModelLayout = new QHBoxLayout(acnetModelRow);
+    acnetModelLayout->setContentsMargins(0, 0, 0, 0);
+    acnetModelLayout->addWidget(new QLabel(tr("Model")));
+    acnetModelLayout->addWidget(acnetModelCombo);
+    acnetModelRow->setEnabled(false);
+    // toggled, unlike clicked, also follows restoreOptions
+    connect(acnetUpscalingCheckBox, &QCheckBox::toggled, acnetModelRow, &QWidget::setEnabled);
+    connect(acnetUpscalingCheckBox, &QCheckBox::clicked, this, [this](bool checked) {
+        Configuration::getConfiguration().setAcnetUpscaling(checked);
+        emit changedImageOptions();
+    });
+    connect(acnetModelCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
+        Configuration::getConfiguration().setAcnetModel(static_cast<AcnetModel>(index));
+        emit changedImageOptions();
+    });
+    acnetLayout->addWidget(acnetUpscalingCheckBox);
+    acnetLayout->addWidget(acnetModelRow);
+    acnetLayout->addStretch();
+    scalingLayout->addLayout(acnetLayout);
     scalingBox->setLayout(scalingLayout);
     layoutImageV->addWidget(scalingBox);
 
@@ -468,6 +496,12 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     auto defaultDisableScrollAnimationsValue = false;
 #endif
     disableScrollAnimations->setChecked(settings->value(DISABLE_SCROLL_ANIMATION, defaultDisableScrollAnimationsValue).toBool());
+
+    acnetUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAcnetUpscaling());
+    {
+        QSignalBlocker blocker(acnetModelCombo);
+        acnetModelCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getAcnetModel()));
+    }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
 
