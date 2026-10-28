@@ -32,16 +32,6 @@ enum YACReaderPageSortingMode {
 
 void comic_pages_sort(QList<QString> &pageNames, YACReaderPageSortingMode sortingMode);
 
-QStringList Comic::getSupportedImageFormats()
-{
-    QList<QByteArray> supportedImageFormats = QImageReader::supportedImageFormats();
-    QStringList supportedImageFormatStrings;
-    for (QByteArray &item : supportedImageFormats) {
-        supportedImageFormatStrings.append(QString::fromLocal8Bit("*." + item));
-    }
-    return supportedImageFormatStrings;
-}
-
 QStringList Comic::getSupportedImageLiteralFormats()
 {
     QList<QByteArray> supportedImageFormats = QImageReader::supportedImageFormats();
@@ -58,6 +48,15 @@ namespace {
 bool isPageFile(const QFileInfo &file)
 {
     return !file.fileName().startsWith('.') && Comic::literalImageExtensions.contains(file.suffix(), Qt::CaseInsensitive);
+}
+
+// Folders that tools keep their own data in, which do not stop the folder they are in from being a comic and are
+// never comics themselves: the thumbnails of Synology, of QNAP and of other tools, what unzipping a macOS archive
+// and netatalk leave, a library. Exact names only, as users have folders like @Comics or .Archive.
+bool isMetadataFolder(const QString &folderName)
+{
+    static const QStringList names { "@eaDir", ".@__thumb", "__MACOSX", ".AppleDouble", ".thumbnails", ".yacreaderlibrary" };
+    return names.contains(folderName);
 }
 
 bool isComicInfoFile(const QFileInfo &file)
@@ -368,13 +367,6 @@ bool Comic::fileIsComic(const QString &path)
 bool Comic::folderIsComic(const QString &path)
 {
     return FolderComic::comicContents(path).has_value();
-}
-
-bool Comic::isMetadataFolder(const QString &folderName)
-{
-    // the thumbnails of Synology, of QNAP and of other tools, what unzipping a macOS archive and netatalk leave, a library
-    static const QStringList names { "@eaDir", ".@__thumb", "__MACOSX", ".AppleDouble", ".thumbnails", ".yacreaderlibrary" };
-    return names.contains(folderName);
 }
 
 bool Comic::fileIsEpub(const QString &path)

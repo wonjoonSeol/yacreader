@@ -48,7 +48,8 @@ private:
     void run() override;
     qulonglong insertFolders(); // devuelve el id del último folder añadido (último en la ruta)
     bool checkCover(const QString &hash);
-    void insertComic(const QString &relativePath, const YACReader::LibraryEntry &entry);
+    // returns the hash of the comic
+    QString insertComic(const QString &relativePath, const YACReader::LibraryEntry &entry);
     void replaceComic(const QString &relativePath, const YACReader::LibraryEntry &entry, ComicDB *comic);
     // qulonglong insertFolder(qulonglong parentId,const Folder & folder);
     // qulonglong insertComic(const Comic & comic);

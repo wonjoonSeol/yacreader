@@ -109,7 +109,7 @@ void ComicsDeletionTest::plansFolderComicsOnlyWithTheirFolders()
     QCOMPARE(deletion.folders, QList<int>({ 0, 2 }));
     QCOMPARE(deletion.folderImages, 9);
     QCOMPARE(deletion.deleted(false), QList<int>({ 1, 3 }));
-    QCOMPARE(deletion.deleted(true), QList<int>({ 0, 1, 2, 3 }));
+    QCOMPARE(deletion.deleted(true), QList<int>({ 1, 3, 0, 2 }));
 }
 
 void ComicsDeletionTest::movesComicsToTheTrash()

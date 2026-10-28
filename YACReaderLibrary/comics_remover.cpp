@@ -7,8 +7,6 @@
 #include <QFile>
 #include <QFileInfo>
 
-#include <algorithm>
-
 ComicsDeletion::ComicsDeletion(const QList<ComicDB> &comics, const QString &libraryPath)
 {
     for (int position = 0; position < comics.size(); ++position) {
@@ -24,12 +22,7 @@ ComicsDeletion::ComicsDeletion(const QList<ComicDB> &comics, const QString &libr
 
 QList<int> ComicsDeletion::deleted(bool deleteFolders) const
 {
-    if (!deleteFolders) {
-        return files;
-    }
-    auto positions = files + folders;
-    std::sort(positions.begin(), positions.end());
-    return positions;
+    return deleteFolders ? files + folders : files;
 }
 
 ComicsRemover::ComicsRemover(QModelIndexList &il, QList<QString> &ps, qulonglong parentId, FolderDeletion folderDeletion, QObject *parent)
@@ -102,31 +95,27 @@ void ComicsRemover::removeFolder(int position, int row, const QString &path)
     }
 
     QStringList leftovers;
-    switch (deletePermanently(path, *contents, &leftovers)) {
-    case PermanentDeletion::Deleted:
-        emit remove(row);
-        break;
-    case PermanentDeletion::FilesLeft:
-        emit remove(row);
-        emit folderNotEmptied(position, leftovers);
-        break;
-    case PermanentDeletion::Failed:
+    if (!deletePermanently(path, *contents, &leftovers)) {
         emit removeError(position);
-        break;
+        return;
+    }
+    emit remove(row);
+    if (!leftovers.isEmpty()) {
+        emit folderNotEmptied(position, leftovers);
     }
 }
 
-ComicsRemover::PermanentDeletion ComicsRemover::deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers)
+bool ComicsRemover::deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers)
 {
     const QFileInfo folder(path);
     if (folder.isSymbolicLink() || folder.isJunction()) {
         // only the link, not the folder it points to; rmdir is how Windows removes a link to a folder
-        return QFile::remove(path) || QDir().rmdir(path) ? PermanentDeletion::Deleted : PermanentDeletion::Failed;
+        return QFile::remove(path) || QDir().rmdir(path);
     }
 
     for (const QFileInfo &page : contents.pages) {
         if (!QFile::remove(page.absoluteFilePath())) {
-            return PermanentDeletion::Failed;
+            return false;
         }
     }
     if (!contents.comicInfoPath.isEmpty()) {
@@ -137,14 +126,12 @@ ComicsRemover::PermanentDeletion ComicsRemover::deletePermanently(const QString 
             QFile::remove(entry.absoluteFilePath());
         }
     }
-    if (QDir().rmdir(path)) {
-        return PermanentDeletion::Deleted;
+    if (!QDir().rmdir(path)) {
+        for (const QFileInfo &entry : everythingIn(path)) {
+            leftovers->append(entry.fileName());
+        }
     }
-
-    for (const QFileInfo &entry : everythingIn(path)) {
-        leftovers->append(entry.fileName());
-    }
-    return PermanentDeletion::FilesLeft;
+    return true;
 }
 
 FoldersRemover::FoldersRemover(QModelIndexList &il, QList<QString> &ps, QObject *parent)

@@ -55,15 +55,10 @@ public slots:
     void process();
 
 private:
-    enum class PermanentDeletion {
-        Deleted,
-        FilesLeft,
-        Failed
-    };
-
     void removeFile(int position, int row, const QString &path);
     void removeFolder(int position, int row, const QString &path);
-    PermanentDeletion deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers);
+    // false when a page could not be deleted; a folder that stays leaves the names of what it holds in leftovers
+    bool deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers);
 
     QModelIndexList indexList;
     QList<QString> paths;

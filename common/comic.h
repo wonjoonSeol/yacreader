@@ -89,15 +89,11 @@ public:
     // check if the comic has failed loading
     bool hasBeenAnErrorOpening();
 
-    static QStringList getSupportedImageFormats();
     static QStringList getSupportedImageLiteralFormats();
 
     static bool fileIsComic(const QString &path);
-    // a folder with images and no comic files or subfolders other than metadata ones, the library reads it as one comic
+    // a folder with images and no comic files or subfolders other than metadata ones like @eaDir, the library reads it as one comic
     static bool folderIsComic(const QString &path);
-    // folders that tools keep their own data in, like @eaDir or __MACOSX, which do not stop the folder they are
-    // in from being a comic and are never comics themselves; exact names only, users have folders like @Comics
-    static bool isMetadataFolder(const QString &folderName);
     static bool fileIsEpub(const QString &path);
     static QList<QString> findValidComicFiles(const QList<QUrl> &list);
     static QList<QString> findValidComicFilesInFolder(const QString &path);

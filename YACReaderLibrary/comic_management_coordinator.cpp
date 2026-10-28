@@ -54,6 +54,14 @@ void moveAndConnectRemoverToThread(Remover *remover, QThread *thread)
     QObject::connect(remover, &Remover::finished, thread, &QThread::quit);
     QObject::connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 }
+
+// a message with the paths or names it is about below it, one per line
+void showWithList(QMessageBox::Icon icon, const QString &title, const QString &text, const QStringList &lines, QWidget *parent)
+{
+    QMessageBox message(icon, title, text, QMessageBox::Ok, parent);
+    message.setInformativeText(lines.join(QLatin1Char('\n')));
+    message.exec();
+}
 }
 
 // what one deletion from disk did, kept across its trash and permanent passes
@@ -637,22 +645,16 @@ void ComicManagementCoordinator::finishComicDeletion(const SourceContext &source
     if (!notTrashed.isEmpty() && confirmPermanentFolderDeletion(notTrashed.size(), outcome->filesDeletedPermanently) && removeComicsFromDisk(notTrashed, source, ComicsRemover::FolderDeletion::Permanently, outcome))
         return;
 
-    if (!outcome->foldersNotEmptied.isEmpty()) {
-        QMessageBox message(QMessageBox::Information,
-                            QCoreApplication::translate("LibraryWindow", "Delete comics"),
-                            QCoreApplication::translate("LibraryWindow", "%n folder(s) still hold other files, so they stay on your disk.", nullptr, outcome->foldersNotEmptied.size()),
-                            QMessageBox::Ok,
-                            window);
-        message.setInformativeText(outcome->foldersNotEmptied.join(QLatin1Char('\n')));
-        message.exec();
-    }
-    if (!outcome->failed.isEmpty()) {
-        QMessageBox message(QMessageBox::Critical,
-                            QCoreApplication::translate("LibraryWindow", "Unable to delete"),
-                            QCoreApplication::translate("LibraryWindow", "There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder."),
-                            QMessageBox::Ok,
-                            window);
-        message.setInformativeText(outcome->failed.join(QLatin1Char('\n')));
-        message.exec();
-    }
+    if (!outcome->foldersNotEmptied.isEmpty())
+        showWithList(QMessageBox::Information,
+                     QCoreApplication::translate("LibraryWindow", "Delete comics"),
+                     QCoreApplication::translate("LibraryWindow", "%n folder(s) still hold other files, so they stay on your disk.", nullptr, outcome->foldersNotEmptied.size()),
+                     outcome->foldersNotEmptied,
+                     window);
+    if (!outcome->failed.isEmpty())
+        showWithList(QMessageBox::Critical,
+                     QCoreApplication::translate("LibraryWindow", "Unable to delete"),
+                     QCoreApplication::translate("LibraryWindow", "There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder."),
+                     outcome->failed,
+                     window);
 }

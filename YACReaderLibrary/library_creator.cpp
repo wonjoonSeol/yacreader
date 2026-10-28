@@ -27,8 +27,12 @@ using namespace YACReader;
 
 namespace {
 
+// like the library list, folders that hold comics first, then the comics, each in the order the merge compares names by
 bool sourceLessThan(const LibraryEntry &left, const LibraryEntry &right)
 {
+    if (left.holdsComics() != right.holdsComics()) {
+        return left.holdsComics();
+    }
     return naturalCompareStrict(left.info.fileName(), right.info.fileName()) < 0;
 }
 
@@ -137,8 +141,9 @@ void LibraryCreator::updateFolder(const QString &source, const QString &target, 
 
     QLOG_DEBUG() << "Relative path : " << relativeFolderPath;
 
-    _sourceFolder = folderBecameComic ? QFileInfo(sourceFolder).absolutePath() : sourceFolder;
+    _sourceFolder = sourceFolder;
     if (folderBecameComic) {
+        _sourceFolder = QFileInfo(sourceFolder).absolutePath();
         _folderDestinationId = _currentPathFolders.last().id;
     }
 
@@ -411,12 +416,12 @@ bool LibraryCreator::checkCover(const QString &hash)
     return QFile::exists(LibraryPaths::coverPathFromLibraryDataPath(_target, hash));
 }
 
-void LibraryCreator::insertComic(const QString &relativePath, const LibraryEntry &entry)
+QString LibraryCreator::insertComic(const QString &relativePath, const LibraryEntry &entry)
 {
     auto _database = QSqlDatabase::database(_databaseConnection);
 
     const QFileInfo &fileInfo = entry.info;
-    QString hash = entry.pseudoHash();
+    const QString hash = entry.pseudoHash();
 
     ComicDB comic = DBHelper::loadComic(fileInfo.fileName(), relativePath, hash, _database);
     int numPages = 0;
@@ -439,7 +444,7 @@ void LibraryCreator::insertComic(const QString &relativePath, const LibraryEntry
             // Not a comic YACReader can show, so it does not belong to the library. It
             // leaves no cover behind either, otherwise the next scan would take that
             // cover as proof that the file had been imported before.
-            return;
+            return hash;
         }
         numPages = ie.getNumPages();
         originalCoverSize = ie.getOriginalCoverSize();
@@ -465,6 +470,7 @@ void LibraryCreator::insertComic(const QString &relativePath, const LibraryEntry
 
         DBHelper::insert(&comic, _database, parsed);
     }
+    return hash;
 }
 
 void LibraryCreator::replaceComic(const QString &relativePath, const LibraryEntry &entry, ComicDB *comic)
@@ -472,12 +478,9 @@ void LibraryCreator::replaceComic(const QString &relativePath, const LibraryEntr
     auto _database = QSqlDatabase::database(_databaseConnection);
 
     DBHelper::removeFromDB(comic, _database);
-    insertComic(relativePath, entry);
+    const QString hash = insertComic(relativePath, entry);
 
-    const QFileInfo &fileInfo = entry.info;
-    QString hash = entry.pseudoHash();
-
-    ComicDB insertedComic = DBHelper::loadComic(fileInfo.fileName(), relativePath, hash, _database);
+    ComicDB insertedComic = DBHelper::loadComic(entry.info.fileName(), relativePath, hash, _database);
 
     if (!insertedComic.info.existOnDb) {
         return;
@@ -511,25 +514,8 @@ void LibraryCreator::update(const QFileInfoList &listing)
     }
 
     auto _database = QSqlDatabase::database(_databaseConnection);
-    QList<LibraryEntry> listSFolders;
-    QList<LibraryEntry> listSComics;
-    const QList<LibraryEntry> entriesS = LibraryEntry::entriesIn(listing);
-    for (const LibraryEntry &entry : entriesS) {
-        if (entry.holdsComics()) {
-            listSFolders.append(entry);
-        } else {
-            listSComics.append(entry);
-        }
-    }
-
-    // both lists are sorted with the order the merge below compares names by
-    std::sort(listSFolders.begin(), listSFolders.end(), sourceLessThan);
-    std::sort(listSComics.begin(), listSComics.end(), sourceLessThan);
-
-    // like the library list, the source list has its folders first
-    QList<LibraryEntry> listS;
-    listS.append(listSFolders);
-    listS.append(listSComics);
+    QList<LibraryEntry> listS = LibraryEntry::entriesIn(listing);
+    std::sort(listS.begin(), listS.end(), sourceLessThan);
     // QLOG_DEBUG() << "---------------------------------------------------------";
     // for (const QFileInfo &info : listS)
     //	QLOG_DEBUG() << info.fileName();
@@ -706,7 +692,7 @@ void LibraryCreator::update(const QFileInfoList &listing)
                         {
                             auto comicDB = static_cast<ComicDB *>(fileInfoD);
                             auto added = comicDB->info.added.toULongLong();
-                            // a folder comic's date is its newest page's, so it is only read when it is used
+                            // a folder comic's date is the newest of its pages, worked out only when it is used
                             const bool needsDate = checkModifiedDatesOnUpdate || added == 0;
                             auto lastModified = needsDate ? entryS.lastModified().toSecsSinceEpoch() : 0;
 
