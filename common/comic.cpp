@@ -10,6 +10,7 @@
 
 #include <QCoreApplication>
 #include <QDir>
+#include <QDirIterator>
 #include <QFileInfoList>
 #include <QImageReader>
 #include <QPixmap>
@@ -31,16 +32,6 @@ enum YACReaderPageSortingMode {
 
 void comic_pages_sort(QList<QString> &pageNames, YACReaderPageSortingMode sortingMode);
 
-QStringList Comic::getSupportedImageFormats()
-{
-    QList<QByteArray> supportedImageFormats = QImageReader::supportedImageFormats();
-    QStringList supportedImageFormatStrings;
-    for (QByteArray &item : supportedImageFormats) {
-        supportedImageFormatStrings.append(QString::fromLocal8Bit("*." + item));
-    }
-    return supportedImageFormatStrings;
-}
-
 QStringList Comic::getSupportedImageLiteralFormats()
 {
     QList<QByteArray> supportedImageFormats = QImageReader::supportedImageFormats();
@@ -51,14 +42,38 @@ QStringList Comic::getSupportedImageLiteralFormats()
     return supportedImageFormatStrings;
 }
 
-const QStringList Comic::imageExtensions = QStringList() << "*.jpg"
-                                                         << "*.jpeg"
-                                                         << "*.png"
-                                                         << "*.gif"
-                                                         << "*.tiff"
-                                                         << "*.tif"
-                                                         << "*.bmp"
-                                                         << "*.webp";
+namespace {
+
+// dot files are hidden on Linux and macOS, on Windows they are listed, like the ._ files macOS leaves next to pages
+bool isPageFile(const QFileInfo &file)
+{
+    return !file.fileName().startsWith('.') && Comic::literalImageExtensions.contains(file.suffix(), Qt::CaseInsensitive);
+}
+
+// Folders that tools keep their own data in, which do not stop the folder they are in from being a comic and are
+// never comics themselves: the thumbnails of Synology, of QNAP and of other tools, what unzipping a macOS archive
+// and netatalk leave, a library. Exact names only, as users have folders like @Comics or .Archive.
+bool isMetadataFolder(const QString &folderName)
+{
+    static const QStringList names { "@eaDir", ".@__thumb", "__MACOSX", ".AppleDouble", ".thumbnails", ".yacreaderlibrary" };
+    return names.contains(folderName);
+}
+
+bool isComicInfoFile(const QFileInfo &file)
+{
+    return file.fileName().compare(QStringLiteral("ComicInfo.xml"), Qt::CaseInsensitive) == 0;
+}
+
+void sortPages(QFileInfoList &pages)
+{
+    // don't fix double page files sorting, because the user can see how the SO sorts the files in the folder.
+    std::sort(pages.begin(), pages.end(), [](const QFileInfo &left, const QFileInfo &right) {
+        return naturalCompareStrict(left.fileName(), right.fileName()) < 0;
+    });
+}
+
+}
+
 const QStringList Comic::literalImageExtensions = QStringList() << "jpg"
                                                                 << "jpeg"
                                                                 << "png"
@@ -215,6 +230,25 @@ bool Comic::load(const QString &path, const ComicDB &comic)
     return false;
 };
 //-----------------------------------------------------------------------------
+bool Comic::loadFromLibrary(const QString &path, const ComicDB &comic, bool found)
+{
+    if (!found) {
+        // QMessageBox::critical(NULL,tr("Not found"),tr("Comic not found")+" : " + path);
+        moveToThread(QCoreApplication::instance()->thread());
+        emit errorOpening();
+        return false;
+    }
+
+    QList<int> bookmarkIndexes;
+    bookmarkIndexes << comic.info.bookmark1 << comic.info.bookmark2 << comic.info.bookmark3;
+    if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
+        emit bookmarksUpdated();
+    }
+    _firstPage = -1;
+    _path = QDir::cleanPath(path);
+    return true;
+}
+//-----------------------------------------------------------------------------
 bool Comic::loaded()
 {
     return _loaded;
@@ -330,6 +364,11 @@ bool Comic::fileIsComic(const QString &path)
     return literalComicExtensions.contains(info.suffix(), Qt::CaseInsensitive);
 }
 
+bool Comic::folderIsComic(const QString &path)
+{
+    return FolderComic::comicContents(path).has_value();
+}
+
 bool Comic::fileIsEpub(const QString &path)
 {
     return QFileInfo(path).suffix().compare(QStringLiteral("epub"), Qt::CaseInsensitive) == 0;
@@ -425,23 +464,7 @@ bool FileComic::load(const QString &path, int atPage)
 
 bool FileComic::load(const QString &path, const ComicDB &comic)
 {
-    QFileInfo fi(path);
-
-    if (fi.exists()) {
-        QList<int> bookmarkIndexes;
-        bookmarkIndexes << comic.info.bookmark1 << comic.info.bookmark2 << comic.info.bookmark3;
-        if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
-            emit bookmarksUpdated();
-        }
-        _firstPage = -1;
-        _path = QDir::cleanPath(path);
-        return true;
-    } else {
-        // QMessageBox::critical(NULL,tr("Not found"),tr("Comic not found")+" : " + path);
-        moveToThread(QCoreApplication::instance()->thread());
-        emit errorOpening();
-        return false;
-    }
+    return loadFromLibrary(path, comic, QFileInfo::exists(path));
 }
 
 QList<QString> FileComic::filter(const QList<QString> &src)
@@ -730,17 +753,68 @@ bool FolderComic::load(const QString &path, int atPage)
     return true;
 }
 
+bool FolderComic::load(const QString &path, const ComicDB &comic)
+{
+    return loadFromLibrary(path, comic, QFileInfo(path).isDir());
+}
+
+QFileInfoList FolderComic::pageFiles(const QString &path)
+{
+    QFileInfoList pages;
+    QDirIterator files(path, QDir::Files | QDir::NoDotAndDotDot);
+    while (files.hasNext()) {
+        const QFileInfo file = files.nextFileInfo();
+        if (isPageFile(file)) {
+            pages.append(file);
+        }
+    }
+    sortPages(pages);
+    return pages;
+}
+
+QFileInfoList FolderComic::listing(const QString &path)
+{
+    return QDir(path).entryInfoList(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+}
+
+std::optional<FolderComicContents> FolderComic::comicContents(const QString &path)
+{
+    return comicContents(path, listing(path));
+}
+
+std::optional<FolderComicContents> FolderComic::comicContents(const QString &path, const QFileInfoList &entries)
+{
+    // a metadata folder is not a comic, nor a folder in one: Synology keeps one for each image in @eaDir
+    const QFileInfo folder(path);
+    if (isMetadataFolder(folder.fileName()) || isMetadataFolder(folder.dir().dirName())) {
+        return std::nullopt;
+    }
+
+    FolderComicContents contents;
+    for (const QFileInfo &entry : entries) {
+        if (entry.isDir()) {
+            if (!isMetadataFolder(entry.fileName())) {
+                return std::nullopt;
+            }
+        } else if (fileIsComic(entry.filePath())) {
+            return std::nullopt;
+        } else if (isPageFile(entry)) {
+            contents.pages.append(entry);
+        } else if (isComicInfoFile(entry)) {
+            contents.comicInfoPath = entry.absoluteFilePath();
+        }
+    }
+
+    if (contents.pages.isEmpty()) {
+        return std::nullopt;
+    }
+    sortPages(contents.pages);
+    return contents;
+}
+
 void FolderComic::process()
 {
-    QDir d(_path);
-
-    d.setNameFilters(getSupportedImageFormats());
-    d.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    // d.setSorting(QDir::Name|QDir::IgnoreCase|QDir::LocaleAware);
-    QFileInfoList list = d.entryInfoList();
-
-    // don't fix double page files sorting, because the user can see how the SO sorts the files in the folder.
-    std::sort(list.begin(), list.end(), naturalSortLessThanCIFileInfo);
+    const QFileInfoList list = pageFiles(_path);
 
     int nPages = list.size();
     _pages.clear();
@@ -830,23 +904,7 @@ bool PDFComic::load(const QString &path, int atPage)
 
 bool PDFComic::load(const QString &path, const ComicDB &comic)
 {
-    QFileInfo fi(path);
-
-    if (fi.exists()) {
-        QList<int> bookmarkIndexes;
-        bookmarkIndexes << comic.info.bookmark1 << comic.info.bookmark2 << comic.info.bookmark3;
-        if (bm->load(bookmarkIndexes, comic.info.currentPage - 1)) {
-            emit bookmarksUpdated();
-        }
-        _firstPage = -1;
-        _path = QDir::cleanPath(path);
-        return true;
-    } else {
-        // QMessageBox::critical(NULL,tr("Not found"),tr("Comic not found")+" : " + path);
-        moveToThread(QCoreApplication::instance()->thread());
-        emit errorOpening();
-        return false;
-    }
+    return loadFromLibrary(path, comic, QFileInfo::exists(path));
 }
 
 void PDFComic::process()

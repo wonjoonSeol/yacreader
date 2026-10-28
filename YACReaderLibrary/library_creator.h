@@ -16,6 +16,10 @@
 #include <QThread>
 #include <QtCore>
 
+namespace YACReader {
+struct LibraryEntry;
+}
+
 class LibraryCreator : public QThread
 {
     Q_OBJECT
@@ -36,17 +40,17 @@ private:
     QString _source;
     QString _target;
     QString _sourceFolder; // used for partial updates
-    QStringList _nameFilter;
     QString _databaseConnection;
     QList<Folder> _currentPathFolders; // lista de folders en el orden en el que están siendo explorados, el último es el folder actual
-    // recursive method
-    void create(QDir currentDirectory);
-    void update(QDir currentDirectory);
+    // recursive method, over the FolderComic::listing() of the current folder
+    void create(const QFileInfoList &listing);
+    void update(const QFileInfoList &listing);
     void run() override;
     qulonglong insertFolders(); // devuelve el id del último folder añadido (último en la ruta)
     bool checkCover(const QString &hash);
-    void insertComic(const QString &relativePath, const QFileInfo &fileInfo);
-    void replaceComic(const QString &relativePath, const QFileInfo &fileInfo, ComicDB *comic);
+    // returns the hash of the comic
+    QString insertComic(const QString &relativePath, const YACReader::LibraryEntry &entry);
+    void replaceComic(const QString &relativePath, const YACReader::LibraryEntry &entry, ComicDB *comic);
     // qulonglong insertFolder(qulonglong parentId,const Folder & folder);
     // qulonglong insertComic(const Comic & comic);
     bool stopRunning;

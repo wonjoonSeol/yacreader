@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) that changes the comic reader. Each change has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with changes to the comic reader and the library, listed below. Each reader change also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -12,6 +12,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) that chan
 | [Page number when the page changes](#page-number-when-the-page-changes) | Display | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
+| [Folders of images as comics](#folders-of-images-as-comics) | Library | [#10](https://github.com/wonjoonSeol/yacreader/pull/10) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
 | [Page turns without scaling](#page-turns-without-scaling) | Speed | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) |
 
@@ -139,6 +140,32 @@ Removing a comic from the library's Reading list resets its progress to 0. Openi
 |---|---|
 | <img src="docs/fork/reading-list-before.png" width="400" alt="0/10 and Loading, please wait"> | <img src="docs/fork/reading-list-after.png" width="400" alt="Page 1 of 10"> |
 | Shows 0/10, stays on "Loading...please wait!", then crashes | Opens at page 1 |
+
+### Folders of images as comics
+
+YACReaderLibrary reads a folder of images as one comic, like a `.cbz`, without converting anything. Upstream leaves such folders out of the library ([#164](https://github.com/YACReader/yacreader/issues/164)).
+
+<img src="docs/fork/library-image-folders.png" width="600" alt="A series folder whose chapter folders show as comics with covers and page counts">
+
+- **What counts as a comic:** a folder with at least one `.jpg`, `.jpeg`, `.png`, `.gif`, `.tif`, `.tiff`, `.bmp` or `.webp` image directly inside, and no subfolders or comic files (`.cbz`, `.cbr`, `.pdf` and the like). Other files, such as `ComicInfo.xml` or a text file, do not matter, and files whose name starts with a dot, like the `._` files macOS leaves, are not pages. The list is fixed, so YACReaderLibrary and YACReaderLibraryServer agree on it whatever image plugins they have, and YACReader shows these same pages when it opens a folder (upstream showed every format its image plugins read).
+- **Metadata folders:** `@eaDir`, `.@__thumb`, `__MACOSX`, `.AppleDouble`, `.thumbnails` and `.yacreaderlibrary` do not count as subfolders, and neither they nor the folders in them are comics. Only these exact names: your own folders, such as `@Manga`, are scanned like any other, and so are dot folders where the system shows them (Windows), as upstream does for archives.
+- **Layouts:** in `Series/Chapter 1/001.jpg`, Series is a folder and Chapter 1 is a comic. A folder with images and subfolders stays a folder, and its own images are left out.
+- **Like an archive:** cover, page count, `ComicInfo.xml` import when it is turned on, reading progress, and library updates when pages are added, removed or change size. With **Compare the modified date of files when updating a library** on, a folder comic's date is that of its newest page, so a new `ComicInfo.xml` does not count as a change.
+
+| Next to archives | Opened from the library |
+|---|---|
+| <img src="docs/fork/library-image-folders-next-to-archives.png" width="400" alt="Two cbz files and a folder of images side by side as comics"> | <img src="docs/fork/reader-folder-comic.png" width="400" alt="YACReader showing page 5 of 9 of a folder comic"> |
+| `Harbor Lights 03` is a folder, the other two are `.cbz` files | Opens at the page where reading stopped |
+
+- **Deleting:** folder comics stay unless **Also move the image folders to the trash** is checked. Checked, each folder goes to the trash with everything in it. If the trash refuses a folder, YACReaderLibrary asks before deleting it for good, and then deletes only its images, `ComicInfo.xml` and the files Windows and macOS leave (`Thumbs.db`, `desktop.ini`, `.DS_Store`, `._` files). A folder that still holds anything else stays on disk, and the message lists what is left.
+
+  <img src="docs/fork/delete-folder-comics.png" width="450" alt="The delete confirmation with the Also move the image folders to the trash box">
+
+  This screenshot comes from the Windows build.
+
+- **Library updates:** a comic or folder that sorts after a new one by number, such as Chapter 10 after a new Chapter 3, is no longer removed and added again, so it keeps its reading lists and labels. This applies to archives too.
+- **Organize files:** a folder comic keeps every dot in its name, and no comic is moved into a folder comic, which would turn it into a plain folder. A comic headed there goes to a numbered folder instead, such as `Vol 1 (1)`.
+- **Not covered:** dragging a folder of images onto the library still imports only comic files, and Organize files does not move a folder comic to another drive.
 
 ### Lanczos3 and Lanczos2 scaling
 

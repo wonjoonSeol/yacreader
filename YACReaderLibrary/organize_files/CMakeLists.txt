@@ -27,6 +27,7 @@ target_link_libraries(organize_files PUBLIC
     Qt6::Widgets
     Qt6::Sql
     common_all
+    comic_backend
     common_gui
     custom_widgets_library
     db_helper

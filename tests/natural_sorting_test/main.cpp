@@ -6,6 +6,7 @@
 #include <QVariant>
 
 #include <algorithm>
+#include <utility>
 
 // naturalCompareFallback() is what runs when Qt has no ICU, so most of these tests
 // call it directly. A machine with ICU would never reach it otherwise, and that is
@@ -27,6 +28,7 @@ private slots:
     void fallbackIsATotalOrder();
     void comicNumbersSortByValue();
     void comicsWithoutANumberGoLast();
+    void strictOrderTellsEquivalentNamesApart();
 };
 
 static QStringList sortedWithFallback(QStringList values)
@@ -166,6 +168,22 @@ void NaturalSortingTest::comicsWithoutANumberGoLast()
 
     // No numbers at all, so the file name decides.
     QVERIFY(comicNumberLessThan(QVariant(), "chapter 2.cbz", QVariant(), "chapter 10.cbz"));
+}
+
+void NaturalSortingTest::strictOrderTellsEquivalentNamesApart()
+{
+    // goes through the collator on machines with ICU, where "01" and "1" compare equal, and a name in
+    // its composed and its decomposed form can be equal for localeAwareCompare as well
+    const QString composed = QString::fromUtf8("café.jpg").normalized(QString::NormalizationForm_C);
+    const QString decomposed = composed.normalized(QString::NormalizationForm_D);
+    const QList<std::pair<QString, QString>> pairs { { "01.jpg", "1.jpg" }, { "Page.jpg", "page.jpg" }, { composed, decomposed } };
+    for (const auto &[left, right] : pairs) {
+        const int forward = naturalCompareStrict(left, right);
+        QVERIFY2(forward != 0, qPrintable(left));
+        QCOMPARE(naturalCompareStrict(right, left) < 0, forward > 0);
+    }
+    QVERIFY(naturalCompareStrict("Chapter 2", "Chapter 10") < 0);
+    QCOMPARE(naturalCompareStrict("Chapter 2", "Chapter 2"), 0);
 }
 
 QTEST_GUILESS_MAIN(NaturalSortingTest)

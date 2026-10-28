@@ -10,10 +10,16 @@
 #include <QVariant>
 
 int naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity caseSensitivity);
+
+/* The case-insensitive natural order, with names it finds equal, like "01" and "1",
+ * told apart by localeAwareCompare, and by their UTF-16 code units when that finds
+ * them equal too, as it can for a name in its composed and its decomposed form.
+ * It returns 0 only for equal strings. Lists that are merged in order need it: the
+ * collator alone leaves such names in whatever order the input had.
+ **/
+int naturalCompareStrict(const QString &s1, const QString &s2);
 bool naturalSortLessThanCS(const QString &left, const QString &right);
 bool naturalSortLessThanCI(const QString &left, const QString &right);
-bool naturalSortLessThanCIFileInfo(const QFileInfo &left, const QFileInfo &right);
-bool naturalSortLessThanCILibraryItem(LibraryItem *left, LibraryItem *right);
 
 /* Qt only does numeric ordering and case folding in QCollator when it is built with
  * ICU. A Qt built with -no-icu falls back to the POSIX collator, which drops

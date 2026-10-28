@@ -304,28 +304,28 @@
 <context>
     <name>ComicManagementCoordinator</name>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="138"/>
-        <location filename="comic_management_coordinator.cpp" line="140"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found</source>
         <translation>YACReader bulunamadı</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="138"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
         <source>YACReader not found. YACReader should be installed in the same folder as YACReaderLibrary.</source>
         <translation>YACReader bulunamadı. YACReader, YACReaderLibrary ile aynı klasöre kurulmalıdır.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="140"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found. There might be a problem with your YACReader installation.</source>
         <translation>YACReader bulunamadı. YACReader kurulumunuzda bir sorun olabilir.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="147"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="147"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error opening comic with third party reader.</source>
         <translation>Çizgi roman üçüncü taraf okuyucuyla açılırken hata oluştu.</translation>
     </message>
@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="643"/>
         <source>7z not found</source>
         <translation>7z bulunamadı</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="529"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>CRC hatası, sayfada (%1): bazı sayfalar düzgün görüntülenmeyecek</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="536"/>
         <source>Unknown error opening the file</source>
         <translation>Dosya açılırken bilinmeyen hata</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="649"/>
+        <location filename="../common/comic.cpp" line="665"/>
         <source>Format not supported</source>
         <translation>Dosya biçimi desteklenmiyor</translation>
     </message>
@@ -1100,12 +1100,14 @@
         <translation>Yeni versiyonu indir</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="520"/>
+        <location filename="comic_management_coordinator.cpp" line="558"/>
+        <location filename="comic_management_coordinator.cpp" line="650"/>
+        <location filename="delete_comics_question.cpp" line="11"/>
         <source>Delete comics</source>
         <translation>Çizgi romanları sil</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="521"/>
+        <location filename="delete_comics_question.cpp" line="12"/>
         <source>All the selected comics will be deleted from your disk. Are you sure?</source>
         <translation>Seçilen tüm çizgi romanlar diskten silinecek emin misin ?</translation>
     </message>
@@ -1140,12 +1142,12 @@
         <translation>Kütüphane yükseltmesi sırasında hatalar oluştu: </translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="208"/>
+        <location filename="comic_management_coordinator.cpp" line="228"/>
         <source>Copying comics...</source>
         <translation>Çizgi romanlar kopyalanıyor...</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="224"/>
+        <location filename="comic_management_coordinator.cpp" line="244"/>
         <source>Moving comics...</source>
         <translation>Çizgi romanlar taşınıyor...</translation>
     </message>
@@ -1184,7 +1186,7 @@
         <translation>Seçilen klasör ve tüm içeriği diskinizden silinecek. Emin misin?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="595"/>
+        <location filename="comic_management_coordinator.cpp" line="656"/>
         <location filename="folder_management_coordinator.cpp" line="250"/>
         <source>Unable to delete</source>
         <translation>Silinemedi</translation>
@@ -1317,7 +1319,7 @@ Klasör: %1</translation>
         <translation>Kütüphane veritabanı güncellenemedi ve klasörün diskteki yeni adı geri alınamadı. Kütüphanenin şimdi elle güncellenmesi gerekiyor.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="360"/>
+        <location filename="comic_management_coordinator.cpp" line="380"/>
         <source>Save covers</source>
         <translation>Kapakları kaydet</translation>
     </message>
@@ -1502,51 +1504,101 @@ Kitaplık menüsünden bir yedeği geri yükleyebilir veya kitaplığı yeniden 
         <translation>Kütüphane bilgisi</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="596"/>
+        <location filename="comic_management_coordinator.cpp" line="657"/>
         <source>There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder.</source>
         <translation>Seçilen çizgi romanlar silinmeye çalışılırken bir sorun oluştu. Lütfen seçilen dosyalarda veya klasörleri içeren yazma izinlerini kontrol edin.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="303"/>
+        <location filename="comic_management_coordinator.cpp" line="323"/>
         <source>Assign comics numbers</source>
         <translation>Çizgi roman numaraları ata</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="304"/>
+        <location filename="comic_management_coordinator.cpp" line="324"/>
         <source>Assign numbers starting in:</source>
         <translation>Şunlardan başlayarak numaralar ata:</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="389"/>
+        <location filename="comic_management_coordinator.cpp" line="409"/>
         <location filename="folder_management_coordinator.cpp" line="339"/>
         <source>Invalid image</source>
         <translation>Geçersiz resim</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="390"/>
+        <location filename="comic_management_coordinator.cpp" line="410"/>
         <location filename="folder_management_coordinator.cpp" line="340"/>
         <source>The selected file is not a valid image.</source>
         <translation>Seçilen dosya geçerli bir resim değil.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="398"/>
+        <location filename="comic_management_coordinator.cpp" line="418"/>
         <location filename="folder_management_coordinator.cpp" line="347"/>
         <source>Error saving cover</source>
         <translation>Kapak kaydedilirken hata oluştu</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="399"/>
+        <location filename="comic_management_coordinator.cpp" line="419"/>
         <location filename="folder_management_coordinator.cpp" line="348"/>
         <source>There was an error saving the cover image.</source>
         <translation>Kapak resmi kaydedilirken bir hata oluştu.</translation>
     </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="559"/>
+        <source>Could not move %n folder(s) to the trash. Delete their pages permanently? This cannot be undone.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="560"/>
+        <location filename="comic_management_coordinator.cpp" line="563"/>
+        <source>Only the images, ComicInfo.xml and system files such as Thumbs.db or .DS_Store are deleted. A folder that holds other files stays on your disk with them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="565"/>
+        <source>%n comic file(s) that the trash refused were already deleted permanently.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="651"/>
+        <source>%n folder(s) still hold other files, so they stay on your disk.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="delete_comics_question.cpp" line="21"/>
+        <source>Folder comics stay on your disk and in the library unless the box below is checked. Checked, each image folder goes to the trash with everything in it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="delete_comics_question.cpp" line="22"/>
+        <source>%n folder(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="delete_comics_question.cpp" line="23"/>
+        <source>%n image(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="delete_comics_question.cpp" line="24"/>
+        <source>Also move the image folders to the trash (%1, %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="comic_management_coordinator.cpp" line="611"/>
         <source>Remove comics</source>
         <translation>Çizgi romanları kaldır</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="561"/>
+        <location filename="comic_management_coordinator.cpp" line="612"/>
         <source>Comics will only be deleted from the current label/list. Are you sure?</source>
         <translation>Çizgi romanlar yalnızca mevcut etiketten/listeden silinecektir. Emin misin?</translation>
     </message>
@@ -2514,12 +2566,12 @@ Otomatik güncellemeyi durdurmak için Kitaplıklar başlığının yanındaki y
 <context>
     <name>OrganizeFiles</name>
     <message>
-        <location filename="organize_files/organize_files_plan.cpp" line="540"/>
+        <location filename="organize_files/organize_files_plan.cpp" line="594"/>
         <source>Renamed, %1 is already in use</source>
         <translation>Yeniden adlandırıldı, %1 zaten kullanımda</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_plan.cpp" line="543"/>
+        <location filename="organize_files/organize_files_plan.cpp" line="597"/>
         <source>Missing metadata: %1</source>
         <translation>Eksik üstveri: %1</translation>
     </message>
@@ -2528,62 +2580,92 @@ Otomatik güncellemeyi durdurmak için Kitaplıklar başlığının yanındaki y
         <source>%1 could not be created</source>
         <translation>%1 oluşturulamadı</translation>
     </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="81"/>
+        <source>%1 (a folder comic cannot be moved to another drive)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="87"/>
+        <source>%1 (copy also failed: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="93"/>
+        <source>the copy did not have the same size as the original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="99"/>
+        <source>the original could not be deleted after it was copied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="310"/>
+        <source>The destination folder could not be created.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="364"/>
+        <source>%1 (the file was left at %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OrganizeFilesCoordinator</name>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="175"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="146"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="178"/>
         <source>Organize files</source>
         <translation>Dosyaları düzenle</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="146"/>
         <source>This folder does not contain any comics.</source>
         <translation>Bu klasör hiç çizgi roman içermiyor.</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="176"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="179"/>
         <source>This library is busy: %1</source>
         <translation>Bu kütüphane meşgul: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="219"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="222"/>
         <source>the library database could not be opened</source>
         <translation>kütüphane veritabanı açılamadı</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="226"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="229"/>
         <source>the library database could not be locked for writing</source>
         <translation>kütüphane veritabanı yazma için kilitlenemedi</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="235"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="238"/>
         <source>a folder entry could not be restored</source>
         <translation>bir klasör kaydı geri yüklenemedi</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="246"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="249"/>
         <source>a comic entry could not be updated</source>
         <translation>bir çizgi roman kaydı güncellenemedi</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="265"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="268"/>
         <source>the library database could not be saved: %1</source>
         <translation>kütüphane veritabanı kaydedilemedi: %1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="310"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="313"/>
         <source>the record of the last organize run could not be read</source>
         <translation>son düzenleme işleminin kaydı okunamadı</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="335"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="338"/>
         <source>the folder %1 could not be created</source>
         <translation>%1 klasörü oluşturulamadı</translation>
     </message>
     <message numerus="yes">
-        <location filename="organize_files/organize_files_coordinator.cpp" line="383"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="386"/>
         <source>%n file(s) could not be moved back</source>
         <translation>
             <numerusform>%n dosya geri taşınamadı</numerusform>
