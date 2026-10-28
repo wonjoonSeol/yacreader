@@ -2,6 +2,8 @@
 #define __VIEWER_H
 
 #include "mouse_handler.h"
+#include "page_fit.h"
+#include "page_prescaler.h"
 #include "scroll_management.h"
 #include "themable.h"
 
@@ -23,6 +25,8 @@
 #include <QSize>
 #include <QTimer>
 #include <QWheelEvent>
+
+#include <optional>
 
 class ComicPageLabel;
 class ComicDB;
@@ -156,7 +160,13 @@ private:
     //!  Comic
     // Comic * comic;
     int index;
-    QPixmap *currentPage;
+    // the decoded pages content shows, and the key of the scaled image of them it shows
+    std::optional<PageViewImages> currentImages;
+    PrescaleKey shownPrescaleKey;
+    // drawn from currentImages the first time it is needed, see fullPage()
+    mutable QPixmap currentFullPage;
+    PagePrescaler *prescaler = nullptr;
+    QTimer *prescaleTimer = nullptr;
     BookmarksDialog *bd;
     bool wheelStop;
     Render *render;
@@ -262,6 +272,12 @@ private:
     void setMangaModeImpl(bool manga, bool persistSettings);
     void goToRelativePage(int offset);
     void applyContinuousPageFit();
+    const QPixmap &fullPage() const;
+    PageFitOptions pageFitOptions() const;
+    void requestPrescale(int delayMs);
+    void schedulePrescale();
+    void showImprovedPage(const PrescaleKey &key);
+    void invalidateScaledPages();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();
 

@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with changes to the comic reader, listed below. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) that changes the comic reader. Each change has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -11,6 +11,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) with chan
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
+| [Page turns without scaling](#page-turns-without-scaling) | Speed | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
@@ -137,6 +138,22 @@ Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
 - **Switching back:** older builds of this fork and upstream YACReader don't have Lanczos3 and Lanczos2. With one of them chosen they skip their own scaling, so pages are scaled at a lower quality, and on HiDPI screens single pages show at their own size instead of fitting the window. Pick Lanczos4 before switching back.
 - **The other way round,** a method this build doesn't know shows as Lanczos4 and stays stored until you pick another one.
 - **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
+
+### Page turns without scaling
+
+In single and double page mode the pages next to the one you read are scaled to the window in the background, so a page turn shows a page that is ready instead of scaling it first.
+
+<img src="docs/fork/prescale-page-turn-time.png" width="700" alt="Time a page turn keeps the reader busy before and after this change, for single and double pages">
+
+| Single page mode | Double page mode |
+|---|---|
+| <img src="docs/fork/prescale-single-page.png" width="400" alt="Page 2 of a sample comic in single page mode"> | <img src="docs/fork/prescale-double-page.png" width="400" alt="Pages 4 and 5 of a sample comic in double page mode"> |
+
+- **What gets ready:** the page shown, the next two and the previous one, in that order. In double page mode the pages are paired the way the next page turns will pair them.
+- **Looks the same:** the pages are pixel for pixel what the reader showed before, in single, double, manga and rotated mode, and in the magnifier.
+- **When a page is not ready yet,** for example right after jumping far or when flipping through double pages faster than they decode, it is scaled when it is shown, as before.
+- **Memory:** at most 256 MiB of scaled views, always including the one shown. Fitted to the window a 1440 x 2160 view takes about 12 MB, so all four fit; zoomed in far, or fitted to the width of a large screen, the views at the end of that order are left out.
+- **Continuous scroll** already scaled its pages in the background and is unchanged.
 
 ---
 
