@@ -29,6 +29,8 @@ qt_add_executable(YACReader WIN32
     image_adjustment.cpp
     image_adjustment_menu.h
     image_adjustment_menu.cpp
+    image_filter_slider.h
+    image_filter_slider.cpp
     bookmarks_dialog.h
     bookmarks_dialog.cpp
     render.h

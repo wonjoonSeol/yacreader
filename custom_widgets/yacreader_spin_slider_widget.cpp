@@ -14,6 +14,8 @@ YACReaderSpinSliderWidget::YACReaderSpinSliderWidget(QWidget *parent, bool strec
         layout->addStretch();
     spinBox = new QSpinBox(this);
     layout->addWidget(spinBox);
+    // so that setFocus() on this widget, or on a menu entry that holds it, reaches the spin box
+    setFocusProxy(spinBox);
     slider = new QSlider(Qt::Horizontal, this);
     layout->addWidget(slider);
     if (strechableSlider) {

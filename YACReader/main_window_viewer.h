@@ -186,6 +186,8 @@ private:
     void syncModeActions(bool manga, bool continuousScroll);
     void applySavedReaderMode();
     void applyLibraryReaderMode(YACReader::FileType type);
+    // the current comic's own brightness, contrast and gamma, or the defaults where it has none
+    void applyComicFilterLevels();
 
     //! Manejadores de evento:
     // void resizeEvent(QResizeEvent * event);

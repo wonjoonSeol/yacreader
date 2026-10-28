@@ -37,14 +37,31 @@ enum EscapeKeyBehavior {
     EscapeCancelsMode = 1
 };
 
+// A brightness, contrast or gamma level of Options > Image adjustment
+struct ImageFilterSpec {
+    const char *settingsKey;
+    int minimum;
+    int maximum;
+    int defaultValue;
+
+    // A comic stores -1 when it has no level of its own
+    constexpr int levelOrDefault(int comicLevel) const { return comicLevel == -1 ? defaultValue : comicLevel; }
+};
+
+inline constexpr ImageFilterSpec brightnessSpec { BRIGHTNESS, 0, 100, 0 };
+inline constexpr ImageFilterSpec contrastSpec { CONTRAST, 0, 250, 100 };
+inline constexpr ImageFilterSpec gammaSpec { GAMMA, 0, 250, 100 };
+
 class Configuration : public QObject
 {
     Q_OBJECT
 
 private:
-    QSettings *settings;
+    QSettings *settings = nullptr;
 
     Configuration();
+
+    bool storeFilterLevel(const ImageFilterSpec &filter, int level);
 
 public:
     static Configuration &getConfiguration()
@@ -97,13 +114,13 @@ public:
     bool getContinuousScroll() { return settings->value(CONTINUOUS_SCROLL, false).toBool(); }
     void setContinuousScroll(bool b) { settings->setValue(CONTINUOUS_SCROLL, b); }
     bool getContinuousScrollFitToHeight() { return settings->value(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, false).toBool(); }
-    void setContinuousScrollFitToHeight(bool b) { settings->setValue(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, b); }
+    void setContinuousScrollFitToHeight(bool b);
     bool getEnlargeImages() { return settings->value(ENLARGE_IMAGES, true).toBool(); }
-    void setEnlargeImages(bool b) { settings->setValue(ENLARGE_IMAGES, b); }
-    // written by the Options dialog
-    int getBrightness() { return settings->value(BRIGHTNESS, 0).toInt(); }
-    int getContrast() { return settings->value(CONTRAST, 100).toInt(); }
-    int getGamma() { return settings->value(GAMMA, 100).toInt(); }
+    void setEnlargeImages(bool b);
+    int getFilterLevel(const ImageFilterSpec &filter) { return settings->value(filter.settingsKey, filter.defaultValue).toInt(); }
+    void setFilterLevel(const ImageFilterSpec &filter, int level);
+    // Emits filtersChanged once for the three, so the pages are filtered again once
+    void setFilterLevels(int brightness, int contrast, int gamma);
 
     QColor getBackgroundColor(const QColor &color) { return settings->value(BACKGROUND_COLOR, color).value<QColor>(); }
     void setBackgroundColor(const QColor &color) { settings->setValue(BACKGROUND_COLOR, color); }
@@ -144,7 +161,14 @@ public:
     void setEscapeKeyBehavior(EscapeKeyBehavior behavior) { settings->setValue(ESCAPE_KEY_BEHAVIOR, static_cast<int>(behavior)); }
 
     ScaleMethod getScalingMethod() { return static_cast<ScaleMethod>(settings->value(SCALING_METHOD, static_cast<int>(ScaleMethod::Lanczos)).toInt()); }
-    void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
+    void setScalingMethod(ScaleMethod method);
+
+signals:
+    // Options > Image adjustment and the image adjustment menu store through the setters above
+    // and both show what these report, so they agree. A setter emits only when the value changes.
+    // The enlarge, continuous scroll fit or scaling method option changed
+    void imageOptionsChanged();
+    void filtersChanged(int brightness, int contrast, int gamma);
 };
 
 }

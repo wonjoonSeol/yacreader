@@ -21,13 +21,4 @@ QList<ScalingMethodChoice> scalingMethodChoices();
 // The position of the choice that stores method, or -1 if no choice does
 int scalingMethodChoiceIndex(const QList<ScalingMethodChoice> &choices, ScaleMethod method);
 
-struct ImageFilterRange {
-    int minimum;
-    int maximum;
-};
-
-constexpr ImageFilterRange brightnessRange { 0, 100 };
-constexpr ImageFilterRange contrastRange { 0, 250 };
-constexpr ImageFilterRange gammaRange { 0, 250 };
-
 #endif // IMAGE_ADJUSTMENT_H

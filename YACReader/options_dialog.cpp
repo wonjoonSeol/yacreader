@@ -4,11 +4,11 @@
 #include "appearance_tab_widget.h"
 #include "configuration.h"
 #include "image_adjustment.h"
+#include "image_filter_slider.h"
 #include "theme_factory.h"
 #include "theme_manager.h"
 #include "yacreader_3d_flow_config_widget.h"
 #include "yacreader_settings_widget.h"
-#include "yacreader_spin_slider_widget.h"
 
 #include <QCheckBox>
 #include <QColorDialog>
@@ -212,50 +212,21 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
     QWidget *pageImage = new QWidget();
     auto layoutImageV = new QVBoxLayout();
-    auto layoutImage = new QGridLayout();
-
-    brightnessS = new YACReaderSpinSliderWidget(this, true);
-    brightnessS->setRange(brightnessRange.minimum, brightnessRange.maximum);
-    // brightnessS->setText(tr("Brightness"));
-    brightnessS->setTracking(false);
-    connect(brightnessS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::brightnessChanged);
-
-    contrastS = new YACReaderSpinSliderWidget(this, true);
-    contrastS->setRange(contrastRange.minimum, contrastRange.maximum);
-    // contrastS->setText(tr("Contrast"));
-    contrastS->setTracking(false);
-    connect(contrastS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::contrastChanged);
-
-    gammaS = new YACReaderSpinSliderWidget(this, true);
-    gammaS->setRange(gammaRange.minimum, gammaRange.maximum);
-    // gammaS->setText(tr("Gamma"));
-    gammaS->setTracking(false);
-    connect(gammaS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::gammaChanged);
-    // connect(brightnessS,SIGNAL(valueChanged(int)),this,SIGNAL(changedOptions()));
-
-    layoutImage->addWidget(new QLabel(tr("Brightness")), 0, 0);
-    layoutImage->addWidget(new QLabel(tr("Contrast")), 1, 0);
-    layoutImage->addWidget(new QLabel(tr("Gamma")), 2, 0);
-    layoutImage->addWidget(brightnessS, 0, 1);
-    layoutImage->addWidget(contrastS, 1, 1);
-    layoutImage->addWidget(gammaS, 2, 1);
-    QPushButton *pushButton = new QPushButton(tr("Reset"));
-    connect(pushButton, &QAbstractButton::pressed, this, &OptionsDialog::resetImageConfig);
-    layoutImage->addWidget(pushButton, 3, 0);
-    layoutImage->setColumnStretch(1, 1);
 
     QGroupBox *imageBox = new QGroupBox(tr("Image options"));
-    imageBox->setLayout(layoutImage);
+    auto layoutImage = new QVBoxLayout(imageBox);
+    for (auto *widget : createImageFilterWidgets())
+        layoutImage->addWidget(widget);
     layoutImageV->addWidget(imageBox);
 
+    // The enlarge, continuous scroll and scaling options reach the viewer through
+    // Configuration::imageOptionsChanged, as they do from the image adjustment menu
     auto scaleBox = new QGroupBox(tr("Fit options"));
     auto scaleLayout = new QVBoxLayout();
     scaleCheckbox = new QCheckBox(tr("Enlarge images to fit width/height"));
-    connect(scaleCheckbox, &QCheckBox::clicked, scaleCheckbox,
-            [=, this](bool checked) {
-                Configuration::getConfiguration().setEnlargeImages(checked);
-                emit changedImageOptions();
-            });
+    connect(scaleCheckbox, &QCheckBox::clicked, scaleCheckbox, [](bool checked) {
+        Configuration::getConfiguration().setEnlargeImages(checked);
+    });
 
     scaleLayout->addWidget(scaleCheckbox);
     scaleBox->setLayout(scaleLayout);
@@ -266,9 +237,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     continuousScrollFitToWidthRadioButton = new QRadioButton(tr("Fit pages to width"));
     continuousScrollFitToHeightRadioButton = new QRadioButton(tr("Fit pages to height"));
     continuousScrollFitToHeightRadioButton->setToolTip(tr("Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width."));
-    connect(continuousScrollFitToHeightRadioButton, &QRadioButton::toggled, this, [this](bool checked) {
+    connect(continuousScrollFitToHeightRadioButton, &QRadioButton::toggled, this, [](bool checked) {
         Configuration::getConfiguration().setContinuousScrollFitToHeight(checked);
-        emit changedImageOptions();
     });
     continuousScrollLayout->addWidget(continuousScrollFitToWidthRadioButton);
     continuousScrollLayout->addWidget(continuousScrollFitToHeightRadioButton);
@@ -301,9 +271,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     scalingMethodCombo = new QComboBox();
     for (const auto &choice : scalingMethodChoices())
         scalingMethodCombo->addItem(choice.text());
-    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
+    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [](int index) {
         Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(index).method);
-        emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
     scalingLayout->addStretch();
@@ -311,6 +280,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutImageV->addWidget(scalingBox);
 
     layoutImageV->addStretch();
+
+    connect(&Configuration::getConfiguration(), &Configuration::imageOptionsChanged, this, &OptionsDialog::reloadImageOptions);
 
     // IMAGE ADJUSTMENTS END -----------------------------
 
@@ -487,11 +458,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     quickNavi->setChecked(settings->value(QUICK_NAVI_MODE).toBool());
     disableShowOnMouseOver->setChecked(settings->value(DISABLE_MOUSE_OVER_GOTO_FLOW).toBool());
 
-    brightnessS->setValue(Configuration::getConfiguration().getBrightness());
-    contrastS->setValue(Configuration::getConfiguration().getContrast());
-    gammaS->setValue(Configuration::getConfiguration().getGamma());
-
-    restoreImageOptions();
+    reloadImageOptions();
 
     doNotTurnPageOnScroll->setChecked(settings->value(DO_NOT_TURN_PAGE_ON_SCROLL, false).toBool());
     useSingleScrollStepToTurnPage->setChecked(settings->value(USE_SINGLE_SCROLL_STEP_TO_TURN_PAGE, false).toBool());
@@ -523,7 +490,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         escapeQuitsRadioButton->setChecked(true);
 }
 
-void OptionsDialog::restoreImageOptions()
+void OptionsDialog::reloadImageOptions()
 {
     auto &configuration = Configuration::getConfiguration();
 
@@ -555,43 +522,6 @@ void OptionsDialog::updateColor(const QColor &color)
     emit changedOptions();
 }
 
-void OptionsDialog::brightnessChanged(int value)
-{
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(BRIGHTNESS, value);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    // emit(changedImageOptions());
-}
-
-void OptionsDialog::contrastChanged(int value)
-{
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(CONTRAST, value);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    /// emit(changedImageOptions());
-}
-
-void OptionsDialog::gammaChanged(int value)
-{
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(GAMMA, value);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    // emit(changedImageOptions());
-}
-
-void OptionsDialog::resetImageConfig()
-{
-    brightnessS->setValue(0);
-    contrastS->setValue(100);
-    gammaS->setValue(100);
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(BRIGHTNESS, 0);
-    settings.setValue(CONTRAST, 100);
-    settings.setValue(GAMMA, 100);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    // emit(changedImageOptions());
-}
-
 void OptionsDialog::show()
 {
     // TODO solucionar el tema de las settings, esto sólo debería aparecer en una única línea de código
@@ -601,22 +531,6 @@ void OptionsDialog::show()
     // connect(fitToWidthRatioS,SIGNAL(valueChanged(int)),this,SLOT(fitToWidthRatio(int)));
     QDialog::show();
     delete s;
-}
-
-void OptionsDialog::setFilters(int brightness, int contrast, int gamma)
-{
-    if (brightness != -1)
-        brightnessS->setValue(brightness);
-    else
-        brightnessS->setValue(0);
-    if (contrast != -1)
-        contrastS->setValue(contrast);
-    else
-        contrastS->setValue(100);
-    if (gamma != -1)
-        gammaS->setValue(gamma);
-    else
-        gammaS->setValue(100);
 }
 
 void OptionsDialog::clearBackgroundColor()

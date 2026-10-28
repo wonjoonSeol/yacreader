@@ -56,3 +56,50 @@ void Configuration::updateOpenRecentList(QString path)
     }
     settings->setValue("recentFiles", list);
 }
+
+void Configuration::setContinuousScrollFitToHeight(bool b)
+{
+    if (b == getContinuousScrollFitToHeight())
+        return;
+    settings->setValue(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, b);
+    emit imageOptionsChanged();
+}
+
+void Configuration::setEnlargeImages(bool b)
+{
+    if (b == getEnlargeImages())
+        return;
+    settings->setValue(ENLARGE_IMAGES, b);
+    emit imageOptionsChanged();
+}
+
+void Configuration::setScalingMethod(ScaleMethod method)
+{
+    if (method == getScalingMethod())
+        return;
+    settings->setValue(SCALING_METHOD, static_cast<int>(method));
+    emit imageOptionsChanged();
+}
+
+bool Configuration::storeFilterLevel(const ImageFilterSpec &filter, int level)
+{
+    if (level == getFilterLevel(filter))
+        return false;
+    settings->setValue(filter.settingsKey, level);
+    return true;
+}
+
+void Configuration::setFilterLevel(const ImageFilterSpec &filter, int level)
+{
+    if (storeFilterLevel(filter, level))
+        emit filtersChanged(getFilterLevel(brightnessSpec), getFilterLevel(contrastSpec), getFilterLevel(gammaSpec));
+}
+
+void Configuration::setFilterLevels(int brightness, int contrast, int gamma)
+{
+    bool changed = storeFilterLevel(brightnessSpec, brightness);
+    changed = storeFilterLevel(contrastSpec, contrast) || changed;
+    changed = storeFilterLevel(gammaSpec, gamma) || changed;
+    if (changed)
+        emit filtersChanged(brightness, contrast, gamma);
+}
