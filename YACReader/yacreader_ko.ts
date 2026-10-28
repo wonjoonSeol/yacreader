@@ -482,22 +482,22 @@ If none is active, Escape does nothing.</source>
         <translation>마우스 오버 활성화 끄기</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="51"/>
+        <location filename="image_filter_slider.cpp" line="49"/>
         <source>Brightness</source>
         <translation>밝기</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="52"/>
+        <location filename="image_filter_slider.cpp" line="50"/>
         <source>Contrast</source>
         <translation>대비</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="53"/>
+        <location filename="image_filter_slider.cpp" line="51"/>
         <source>Gamma</source>
         <translation>감마</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="73"/>
+        <location filename="image_filter_slider.cpp" line="58"/>
         <source>Reset</source>
         <translation>초기화</translation>
     </message>
@@ -513,25 +513,25 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="226"/>
-        <location filename="image_adjustment_menu.cpp" line="42"/>
+        <location filename="image_adjustment_menu.cpp" line="65"/>
         <source>Enlarge images to fit width/height</source>
         <translation>작은 그림도 꽉차게 보기</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="235"/>
-        <location filename="image_adjustment_menu.cpp" line="48"/>
+        <location filename="image_adjustment_menu.cpp" line="71"/>
         <source>Continuous scroll</source>
         <translation>연속 스크롤</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="237"/>
-        <location filename="image_adjustment_menu.cpp" line="50"/>
+        <location filename="image_adjustment_menu.cpp" line="73"/>
         <source>Fit pages to width</source>
         <translation>페이지를 폭에 맞춤</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="238"/>
-        <location filename="image_adjustment_menu.cpp" line="51"/>
+        <location filename="image_adjustment_menu.cpp" line="74"/>
         <source>Fit pages to height</source>
         <translation>페이지를 높이에 맞춤</translation>
     </message>
@@ -562,7 +562,7 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="270"/>
-        <location filename="image_adjustment_menu.cpp" line="63"/>
+        <location filename="image_adjustment_menu.cpp" line="82"/>
         <source>Scaling method</source>
         <translation>스케일링 방법</translation>
     </message>
@@ -598,7 +598,7 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <location filename="image_adjustment_menu.cpp" line="15"/>
+        <location filename="image_adjustment_menu.cpp" line="36"/>
         <source>Image adjustment</source>
         <translation>이미지 조정</translation>
     </message>

@@ -276,18 +276,18 @@
 <context>
     <name>OptionsDialog</name>
     <message>
-        <location filename="image_filter_slider.cpp" line="53"/>
+        <location filename="image_filter_slider.cpp" line="51"/>
         <source>Gamma</source>
         <translation>Gamma值</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="73"/>
+        <location filename="image_filter_slider.cpp" line="58"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="226"/>
-        <location filename="image_adjustment_menu.cpp" line="42"/>
+        <location filename="image_adjustment_menu.cpp" line="65"/>
         <source>Enlarge images to fit width/height</source>
         <translation>放大图片以适应宽度/高度</translation>
     </message>
@@ -308,7 +308,7 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <location filename="image_adjustment_menu.cpp" line="15"/>
+        <location filename="image_adjustment_menu.cpp" line="36"/>
         <source>Image adjustment</source>
         <translation>图像调整</translation>
     </message>
@@ -458,25 +458,25 @@ If none is active, Escape does nothing.</source>
         <translation>使用简单的水平页面缩略图列表，代替 GPU 渲染的 3D 页面流。如果您的系统阅读体验不流畅，请启用此选项。</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="52"/>
+        <location filename="image_filter_slider.cpp" line="50"/>
         <source>Contrast</source>
         <translation>对比度</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="235"/>
-        <location filename="image_adjustment_menu.cpp" line="48"/>
+        <location filename="image_adjustment_menu.cpp" line="71"/>
         <source>Continuous scroll</source>
         <translation type="unfinished">连续滚动</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="237"/>
-        <location filename="image_adjustment_menu.cpp" line="50"/>
+        <location filename="image_adjustment_menu.cpp" line="73"/>
         <source>Fit pages to width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="238"/>
-        <location filename="image_adjustment_menu.cpp" line="51"/>
+        <location filename="image_adjustment_menu.cpp" line="74"/>
         <source>Fit pages to height</source>
         <translation type="unfinished"></translation>
     </message>
@@ -577,7 +577,7 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="270"/>
-        <location filename="image_adjustment_menu.cpp" line="63"/>
+        <location filename="image_adjustment_menu.cpp" line="82"/>
         <source>Scaling method</source>
         <translation>缩放方法</translation>
     </message>
@@ -607,7 +607,7 @@ If none is active, Escape does nothing.</source>
         <translation>常规</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="51"/>
+        <location filename="image_filter_slider.cpp" line="49"/>
         <source>Brightness</source>
         <translation>亮度</translation>
     </message>

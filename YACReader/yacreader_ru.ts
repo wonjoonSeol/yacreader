@@ -272,12 +272,12 @@
 <context>
     <name>OptionsDialog</name>
     <message>
-        <location filename="image_filter_slider.cpp" line="53"/>
+        <location filename="image_filter_slider.cpp" line="51"/>
         <source>Gamma</source>
         <translation>Гамма</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="73"/>
+        <location filename="image_filter_slider.cpp" line="58"/>
         <source>Reset</source>
         <translation>Вернуть к первоначальным значениям</translation>
     </message>
@@ -288,7 +288,7 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <location filename="image_adjustment_menu.cpp" line="15"/>
+        <location filename="image_adjustment_menu.cpp" line="36"/>
         <source>Image adjustment</source>
         <translation>Настройка изображения</translation>
     </message>
@@ -308,7 +308,7 @@
         <translation>Настройки изображения</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="52"/>
+        <location filename="image_filter_slider.cpp" line="50"/>
         <source>Contrast</source>
         <translation>Контраст</translation>
     </message>
@@ -509,19 +509,19 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="235"/>
-        <location filename="image_adjustment_menu.cpp" line="48"/>
+        <location filename="image_adjustment_menu.cpp" line="71"/>
         <source>Continuous scroll</source>
         <translation type="unfinished">Непрерывная прокрутка</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="237"/>
-        <location filename="image_adjustment_menu.cpp" line="50"/>
+        <location filename="image_adjustment_menu.cpp" line="73"/>
         <source>Fit pages to width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="238"/>
-        <location filename="image_adjustment_menu.cpp" line="51"/>
+        <location filename="image_adjustment_menu.cpp" line="74"/>
         <source>Fit pages to height</source>
         <translation type="unfinished"></translation>
     </message>
@@ -542,7 +542,7 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="270"/>
-        <location filename="image_adjustment_menu.cpp" line="63"/>
+        <location filename="image_adjustment_menu.cpp" line="82"/>
         <source>Scaling method</source>
         <translation>Метод масштабирования</translation>
     </message>
@@ -582,7 +582,7 @@ If none is active, Escape does nothing.</source>
         <translation>Общие</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="51"/>
+        <location filename="image_filter_slider.cpp" line="49"/>
         <source>Brightness</source>
         <translation>Яркость</translation>
     </message>
@@ -598,7 +598,7 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="226"/>
-        <location filename="image_adjustment_menu.cpp" line="42"/>
+        <location filename="image_adjustment_menu.cpp" line="65"/>
         <source>Enlarge images to fit width/height</source>
         <translation>Увеличьте изображения по ширине/высоте</translation>
     </message>

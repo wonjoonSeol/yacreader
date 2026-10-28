@@ -487,22 +487,22 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
         <translation>Desativar ativação do mouse sobre</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="51"/>
+        <location filename="image_filter_slider.cpp" line="49"/>
         <source>Brightness</source>
         <translation>Brilho</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="52"/>
+        <location filename="image_filter_slider.cpp" line="50"/>
         <source>Contrast</source>
         <translation>Contraste</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="53"/>
+        <location filename="image_filter_slider.cpp" line="51"/>
         <source>Gamma</source>
         <translation>Gama</translation>
     </message>
     <message>
-        <location filename="image_filter_slider.cpp" line="73"/>
+        <location filename="image_filter_slider.cpp" line="58"/>
         <source>Reset</source>
         <translation>Reiniciar</translation>
     </message>
@@ -518,25 +518,25 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="226"/>
-        <location filename="image_adjustment_menu.cpp" line="42"/>
+        <location filename="image_adjustment_menu.cpp" line="65"/>
         <source>Enlarge images to fit width/height</source>
         <translation>Amplie as imagens para caber na largura/altura</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="235"/>
-        <location filename="image_adjustment_menu.cpp" line="48"/>
+        <location filename="image_adjustment_menu.cpp" line="71"/>
         <source>Continuous scroll</source>
         <translation type="unfinished">Rolagem contínua</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="237"/>
-        <location filename="image_adjustment_menu.cpp" line="50"/>
+        <location filename="image_adjustment_menu.cpp" line="73"/>
         <source>Fit pages to width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="238"/>
-        <location filename="image_adjustment_menu.cpp" line="51"/>
+        <location filename="image_adjustment_menu.cpp" line="74"/>
         <source>Fit pages to height</source>
         <translation type="unfinished"></translation>
     </message>
@@ -567,7 +567,7 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="270"/>
-        <location filename="image_adjustment_menu.cpp" line="63"/>
+        <location filename="image_adjustment_menu.cpp" line="82"/>
         <source>Scaling method</source>
         <translation>Método de dimensionamento</translation>
     </message>
@@ -608,7 +608,7 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="305"/>
-        <location filename="image_adjustment_menu.cpp" line="15"/>
+        <location filename="image_adjustment_menu.cpp" line="36"/>
         <source>Image adjustment</source>
         <translation>Ajuste de imagem</translation>
     </message>
