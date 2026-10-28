@@ -16,10 +16,6 @@ ToolBarOverlay::ToolBarOverlay(QMainWindow *window, QToolBar *toolBar, std::func
 
 void ToolBarOverlay::setActive(bool active)
 {
-    if (active == this->active)
-        return;
-
-    this->active = active;
     // Only an application filter sees every move: a move at a widget that doesn't track the mouse, like the page number label
     // or a toolbar button, goes through the application filters and then stops, and once the go-to flow's window container
     // makes the page a native window, a filter on the top-level window doesn't see the moves over the page any more.
@@ -69,7 +65,7 @@ bool ToolBarOverlay::eventFilter(QObject *watched, QEvent *event)
         break;
     }
 
-    return QObject::eventFilter(watched, event);
+    return false;
 }
 
 void ToolBarOverlay::updateForMove(const QMouseEvent *event)

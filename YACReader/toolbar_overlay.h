@@ -40,7 +40,6 @@ private:
     QMainWindow *window;
     QToolBar *toolBar;
     std::function<bool()> canReveal;
-    bool active = false;
 };
 
 }
