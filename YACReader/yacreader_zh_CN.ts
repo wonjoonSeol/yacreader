@@ -188,18 +188,18 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="642"/>
-        <location filename="../common/comic.cpp" line="658"/>
+        <location filename="../common/comic.cpp" line="657"/>
+        <location filename="../common/comic.cpp" line="673"/>
         <source>Format not supported</source>
         <translation>不支持的文件格式</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="636"/>
+        <location filename="../common/comic.cpp" line="651"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="529"/>
+        <location filename="../common/comic.cpp" line="544"/>
         <source>Unknown error opening the file</source>
         <translation>打开文件时出现未知错误</translation>
     </message>
@@ -208,7 +208,7 @@
         <translation type="vanished">不支持的 EPUB 格式：%1</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="522"/>
+        <location filename="../common/comic.cpp" line="537"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 页 CRC 校验失败: 部分页面将无法正确显示</translation>
     </message>
@@ -1082,12 +1082,12 @@ If none is active, Escape does nothing.</source>
         <translation>打开图片文件夹</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1404"/>
+        <location filename="main_window_viewer.cpp" line="1391"/>
         <source>Size down magnifying glass</source>
         <translation>减小放大镜尺寸</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1410"/>
+        <location filename="main_window_viewer.cpp" line="1397"/>
         <source>Zoom out magnifying glass</source>
         <translation>减小缩放级别</translation>
     </message>
@@ -1102,7 +1102,7 @@ If none is active, Escape does nothing.</source>
         <translation>打开最近的漫画</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1452"/>
+        <location filename="main_window_viewer.cpp" line="1439"/>
         <source>Autoscroll up</source>
         <translation>向上自动滚动</translation>
     </message>
@@ -1112,7 +1112,7 @@ If none is active, Escape does nothing.</source>
         <translation>设置书签</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1463"/>
+        <location filename="main_window_viewer.cpp" line="1450"/>
         <source>Autoscroll forward, vertical first</source>
         <translation>向前自动滚动，垂直优先</translation>
     </message>
@@ -1123,14 +1123,14 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="379"/>
-        <location filename="main_window_viewer.cpp" line="1099"/>
-        <location filename="main_window_viewer.cpp" line="1110"/>
-        <location filename="main_window_viewer.cpp" line="1121"/>
+        <location filename="main_window_viewer.cpp" line="1086"/>
+        <location filename="main_window_viewer.cpp" line="1097"/>
+        <location filename="main_window_viewer.cpp" line="1108"/>
         <source>Save current page</source>
         <translation>保存当前页面</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1401"/>
+        <location filename="main_window_viewer.cpp" line="1388"/>
         <source>Size up magnifying glass</source>
         <translation>增大放大镜尺寸</translation>
     </message>
@@ -1140,7 +1140,7 @@ If none is active, Escape does nothing.</source>
         <translation>双页模式</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1474"/>
+        <location filename="main_window_viewer.cpp" line="1461"/>
         <source>Move up</source>
         <translation>向上移动</translation>
     </message>
@@ -1155,13 +1155,13 @@ If none is active, Escape does nothing.</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="1339"/>
         <location filename="main_window_viewer.cpp" line="1352"/>
-        <location filename="main_window_viewer.cpp" line="1365"/>
         <source>Comics</source>
         <translation>漫画</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1491"/>
+        <location filename="main_window_viewer.cpp" line="1478"/>
         <source>Offset double page to the right</source>
         <translation>双页向右偏移</translation>
     </message>
@@ -1171,7 +1171,7 @@ If none is active, Escape does nothing.</source>
         <translation>适应高度</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1467"/>
+        <location filename="main_window_viewer.cpp" line="1454"/>
         <source>Autoscroll backward, vertical first</source>
         <translation>向后自动滚动，垂直优先</translation>
     </message>
@@ -1181,19 +1181,19 @@ If none is active, Escape does nothing.</source>
         <translation>漫画文件</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1594"/>
+        <location filename="main_window_viewer.cpp" line="1581"/>
         <source>Not now</source>
         <translation>现在不</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1483"/>
+        <location filename="main_window_viewer.cpp" line="1470"/>
         <source>Go to the first page</source>
         <translation>转到第一页</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="404"/>
-        <location filename="main_window_viewer.cpp" line="1949"/>
-        <location filename="main_window_viewer.cpp" line="1953"/>
+        <location filename="main_window_viewer.cpp" line="1936"/>
+        <location filename="main_window_viewer.cpp" line="1940"/>
         <source>Go to previous page</source>
         <translation>转至上一页</translation>
     </message>
@@ -1243,8 +1243,8 @@ If none is active, Escape does nothing.</source>
         <translation>跳转至页面 ...</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1354"/>
-        <location filename="main_window_viewer.cpp" line="1420"/>
+        <location filename="main_window_viewer.cpp" line="1341"/>
+        <location filename="main_window_viewer.cpp" line="1407"/>
         <source>Magnifiying glass</source>
         <translation>放大镜</translation>
     </message>
@@ -1254,22 +1254,22 @@ If none is active, Escape does nothing.</source>
         <translation>缩放图片以适应宽度</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1376"/>
+        <location filename="main_window_viewer.cpp" line="1363"/>
         <source>Toggle fullscreen mode</source>
         <translation>切换全屏模式</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1427"/>
+        <location filename="main_window_viewer.cpp" line="1414"/>
         <source>Toggle between fit to width and fit to height</source>
         <translation>切换显示为&quot;适应宽度&quot;或&quot;适应高度&quot;</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1480"/>
+        <location filename="main_window_viewer.cpp" line="1467"/>
         <source>Move right</source>
         <translation>向右移动</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1407"/>
+        <location filename="main_window_viewer.cpp" line="1394"/>
         <source>Zoom in magnifying glass</source>
         <translation>增大缩放级别</translation>
     </message>
@@ -1280,13 +1280,13 @@ If none is active, Escape does nothing.</source>
         <translation>最近打开的文件</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1489"/>
+        <location filename="main_window_viewer.cpp" line="1476"/>
         <source>Offset double page to the left</source>
         <translation>双页向左偏移</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1356"/>
-        <location filename="main_window_viewer.cpp" line="1528"/>
+        <location filename="main_window_viewer.cpp" line="1343"/>
+        <location filename="main_window_viewer.cpp" line="1515"/>
         <source>Reading</source>
         <translation>阅读</translation>
     </message>
@@ -1296,14 +1296,14 @@ If none is active, Escape does nothing.</source>
         <translation>上一页(&amp;P)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1455"/>
+        <location filename="main_window_viewer.cpp" line="1442"/>
         <source>Autoscroll forward, horizontal first</source>
         <translation>向前自动滚动，水平优先</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="411"/>
-        <location filename="main_window_viewer.cpp" line="1948"/>
-        <location filename="main_window_viewer.cpp" line="1954"/>
+        <location filename="main_window_viewer.cpp" line="1935"/>
+        <location filename="main_window_viewer.cpp" line="1941"/>
         <source>Go to next page</source>
         <translation>转至下一页</translation>
     </message>
@@ -1318,29 +1318,29 @@ If none is active, Escape does nothing.</source>
         <translation>双页日漫模式</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1589"/>
+        <location filename="main_window_viewer.cpp" line="1576"/>
         <source>There is a new version available</source>
         <translation>有新版本可用</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1449"/>
+        <location filename="main_window_viewer.cpp" line="1436"/>
         <source>Autoscroll down</source>
         <translation>向下自动滚动</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="397"/>
-        <location filename="main_window_viewer.cpp" line="1946"/>
-        <location filename="main_window_viewer.cpp" line="1952"/>
+        <location filename="main_window_viewer.cpp" line="1933"/>
+        <location filename="main_window_viewer.cpp" line="1939"/>
         <source>Open next comic</source>
         <translation>打开下一个漫画</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1495"/>
+        <location filename="main_window_viewer.cpp" line="1482"/>
         <source>Go %1 pages to the left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1593"/>
+        <location filename="main_window_viewer.cpp" line="1580"/>
         <source>Remind me in 14 days</source>
         <translation>14天后提醒我</translation>
     </message>
@@ -1356,8 +1356,8 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="391"/>
-        <location filename="main_window_viewer.cpp" line="1947"/>
-        <location filename="main_window_viewer.cpp" line="1951"/>
+        <location filename="main_window_viewer.cpp" line="1934"/>
+        <location filename="main_window_viewer.cpp" line="1938"/>
         <source>Open previous comic</source>
         <translation>打开上一个漫画</translation>
     </message>
@@ -1373,10 +1373,10 @@ If none is active, Escape does nothing.</source>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="384"/>
-        <location filename="main_window_viewer.cpp" line="1126"/>
-        <location filename="main_window_viewer.cpp" line="1140"/>
-        <location filename="main_window_viewer.cpp" line="1151"/>
-        <location filename="main_window_viewer.cpp" line="1169"/>
+        <location filename="main_window_viewer.cpp" line="1113"/>
+        <location filename="main_window_viewer.cpp" line="1127"/>
+        <location filename="main_window_viewer.cpp" line="1138"/>
+        <location filename="main_window_viewer.cpp" line="1156"/>
         <source>Extract page(s)</source>
         <translation>提取页面</translation>
     </message>
@@ -1421,62 +1421,62 @@ If none is active, Escape does nothing.</source>
         <translation>显示字典</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1110"/>
+        <location filename="main_window_viewer.cpp" line="1097"/>
         <source>The current page is not ready. Please try again later.</source>
         <translation>当前页面尚未准备就绪。请稍后重试。</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1115"/>
+        <location filename="main_window_viewer.cpp" line="1102"/>
         <source>Overwrite file?</source>
         <translation>覆盖文件？</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1115"/>
+        <location filename="main_window_viewer.cpp" line="1102"/>
         <source>The file already exists. Do you want to overwrite it?</source>
         <translation>文件已存在。是​​否要覆盖它？</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1121"/>
+        <location filename="main_window_viewer.cpp" line="1108"/>
         <source>The current page could not be saved.</source>
         <translation>无法保存当前页面。</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1140"/>
+        <location filename="main_window_viewer.cpp" line="1127"/>
         <source>The selected pages are not ready. Please try again later.</source>
         <translation>所选页面尚未准备就绪。请稍后重试。</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1151"/>
+        <location filename="main_window_viewer.cpp" line="1138"/>
         <source>The current page could not be extracted.</source>
         <translation>无法提取当前页面。</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1156"/>
+        <location filename="main_window_viewer.cpp" line="1143"/>
         <source>Overwrite files?</source>
         <translation>覆盖文件？</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1156"/>
+        <location filename="main_window_viewer.cpp" line="1143"/>
         <source>Some files already exist. Do you want to overwrite them?</source>
         <translation>部分文件已存在。是​​否要覆盖它们？</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1169"/>
+        <location filename="main_window_viewer.cpp" line="1156"/>
         <source>Some pages could not be extracted.</source>
         <translation>部分页面无法提取。</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1413"/>
+        <location filename="main_window_viewer.cpp" line="1400"/>
         <source>Reset magnifying glass</source>
         <translation>重置放大镜</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1471"/>
+        <location filename="main_window_viewer.cpp" line="1458"/>
         <source>Move down</source>
         <translation>向下移动</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1477"/>
+        <location filename="main_window_viewer.cpp" line="1464"/>
         <source>Move left</source>
         <translation>向左移动</translation>
     </message>
@@ -1516,7 +1516,7 @@ If none is active, Escape does nothing.</source>
         <translation>显示全尺寸</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1379"/>
+        <location filename="main_window_viewer.cpp" line="1366"/>
         <source>Hide/show toolbar</source>
         <translation>隐藏/显示 工具栏</translation>
     </message>
@@ -1531,8 +1531,8 @@ If none is active, Escape does nothing.</source>
         <translation>编辑快捷键</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1353"/>
-        <location filename="main_window_viewer.cpp" line="1382"/>
+        <location filename="main_window_viewer.cpp" line="1340"/>
+        <location filename="main_window_viewer.cpp" line="1369"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
@@ -1542,8 +1542,8 @@ If none is active, Escape does nothing.</source>
         <translation>在当前页面设置书签</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1355"/>
-        <location filename="main_window_viewer.cpp" line="1431"/>
+        <location filename="main_window_viewer.cpp" line="1342"/>
+        <location filename="main_window_viewer.cpp" line="1418"/>
         <source>Page adjustement</source>
         <translation>页面调整</translation>
     </message>
@@ -1553,17 +1553,17 @@ If none is active, Escape does nothing.</source>
         <translation>显示缩放滑块</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1486"/>
+        <location filename="main_window_viewer.cpp" line="1473"/>
         <source>Go to the last page</source>
         <translation>转到最后一页</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1500"/>
+        <location filename="main_window_viewer.cpp" line="1487"/>
         <source>Go %1 pages to the right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1590"/>
+        <location filename="main_window_viewer.cpp" line="1577"/>
         <source>Do you want to download the new version?</source>
         <translation>你要下载新版本吗?</translation>
     </message>
@@ -1573,7 +1573,7 @@ If none is active, Escape does nothing.</source>
         <translation>向右旋转图片</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1459"/>
+        <location filename="main_window_viewer.cpp" line="1446"/>
         <source>Autoscroll backward, horizontal first</source>
         <translation>向后自动滚动，水平优先</translation>
     </message>

@@ -4,23 +4,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="522"/>
+        <location filename="../common/comic.cpp" line="537"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Erreur CRC sur la page (%1): certaines pages ne s&apos;afficheront pas correctement</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="529"/>
+        <location filename="../common/comic.cpp" line="544"/>
         <source>Unknown error opening the file</source>
         <translation>Erreur inconnue lors de l&apos;ouverture du fichier</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="636"/>
+        <location filename="../common/comic.cpp" line="651"/>
         <source>7z not found</source>
         <translation>7z introuvable</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="642"/>
-        <location filename="../common/comic.cpp" line="658"/>
+        <location filename="../common/comic.cpp" line="657"/>
+        <location filename="../common/comic.cpp" line="673"/>
         <source>Format not supported</source>
         <translation>Format non supporté</translation>
     </message>
