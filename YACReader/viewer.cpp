@@ -70,7 +70,6 @@ Viewer::Viewer(QWidget *parent)
       doubleMangaPage(false),
       continuousScroll(false),
       zoom(100),
-      currentPage(nullptr),
       wheelStop(false),
       direction(1),
       drag(false),
@@ -179,6 +178,13 @@ Viewer::Viewer(QWidget *parent)
     continuousWidget->setRender(render);
     continuousPageProvider->setRender(render);
 
+    prescaler = new PagePrescaler({ std::make_shared<ScaleStage>() }, PagePrescaler::defaultThreadCount(), PagePrescaler::defaultMaxBytes, this);
+    // started with a zero interval, which lets the page being shown take its image first so the background does not
+    // scale it again, or with a longer one while the window is being resized
+    prescaleTimer = new QTimer(this);
+    prescaleTimer->setSingleShot(true);
+    connect(prescaleTimer, &QTimer::timeout, this, &Viewer::schedulePrescale);
+
     hideCursorTimer = new QTimer();
     hideCursorTimer->setSingleShot(true);
 
@@ -243,8 +249,6 @@ Viewer::~Viewer()
     delete bd;
     delete notificationsLabel;
     delete mglass;
-    if (currentPage != nullptr)
-        delete currentPage;
 }
 
 QString Viewer::renderingSystemInfo() const
@@ -299,6 +303,8 @@ void Viewer::createConnections()
     connect(render, qOverload<unsigned int>(&Render::numPages), this, &Viewer::comicLoaded);
     connect(render, QOverload<int, const QByteArray &>::of(&Render::imageLoaded), goToFlow, &GoToFlowWidget::setImageReady);
     connect(render, &Render::currentPageReady, this, &Viewer::updatePage);
+    connect(render, &Render::pageRendered, this, [this] { requestPrescale(0); });
+    connect(prescaler, &PagePrescaler::imageImproved, this, &Viewer::showImprovedPage);
     // Continuous mode is driven by the off-thread page provider, not by Render's
     // (blocking) page buffer. The provider emits pageReady when a full-resolution
     // page has been decoded on a background thread.
@@ -340,6 +346,7 @@ void Viewer::prepareForOpening()
     // content while the new comic loads.
     continuousPageProvider->reset();
     continuousWidget->invalidateScaledImageCache();
+    prescaler->invalidate();
     // until the new comic's page count arrives, the old layout would give its pages to the new comic
     continuousViewModel->reset();
     lastCenterPage = -1;
@@ -369,9 +376,9 @@ void Viewer::open(QString pathFile, const ComicDB &comic)
     prepareForOpening();
     // Mirror exactly the filter levels Render::load(comicDB) derives, so the
     // decoded pages match single-page mode.
-    continuousPageProvider->setFilters(comic.info.brightness == -1 ? 0 : comic.info.brightness,
-                                       comic.info.contrast == -1 ? 100 : comic.info.contrast,
-                                       comic.info.gamma == -1 ? 100 : comic.info.gamma);
+    continuousPageProvider->setFilters(brightnessSpec.levelOrDefault(comic.info.brightness),
+                                       contrastSpec.levelOrDefault(comic.info.contrast),
+                                       gammaSpec.levelOrDefault(comic.info.gamma));
     render->load(pathFile, comic);
 }
 
@@ -539,22 +546,18 @@ void Viewer::updatePage()
 
     setActiveWidget(content);
 
-    QPixmap *previousPage = currentPage;
-    currentPageHasDoublePageSeam = false;
-    if (doublePage) {
-        if (!doubleMangaPage)
-            currentPage = render->getCurrentDoublePage(&doublePageSeamRatio, &doublePageSeamOrientation);
-        else {
-            currentPage = render->getCurrentDoubleMangaPage(&doublePageSeamRatio, &doublePageSeamOrientation);
-        }
-        currentPageHasDoublePageSeam = currentPage != nullptr;
-        if (currentPage == nullptr) {
-            currentPage = render->getCurrentPage();
-        }
-    } else {
-        currentPage = render->getCurrentPage();
+    currentImages = render->viewImages(render->currentView());
+    currentFullPage = QPixmap();
+    shownPrescaleKey = { };
+    currentPageHasDoublePageSeam = currentImages && currentImages->isDoublePage();
+    if (currentPageHasDoublePageSeam) {
+        const DoublePageLayout layout = currentImages->layout();
+        doublePageSeamRatio = layout.seamRatio;
+        doublePageSeamOrientation = layout.seamOrientation;
     }
-    content->setPixmap(*currentPage);
+    if (!currentImages) {
+        content->setPixmap(QPixmap());
+    }
     updateContentSize();
     updateVerticalScrollBar();
 
@@ -562,9 +565,8 @@ void Viewer::updatePage()
         setFocus(Qt::ShortcutFocusReason);
     else
         goToFlow->setFocus(Qt::OtherFocusReason);
-    delete previousPage;
 
-    if (currentPage->isNull())
+    if (!currentImages)
         setPageUnavailableMessage();
     else
         emit pageAvailable(true);
@@ -580,57 +582,97 @@ void Viewer::updatePage()
     }
 }
 
+namespace {
+
+// The page shown and the views scheduled get the same key, so the schedule after a page turn finds the image the
+// turn scaled
+PrescaleKey prescaleKey(const PageViewImages &images, const FittedPage &fit, const PageFitOptions &options)
+{
+    return { images.key(), fit.pixelSize, options.devicePixelRatio, Configuration::getConfiguration().getScalingMethod() };
+}
+
+}
+
 void Viewer::updateContentSize()
 {
     cancelZoomPreview();
+    // continuous scroll scales its own pages
+    if (continuousScroll) {
+        return;
+    }
 
     // there is an image to resize
-    if (currentPage != nullptr && !currentPage->isNull()) {
-        QSize pagefit = currentPage->size();
-        bool stretchImages = Configuration::getConfiguration().getEnlargeImages();
-        YACReader::FitMode fitmode = Configuration::getConfiguration().getFitMode();
-        switch (fitmode) {
-        case YACReader::FitMode::FullRes:
-            break;
-        case YACReader::FitMode::ToWidth:
-            if (!stretchImages && width() > pagefit.width()) {
-                break;
-            }
-            pagefit.scale(width(), 0, Qt::KeepAspectRatioByExpanding);
-            break;
-        case YACReader::FitMode::ToHeight:
-            if (!stretchImages && height() > pagefit.height()) {
-                break;
-            }
-            pagefit.scale(0, height(), Qt::KeepAspectRatioByExpanding);
-            break;
-            // if everything fails showing the full page is a good idea
-        case YACReader::FitMode::FullPage:
-        default:
-            pagefit.scale(size(), Qt::KeepAspectRatio);
-            break;
-        }
-
-        if (zoom != 100) {
-            pagefit.scale(floor(pagefit.width() * zoom / 100.0f), 0, Qt::KeepAspectRatioByExpanding);
-        }
+    if (currentImages) {
+        const PageFitOptions fitOptions = pageFitOptions();
+        const FittedPage fit = fitPage(currentImages->size(), fitOptions);
         // apply size to the container
-        content->resize(pagefit);
+        content->resize(fit.size);
 
-        // scale the pixmap to physical pixels for crisp rendering on all displays
-        auto dpr = devicePixelRatioF();
-        QPixmap page = scalePixmap(*currentPage,
-                                   qRound(content->width() * dpr),
-                                   qRound(content->height() * dpr),
-                                   Configuration::getConfiguration().getScalingMethod());
-        page.setDevicePixelRatio(dpr);
-        content->setPixmap(page);
+        // the page in physical pixels for crisp rendering on all displays, prescaled in the background or else
+        // scaled here
+        shownPrescaleKey = prescaleKey(*currentImages, fit, fitOptions);
+        content->setPixmap(QPixmap::fromImage(prescaler->scaleNow({ shownPrescaleKey, *currentImages })));
         content->setBookFoldShadow(currentPageHasDoublePageSeam && Configuration::getConfiguration().getDoublePageShadow(),
                                    doublePageSeamRatio, doublePageSeamOrientation);
 
         emit backgroundChanges();
     }
     content->update(); // TODO, it shouldn't be neccesary
+    requestPrescale(0);
+}
+
+// A longer delay that is pending, after a resize, is not cut short
+void Viewer::requestPrescale(int delayMs)
+{
+    if (!prescaleTimer->isActive() || prescaleTimer->remainingTime() < delayMs) {
+        prescaleTimer->start(delayMs);
+    }
+}
+
+// Drawing a double page at full resolution takes a while, so it waits for the magnifier or Save current page
+const QPixmap &Viewer::fullPage() const
+{
+    if (currentFullPage.isNull() && currentImages) {
+        currentFullPage = QPixmap::fromImage(currentImages->image());
+    }
+    return currentFullPage;
+}
+
+PageFitOptions Viewer::pageFitOptions() const
+{
+    Configuration &configuration = Configuration::getConfiguration();
+    return { size(), configuration.getFitMode(), configuration.getEnlargeImages(), zoom, devicePixelRatioF() };
+}
+
+void Viewer::schedulePrescale()
+{
+    if (continuousScroll || !render->hasLoadedComic()) {
+        return;
+    }
+
+    const PageFitOptions fitOptions = pageFitOptions();
+    QList<PrescaleRequest> requests;
+    for (const PageView &view : render->viewsAroundCurrent()) {
+        std::optional<PageViewImages> images = render->viewImages(view);
+        if (!images) {
+            continue;
+        }
+        const FittedPage fit = fitPage(images->size(), fitOptions);
+        if (fit.pixelSize.isEmpty()) {
+            continue;
+        }
+        const PrescaleKey key = prescaleKey(*images, fit, fitOptions);
+        requests.append({ key, std::move(*images) });
+    }
+    prescaler->schedule(requests);
+}
+
+void Viewer::showImprovedPage(const PrescaleKey &key)
+{
+    if (continuousScroll || zoomPreviewActive || widget() != content || key != shownPrescaleKey) {
+        return;
+    }
+    content->setPixmap(QPixmap::fromImage(prescaler->image(key)));
 }
 
 void Viewer::increaseZoomFactor()
@@ -1057,6 +1099,10 @@ void Viewer::resizeEvent(QResizeEvent *event)
     }
 
     updateContentSize();
+    // a window being resized sends resize events in quick succession, and every schedule cancels the work of the one
+    // before
+    static constexpr int prescaleDelayAfterResizeMs = 100;
+    requestPrescale(prescaleDelayAfterResizeMs);
     goToFlow->updateSize();
     goToFlow->move((width() - goToFlow->width()) / 2, height() - goToFlow->height());
     informationLabel->updatePosition();
@@ -1070,8 +1116,8 @@ QPixmap Viewer::pixmap() const
         return img && !img->isNull() ? QPixmap::fromImage(*img) : QPixmap();
     }
 
-    if (currentPage != nullptr && !currentPage->isNull())
-        return *currentPage;
+    if (currentImages)
+        return fullPage();
 
     return content->pixmap();
 }
@@ -1318,7 +1364,7 @@ QImage Viewer::grabMagnifiedRegion(const QPoint &viewerPos, const QSize &glassSi
     }
 
     // --- single-page mode ---
-    const QPixmap sourceImage = currentPage != nullptr ? *currentPage : QPixmap();
+    const QPixmap sourceImage = fullPage();
     if (sourceImage.isNull()) {
         QImage result(zoomW, zoomH, QImage::Format_RGB32);
         result.setDevicePixelRatio(devicePixelRatioF());
@@ -1621,15 +1667,21 @@ void Viewer::rotateLeft()
     // at the same angle; continuousRotation stays in lockstep with Render.
     continuousRotation = (continuousRotation == 0) ? 270 : continuousRotation - 90;
     continuousPageProvider->setRotation(continuousRotation);
-    if (continuousScroll) {
-        continuousWidget->invalidateScaledImageCache();
-    }
+    invalidateScaledPages();
 }
 void Viewer::rotateRight()
 {
     render->rotateRight();
     continuousRotation = (continuousRotation + 90) % 360;
     continuousPageProvider->setRotation(continuousRotation);
+    invalidateScaledPages();
+}
+
+// Render decodes the pages again after these changes, so the prescaled ones and the work on them are dropped at
+// once instead of at the next schedule
+void Viewer::invalidateScaledPages()
+{
+    prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     }
@@ -1676,6 +1728,11 @@ void Viewer::setContinuousScrollImpl(bool enabled, bool persistSettings)
     }
 
     if (continuousScroll) {
+        prescaler->invalidate();
+        // continuous scroll shows its own pages, so the last single page view is let go
+        currentImages.reset();
+        currentFullPage = QPixmap();
+        shownPrescaleKey = { };
         continuousViewModel->setZoomFactor(zoom);
         if (render->hasLoadedComic()) {
             continuousViewModel->setViewportSize(viewport()->width(), viewport()->height());
@@ -1921,6 +1978,7 @@ void Viewer::resetContent()
     continuousViewModel->reset();
     continuousPageProvider->reset();
     continuousWidget->reset();
+    prescaler->invalidate();
     lastCenterPage = -1;
     pageCounter->hide();
     emit reset();
@@ -2251,9 +2309,7 @@ void Viewer::updateFilters(int brightness, int contrast, int gamma)
 {
     render->updateFilters(brightness, contrast, gamma);
     continuousPageProvider->setFilters(brightness, contrast, gamma);
-    if (continuousScroll) {
-        continuousWidget->invalidateScaledImageCache();
-    }
+    invalidateScaledPages();
 }
 
 void Viewer::setBookmarks()
@@ -2353,17 +2409,9 @@ void Viewer::updateComic(ComicDB &comic)
         if (numBookmarks > 2)
             comic.info.bookmark3 = boomarksList[2];
         // set filters
-        // TODO: avoid use settings for this...
-        QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-        int brightness = settings.value(BRIGHTNESS, 0).toInt();
-        int contrast = settings.value(CONTRAST, 100).toInt();
-        int gamma = settings.value(GAMMA, 100).toInt();
-
-        if (brightness != 0 || comic.info.brightness != -1)
-            comic.info.brightness = brightness;
-        if (contrast != 100 || comic.info.contrast != -1)
-            comic.info.contrast = contrast;
-        if (gamma != 100 || comic.info.gamma != -1)
-            comic.info.gamma = gamma;
+        auto &configuration = Configuration::getConfiguration();
+        comic.info.brightness = brightnessSpec.toComicLevel(configuration.getFilterLevel(brightnessSpec), comic.info.brightness);
+        comic.info.contrast = contrastSpec.toComicLevel(configuration.getFilterLevel(contrastSpec), comic.info.contrast);
+        comic.info.gamma = gammaSpec.toComicLevel(configuration.getFilterLevel(gammaSpec), comic.info.gamma);
     }
 }
