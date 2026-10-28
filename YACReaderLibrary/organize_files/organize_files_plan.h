@@ -25,6 +25,8 @@ struct ComicEntry {
     QString extension;
     QString folderRelative;
     bool missing = false;
+    // a folder of images, which nothing else may be placed in
+    bool folderComic = false;
 
     QString publisher;
     QString imprint;
@@ -53,6 +55,8 @@ struct PlannedMove {
     qulonglong comicId = 0;
     QString sourceAbsolute;
     QString destinationRelative;
+    // the comic's extension, which a folder comic does not have even when its name has a dot
+    QString extension;
     Status status = Status::Move;
     bool edited = false;
     QString note;
@@ -96,6 +100,8 @@ public:
 private:
     const QHash<QString, QString> &namesIn(const QString &absoluteDirectory);
     QString canonicalDirectory(const QString &absoluteDirectory);
+    bool isFolderComic(const QString &absoluteDirectory, const QSet<QString> &plannedFolderComics);
+    QString outsideFolderComics(const QString &absoluteDirectory, const QSet<QString> &plannedFolderComics, QString *takenName);
 
     QList<ComicEntry> entries;
     QString base;
@@ -103,6 +109,8 @@ private:
     QSet<QString> sourcePaths;
     // Per directory: the names it holds on disk, folded key to actual casing.
     QHash<QString, QHash<QString, QString>> directoryNames;
+    // Per directory: whether it is a folder comic on disk.
+    QHash<QString, bool> folderComicsOnDisk;
     // Folded path to the casing the run will produce; rebuilt on every build().
     QHash<QString, QString> canonicalDirectories;
 };

@@ -24,6 +24,9 @@ private slots:
     void choosesTheStartPage();
     void choosesTheStartPageOfLibraryComics_data();
     void choosesTheStartPageOfLibraryComics();
+    void opensLibraryFolderComicsAtTheSavedPage_data();
+    void opensLibraryFolderComicsAtTheSavedPage();
+    void reportsALibraryFolderComicThatIsGone();
     void reopenedComicStartsFromTheSavedProgress_data();
     void reopenedComicStartsFromTheSavedProgress();
     void saveBookmarksRecordsTheLastReadPageAndItsImage();
@@ -157,6 +160,45 @@ void ComicStartPageTest::choosesTheStartPageOfLibraryComics()
     comic.resolveStartPage();
 
     QCOMPARE(comic.startPage(), expectedPage);
+}
+
+void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage_data()
+{
+    QTest::addColumn<int>("currentPage");
+    QTest::addColumn<OpenComicsAt>("openComicsAt");
+    QTest::addColumn<int>("expectedPage");
+
+    QTest::newRow("on a middle page") << 3 << OpenComicsAt::LastReadPage << 2;
+    QTest::newRow("never opened") << 0 << OpenComicsAt::LastReadPage << 0;
+    QTest::newRow("finished, first page if finished") << pageCount << OpenComicsAt::FirstPageIfFinished << 0;
+    QTest::newRow("on a middle page, first page if finished") << 3 << OpenComicsAt::FirstPageIfFinished << 2;
+    QTest::newRow("on a middle page, first page") << 3 << OpenComicsAt::FirstPage << 0;
+}
+
+void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage()
+{
+    QFETCH(int, currentPage);
+    QFETCH(OpenComicsAt, openComicsAt);
+    QFETCH(int, expectedPage);
+
+    ComicDB comicDB;
+    comicDB.info.currentPage = currentPage;
+
+    FolderComic comic;
+    comic.setOpenComicsAt(openComicsAt);
+    QVERIFY(comic.load(comicFolder.path(), comicDB));
+
+    QCOMPARE(startPageOf(comic), expectedPage);
+    QVERIFY(!comic.hasBeenAnErrorOpening());
+    QCOMPARE(comic.numPages(), static_cast<unsigned int>(pageCount));
+}
+
+void ComicStartPageTest::reportsALibraryFolderComicThatIsGone()
+{
+    // like a comic file, a folder that is no longer there is an error at once
+    FolderComic comic;
+    QVERIFY(!comic.load(comicFolder.filePath("Missing"), ComicDB()));
+    QVERIFY(comic.hasBeenAnErrorOpening());
 }
 
 void ComicStartPageTest::reopenedComicStartsFromTheSavedProgress_data()

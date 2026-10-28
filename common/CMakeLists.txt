@@ -96,6 +96,7 @@ target_link_libraries(common_all PUBLIC
 add_library(comic_backend STATIC
     comic.h
     comic.cpp
+    folder_comic_contents.h
     pdf_comic.h
     pdf_render_size.h
 )

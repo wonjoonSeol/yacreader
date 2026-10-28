@@ -9,16 +9,12 @@
 #include <QHash>
 #include <QPair>
 #include <QSet>
+#include <QStorageInfo>
 
 #include <algorithm>
 #include <utility>
 
 namespace {
-
-QString translated(const char *text)
-{
-    return QCoreApplication::translate("OrganizeFiles", text);
-}
 
 QString temporaryNameFor(const QString &source)
 {
@@ -79,21 +75,28 @@ bool moveFile(const QString &source, const QString &destination, QString *reason
         return false;
     }
 
+    // a folder comic is only ever renamed, never copied
+    if (QFileInfo(source).isDir()) {
+        const bool otherDrive = QStorageInfo(source).rootPath() != QStorageInfo(QFileInfo(destination).absolutePath()).rootPath();
+        *reason = otherDrive ? QCoreApplication::translate("OrganizeFiles", "%1 (a folder comic cannot be moved to another drive)").arg(renameError) : renameError;
+        return false;
+    }
+
     if (!QFile::copy(source, destination)) {
         QFile copyTarget(destination);
-        *reason = translated("%1 (copy also failed: %2)").arg(renameError, copyTarget.errorString());
+        *reason = QCoreApplication::translate("OrganizeFiles", "%1 (copy also failed: %2)").arg(renameError, copyTarget.errorString());
         return false;
     }
 
     if (QFileInfo(destination).size() != QFileInfo(source).size()) {
         QFile::remove(destination);
-        *reason = translated("the copy did not have the same size as the original");
+        *reason = QCoreApplication::translate("OrganizeFiles", "the copy did not have the same size as the original");
         return false;
     }
 
     if (!QFile::remove(source)) {
         QFile::remove(destination);
-        *reason = translated("the original could not be deleted after it was copied");
+        *reason = QCoreApplication::translate("OrganizeFiles", "the original could not be deleted after it was copied");
         return false;
     }
 
@@ -304,7 +307,7 @@ void MoveWorker::process()
         }
 
         if (!QDir().mkpath(targetDirectory)) {
-            failed.append({ move.source, translated("The destination folder could not be created.") });
+            failed.append({ move.source, QCoreApplication::translate("OrganizeFiles", "The destination folder could not be created.") });
         } else {
             for (const QString &level : std::as_const(aboutToCreate)) {
                 if (!createdDirectories.contains(level)) {
@@ -358,7 +361,7 @@ void MoveWorker::process()
             if (moveFile(temporary, move.source, &backReason))
                 failed.append({ move.source, reason });
             else
-                failed.append({ move.source, translated("%1 (the file was left at %2)").arg(reason, QDir::toNativeSeparators(temporary)) });
+                failed.append({ move.source, QCoreApplication::translate("OrganizeFiles", "%1 (the file was left at %2)").arg(reason, QDir::toNativeSeparators(temporary)) });
         }
     }
 

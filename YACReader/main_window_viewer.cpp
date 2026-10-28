@@ -7,11 +7,13 @@
 #include "configuration.h"
 #include "edit_shortcuts_dialog.h"
 #include "help_about_dialog.h"
+#include "image_adjustment_menu.h"
 #include "options_dialog.h"
 #include "qnaturalsorting.h"
 #include "rating_favorite_controller.h"
 #include "shortcuts_manager.h"
 #include "theme_manager.h"
+#include "toolbar_overlay.h"
 #include "viewer.h"
 #include "whats_new_controller.h"
 #include "width_slider.h"
@@ -204,6 +206,8 @@ void MainWindowViewer::showChangeNotSaved(const QString &title)
 
 MainWindowViewer::~MainWindowViewer()
 {
+    // first, so its application filter doesn't see the events of a window being destroyed
+    delete toolBarOverlay;
     delete settings;
     delete viewer;
     delete had;
@@ -309,10 +313,15 @@ void MainWindowViewer::setupUI()
     optionsDialog = new OptionsDialog(this);
     connect(optionsDialog, &QDialog::accepted, viewer, &Viewer::updateOptions);
     connect(optionsDialog, &YACReaderOptionsDialog::optionsChanged, this, &MainWindowViewer::reloadOptions);
-    connect(optionsDialog, &OptionsDialog::changedFilters, viewer, &Viewer::updateFilters);
     connect(optionsDialog, &OptionsDialog::changedImageOptions, viewer, &Viewer::onImageOptionsChanged);
+    // Options and the image adjustment menu store these, and both show them as they change
+    connect(&conf, &Configuration::filtersChanged, viewer, &Viewer::updateFilters);
+    connect(&conf, &Configuration::imageOptionsChanged, viewer, &Viewer::onImageOptionsChanged);
 
     optionsDialog->restoreOptions(settings);
+
+    imageAdjustmentMenu = new ImageAdjustmentMenu(this);
+
     // shortcutsDialog = new ShortcutsDialog(this);
     editShortcutsDialog = new EditShortcutsDialog(this);
     connect(optionsDialog, &YACReaderOptionsDialog::editShortcuts, editShortcutsDialog, &QWidget::show);
@@ -607,6 +616,9 @@ void MainWindowViewer::createActions()
     exitAction = new QAction(tr("Close"), this);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
 
+    toggleFullScreenAction = addActionWithShortcut(tr("Toggle fullscreen mode"), TOGGLE_FULL_SCREEN_ACTION_Y);
+    connect(toggleFullScreenAction, &QAction::triggered, this, &MainWindowViewer::toggleFullScreen);
+
     showDictionaryAction = new QAction(tr("Show Dictionary"), this);
     // showDictionaryAction->setCheckable(true);
     showDictionaryAction->setData(SHOW_DICTIONARY_ACTION_Y);
@@ -747,10 +759,31 @@ void MainWindowViewer::createToolBars()
 #endif
 
     comicToolBar->addAction(wrappedToolbarAction(showShorcutsAction));
+#ifdef Y_MAC_UI
     comicToolBar->addAction(wrappedToolbarAction(optionsAction));
+#else
+    // the arrow next to Options opens the image adjustment menu
+    auto optionsToolButton = new QToolButton();
+    optionsToolButton->setDefaultAction(wrappedToolbarAction(optionsAction));
+    optionsToolButton->setMenu(imageAdjustmentMenu);
+    optionsToolButton->setPopupMode(QToolButton::MenuButtonPopup);
+    comicToolBar->addWidget(optionsToolButton);
+#endif
     comicToolBar->addAction(wrappedToolbarAction(helpAboutAction));
 
 #ifndef Y_MAC_UI
+    auto *fullScreenSeparator = comicToolBar->addSeparator();
+    auto *exitFullScreenTBAction = wrappedToolbarAction(toggleFullScreenAction);
+    exitFullScreenTBAction->setText(tr("Exit fullscreen mode"));
+    comicToolBar->addAction(exitFullScreenTBAction);
+    auto *closeTBAction = wrappedToolbarAction(exitAction);
+    comicToolBar->addAction(closeTBAction);
+    fullScreenToolBarActions = { fullScreenSeparator, exitFullScreenTBAction, closeTBAction };
+    setFullScreenToolBarActionsVisible(false);
+
+    // the window manager can take the window out of full screen without toNormal
+    toolBarOverlay = new ToolBarOverlay(this, comicToolBar, [this] { return isFullScreen() && !viewer->magnifyingGlassIsVisible(); });
+
     comicToolBar->setMovable(false);
 #endif
 
@@ -771,6 +804,7 @@ void MainWindowViewer::createToolBars()
     viewer->addAction(adjustToFullSizeAction);
     viewer->addAction(fitToPageAction);
     viewer->addAction(continuousScrollAction);
+    viewer->addAction(imageAdjustmentMenu->menuAction());
     YACReader::addSperator(viewer);
     viewer->addAction(leftRotationAction);
     viewer->addAction(rightRotationAction);
@@ -1006,7 +1040,15 @@ void MainWindowViewer::open(QString path, ComicDB &comic, QList<ComicDB> &siblin
     int index = siblings.indexOf(comic);
     updatePrevNextActions(index > 0, index + 1 < siblings.count());
 
-    optionsDialog->setFilters(currentComicDB.info.brightness, currentComicDB.info.contrast, currentComicDB.info.gamma);
+    applyComicFilterLevels();
+}
+
+void MainWindowViewer::applyComicFilterLevels()
+{
+    const auto &info = currentComicDB.info;
+    Configuration::getConfiguration().setFilterLevels(brightnessSpec.levelOrDefault(info.brightness),
+                                                      contrastSpec.levelOrDefault(info.contrast),
+                                                      gammaSpec.levelOrDefault(info.gamma));
 }
 
 void MainWindowViewer::open(QString path, qint64 comicId, qint64 libraryId, YACReader::OpenComicSource source)
@@ -1038,7 +1080,7 @@ void MainWindowViewer::open(QString path, qint64 comicId, qint64 libraryId, YACR
         // error
     }
 
-    optionsDialog->setFilters(currentComicDB.info.brightness, currentComicDB.info.contrast, currentComicDB.info.gamma);
+    applyComicFilterLevels();
 }
 
 void MainWindowViewer::openComicFromPath(QString pathFile)
@@ -1113,23 +1155,10 @@ void MainWindowViewer::openFolderFromPath(QString pathDir, QString atFileName)
     ratingFavoriteController->showNoComic();
     applySavedReaderMode();
 
-    QDir d(pathDir);
-    d.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    d.setNameFilters(Comic::getSupportedImageFormats());
-    d.setSorting(QDir::Name | QDir::IgnoreCase | QDir::LocaleAware);
-    QStringList list = d.entryList();
-
-    std::sort(list.begin(), list.end(), naturalSortLessThanCI);
-    int i = 0;
-    for (const QString &path : std::as_const(list)) {
-        if (path.endsWith(atFileName))
-            break;
-        i++;
-    }
-
-    int index = 0;
-    if (i < list.count())
-        index = i;
+    // the pages in the order FolderComic shows them, so that the dropped image is the one opened
+    const QFileInfoList pages = FolderComic::pageFiles(pathDir);
+    const auto dropped = std::find_if(pages.cbegin(), pages.cend(), [&atFileName](const QFileInfo &page) { return page.fileName() == atFileName; });
+    const int index = dropped != pages.cend() ? int(dropped - pages.cbegin()) : 0;
 
     viewer->open(pathDir, index);
 }
@@ -1292,6 +1321,9 @@ void MainWindowViewer::toFullScreen()
     fromMaximized = this->isMaximized();
 
     hideToolBars();
+    setFullScreenToolBarActionsVisible(true);
+    if (toolBarOverlay)
+        toolBarOverlay->setActive(true);
     viewer->hide();
     viewer->fullscreen = true; // TODO, change by the right use of windowState();
     setWindowState(Qt::WindowFullScreen);
@@ -1311,6 +1343,9 @@ void MainWindowViewer::toNormal()
     else
         showNormal();
 
+    setFullScreenToolBarActionsVisible(false);
+    if (toolBarOverlay)
+        toolBarOverlay->setActive(false);
     if (Configuration::getConfiguration().getShowToolbars())
         showToolBars();
     viewer->show();
@@ -1336,9 +1371,19 @@ void MainWindowViewer::hideToolBars()
 
 void MainWindowViewer::showToolBars()
 {
+    // in full screen the toolbar can be over the page, out of the layout
+    if (toolBarOverlay)
+        toolBarOverlay->dock();
     this->comicToolBar->show();
     toolbars = true;
 }
+
+void MainWindowViewer::setFullScreenToolBarActionsVisible(bool visible)
+{
+    for (auto *a : std::as_const(fullScreenToolBarActions))
+        a->setVisible(visible);
+}
+
 void MainWindowViewer::fitToWidth()
 {
     Configuration::getConfiguration().setFitMode(YACReader::FitMode::ToWidth);
@@ -1415,9 +1460,6 @@ void MainWindowViewer::setUpShortcutsManagement()
                                                  ratingFavoriteController->ratingActions());
 
     allActions << tmpList;
-
-    auto *const toggleFullScreenAction = addActionWithShortcut(tr("Toggle fullscreen mode"), TOGGLE_FULL_SCREEN_ACTION_Y);
-    connect(toggleFullScreenAction, &QAction::triggered, this, &MainWindowViewer::toggleFullScreen);
 
     auto *const toggleToolbarsAction = addActionWithShortcut(tr("Hide/show toolbar"), TOGGLE_TOOL_BARS_ACTION_Y);
     connect(toggleToolbarsAction, &QAction::triggered, this, &MainWindowViewer::toggleToolBars);
@@ -1853,6 +1895,9 @@ void MainWindowViewer::applyTheme(const Theme &theme)
     setIcon(showInfoAction, toolbarTheme.showInfoAction, toolbarTheme.showInfoAction18x18);
     setIcon(closeAction, toolbarTheme.closeAction, toolbarTheme.closeAction18x18);
     setIcon(exitAction, toolbarTheme.closeAction, toolbarTheme.closeAction18x18);
+    // only the full screen toolbar button exits; the action itself toggles, so the shortcuts editor shows it without an icon as before
+    if (auto *exitFullScreenTBAction = toggleFullScreenAction->property("wrappedToolbarAction").value<QAction *>())
+        exitFullScreenTBAction->setIcon(toolbarTheme.exitFullScreenAction18x18);
     setIcon(showDictionaryAction, toolbarTheme.showDictionaryAction, toolbarTheme.showDictionaryAction18x18);
     setIcon(adjustToFullSizeAction, toolbarTheme.adjustToFullSizeAction, toolbarTheme.adjustToFullSizeAction18x18);
     setIcon(fitToPageAction, toolbarTheme.fitToPageAction, toolbarTheme.fitToPageAction18x18);
