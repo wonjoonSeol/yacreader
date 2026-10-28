@@ -120,27 +120,26 @@ QImage PagePrescaler::scaleNow(const PrescaleRequest &request)
         return QImage();
     }
 
-    // a window being resized asks for a new size at every step, so only the last view outside the schedule is kept
-    views.removeIf([this, &request](QHash<PrescaleKey, View>::iterator view) {
-        return view.key() != request.key && !isRequested(view.key());
-    });
-
     View &view = views[request.key];
-    if (!view.image.isNull()) {
-        return view.image;
+    if (view.image.isNull()) {
+        if (view.job && view.job->stage == 0) {
+            cancel(view);
+        }
+        if (!view.source) {
+            view.source = sourceFor(request);
+        }
+        const std::atomic_bool notCancelled = false;
+        view.image = displayReady(stages.first()->process(view.source->image(), request.key.pixelSize, request.key.scaleMethod, notCancelled),
+                                  request.key.devicePixelRatio);
+        view.stage = std::max(view.stage, 0);
     }
+    const QImage image = view.image;
 
-    if (view.job && view.job->stage == 0) {
-        cancel(view);
-    }
-    if (!view.source) {
-        view.source = std::make_shared<Source>(request.images);
-    }
-    const std::atomic_bool notCancelled = false;
-    view.image = displayReady(stages.first()->process(view.source->image(), request.key.pixelSize, request.key.scaleMethod, notCancelled),
-                              request.key.devicePixelRatio);
-    view.stage = std::max(view.stage, 0);
-    return view.image;
+    // a window being resized asks for a new size at every step, so only the last view outside the schedule is kept
+    views.removeIf([this, &request](QHash<PrescaleKey, View>::iterator other) {
+        return other.key() != request.key && !isRequested(other.key());
+    });
+    return image;
 }
 
 void PagePrescaler::schedule(const QList<PrescaleRequest> &newRequests)
@@ -185,6 +184,17 @@ bool PagePrescaler::isRequested(const PrescaleKey &key) const
     return std::any_of(requests.cbegin(), requests.cend(), [&key](const PrescaleRequest &request) { return request.key == key; });
 }
 
+// A view at another size, such as a step of a window being resized, shares the pages it has drawn
+std::shared_ptr<PagePrescaler::Source> PagePrescaler::sourceFor(const PrescaleRequest &request) const
+{
+    for (auto view = views.cbegin(); view != views.cend(); ++view) {
+        if (view->source && view.key().view == request.key.view) {
+            return view->source;
+        }
+    }
+    return std::make_shared<Source>(request.images);
+}
+
 // The first stage after `after` that does not decline the view, or the number of stages when none is left
 int PagePrescaler::nextStage(const PrescaleRequest &request, int after) const
 {
@@ -210,7 +220,7 @@ void PagePrescaler::startMissingStages()
             view.source.reset();
         } else if (busy.at(stage) < stages.at(stage)->maxConcurrent()) {
             if (!view.source) {
-                view.source = std::make_shared<Source>(request.images);
+                view.source = sourceFor(request);
             }
             start(request.key, view, stage, order);
         }
@@ -233,31 +243,28 @@ void PagePrescaler::start(const PrescaleKey &key, View &view, int stage, int ord
         if (!job->cancelled) {
             image = step->process(source->image(), key.pixelSize, key.scaleMethod, job->cancelled);
         }
-        if (!job->cancelled) {
-            image = displayReady(std::move(image), key.devicePixelRatio);
-        }
-        QMetaObject::invokeMethod(this, [this, key, job, image] { finish(key, job, image); }, Qt::QueuedConnection);
+        // a cancelled result is dropped, so it is not sent back
+        image = job->cancelled ? QImage() : displayReady(std::move(image), key.devicePixelRatio);
+        QMetaObject::invokeMethod(this, [this, key, job, image = std::move(image)] { finish(key, job, image); }, Qt::QueuedConnection);
     };
     pool.start(run, -(stage * kStagePriorityStep + order));
 }
 
 // Makes sure a job that has not started never will
-bool PagePrescaler::takeBack(View &view)
+void PagePrescaler::takeBack(View &view)
 {
-    if (!view.job || view.job->claimed.exchange(true)) {
-        return false;
+    if (view.job && !view.job->claimed.exchange(true)) {
+        --busy[view.job->stage];
+        view.job.reset();
     }
-    view.job->cancelled = true;
-    --busy[view.job->stage];
-    view.job.reset();
-    return true;
 }
 
 // A job that is running finishes on its own, and its result is dropped
 void PagePrescaler::cancel(View &view)
 {
-    if (!takeBack(view) && view.job) {
+    if (view.job) {
         view.job->cancelled = true;
+        takeBack(view);
         view.job.reset();
     }
 }

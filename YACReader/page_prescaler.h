@@ -101,8 +101,8 @@ private:
 
     struct Job {
         int stage = 0;
-        // set by whoever takes the job first: a pool thread that runs it, or schedule() and invalidate() taking it
-        // back before it starts
+        // set by whoever takes the job first: a pool thread that runs it, or the prescaler taking it back before it
+        // starts
         std::atomic_bool claimed = false;
         std::atomic_bool cancelled = false;
     };
@@ -111,17 +111,19 @@ private:
         QImage image;
         // the last stage that ran
         int stage = -1;
-        // the image the stages start from, kept while the view has stages left to run
+        // the image the stages start from, kept while the view has stages left to run, and after scaleNow() until
+        // the next schedule()
         std::shared_ptr<Source> source;
         // the stage queued or running
         std::shared_ptr<Job> job;
     };
 
     bool isRequested(const PrescaleKey &key) const;
+    std::shared_ptr<Source> sourceFor(const PrescaleRequest &request) const;
     int nextStage(const PrescaleRequest &request, int after) const;
     void startMissingStages();
     void start(const PrescaleKey &key, View &view, int stage, int order);
-    bool takeBack(View &view);
+    void takeBack(View &view);
     void cancel(View &view);
     void finish(const PrescaleKey &key, const std::shared_ptr<Job> &job, const QImage &image);
 

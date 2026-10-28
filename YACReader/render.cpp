@@ -465,9 +465,7 @@ PageView Render::currentView()
 
 QList<PageView> Render::viewsAroundCurrent()
 {
-    const PagePairingFunction pairingAt = pagePairing();
-    const PageView current { currentIndex, doublePage && doublePageNavigation.showsTwoPages(currentIndex, pageCount(), pairingAt) };
-    return QList<PageView> { current } + nearbyPageViews(currentIndex, pageCount(), doublePage, doublePageNavigation, pairingAt);
+    return QList<PageView> { currentView() } + nearbyPageViews(currentIndex, pageCount(), doublePage, doublePageNavigation, pagePairing());
 }
 
 std::optional<PageViewImages> Render::viewImages(PageView view) const

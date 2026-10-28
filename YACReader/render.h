@@ -3,13 +3,13 @@
 
 #include "comic.h"
 #include "page_view.h"
+#include "release_acquire_atomic.h"
 
 #include <QByteArray>
 #include <QImage>
 #include <QThread>
 #include <QVector>
 
-#include <atomic>
 #include <optional>
 //-----------------------------------------------------------------------------
 // FILTERS
@@ -103,7 +103,7 @@ private:
     QImage *page;
     unsigned int degrees;
     QVector<ImageFilter *> filters;
-    std::atomic_bool decoded = false;
+    ReleaseAcquireAtomic<bool> decoded { false };
     void run() override;
     Render *render;
 signals:

@@ -300,7 +300,7 @@ void Viewer::createConnections()
     connect(render, qOverload<unsigned int>(&Render::numPages), this, &Viewer::comicLoaded);
     connect(render, QOverload<int, const QByteArray &>::of(&Render::imageLoaded), goToFlow, &GoToFlowWidget::setImageReady);
     connect(render, &Render::currentPageReady, this, &Viewer::updatePage);
-    connect(render, &Render::pageRendered, this, [this] { prescaleTimer->start(0); });
+    connect(render, &Render::pageRendered, this, [this] { requestPrescale(0); });
     connect(prescaler, &PagePrescaler::imageImproved, this, &Viewer::showImprovedPage);
     // Continuous mode is driven by the off-thread page provider, not by Render's
     // (blocking) page buffer. The provider emits pageReady when a full-resolution
@@ -572,6 +572,17 @@ void Viewer::updatePage()
     }
 }
 
+namespace {
+
+// The page shown and the views scheduled get the same key, so the schedule after a page turn finds the image the
+// turn scaled
+PrescaleKey prescaleKey(const PageViewImages &images, const FittedPage &fit, const PageFitOptions &options)
+{
+    return { images.key(), fit.pixelSize, options.devicePixelRatio, Configuration::getConfiguration().getScalingMethod() };
+}
+
+}
+
 void Viewer::updateContentSize()
 {
     cancelZoomPreview();
@@ -589,7 +600,7 @@ void Viewer::updateContentSize()
 
         // the page in physical pixels for crisp rendering on all displays, prescaled in the background or else
         // scaled here
-        shownPrescaleKey = { currentImages->key(), fit.pixelSize, fitOptions.devicePixelRatio, Configuration::getConfiguration().getScalingMethod() };
+        shownPrescaleKey = prescaleKey(*currentImages, fit, fitOptions);
         content->setPixmap(QPixmap::fromImage(prescaler->scaleNow({ shownPrescaleKey, *currentImages })));
         content->setBookFoldShadow(currentPageHasDoublePageSeam && Configuration::getConfiguration().getDoublePageShadow(),
                                    doublePageSeamRatio, doublePageSeamOrientation);
@@ -597,7 +608,15 @@ void Viewer::updateContentSize()
         emit backgroundChanges();
     }
     content->update(); // TODO, it shouldn't be neccesary
-    prescaleTimer->start(0);
+    requestPrescale(0);
+}
+
+// A longer delay that is pending, after a resize, is not cut short
+void Viewer::requestPrescale(int delayMs)
+{
+    if (!prescaleTimer->isActive() || prescaleTimer->remainingTime() < delayMs) {
+        prescaleTimer->start(delayMs);
+    }
 }
 
 // Drawing a double page at full resolution takes a while, so it waits for the magnifier or Save current page
@@ -622,7 +641,6 @@ void Viewer::schedulePrescale()
     }
 
     const PageFitOptions fitOptions = pageFitOptions();
-    const ScaleMethod scaleMethod = Configuration::getConfiguration().getScalingMethod();
     QList<PrescaleRequest> requests;
     for (const PageView &view : render->viewsAroundCurrent()) {
         std::optional<PageViewImages> images = render->viewImages(view);
@@ -633,7 +651,7 @@ void Viewer::schedulePrescale()
         if (fit.pixelSize.isEmpty()) {
             continue;
         }
-        const PrescaleKey key { images->key(), fit.pixelSize, fitOptions.devicePixelRatio, scaleMethod };
+        const PrescaleKey key = prescaleKey(*images, fit, fitOptions);
         requests.append({ key, std::move(*images) });
     }
     prescaler->schedule(requests);
@@ -1074,7 +1092,7 @@ void Viewer::resizeEvent(QResizeEvent *event)
     // a window being resized sends resize events in quick succession, and every schedule cancels the work of the one
     // before
     static constexpr int prescaleDelayAfterResizeMs = 100;
-    prescaleTimer->start(prescaleDelayAfterResizeMs);
+    requestPrescale(prescaleDelayAfterResizeMs);
     goToFlow->updateSize();
     goToFlow->move((width() - goToFlow->width()) / 2, height() - goToFlow->height());
     informationLabel->updatePosition();
@@ -1608,7 +1626,8 @@ void Viewer::rotateRight()
     invalidateScaledPages();
 }
 
-// For changes the prescale keys and the continuous scroll cache do not show
+// Render decodes the pages again after these changes, so the prescaled ones and the work on them are dropped at
+// once instead of at the next schedule
 void Viewer::invalidateScaledPages()
 {
     prescaler->invalidate();
@@ -1661,6 +1680,10 @@ void Viewer::setContinuousScrollImpl(bool enabled, bool persistSettings)
 
     if (continuousScroll) {
         prescaler->invalidate();
+        // continuous scroll shows its own pages, so the last single page view is let go
+        currentImages.reset();
+        currentFullPage = QPixmap();
+        shownPrescaleKey = { };
         continuousViewModel->setZoomFactor(zoom);
         if (render->hasLoadedComic()) {
             continuousViewModel->setViewportSize(viewport()->width(), viewport()->height());

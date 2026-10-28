@@ -151,22 +151,6 @@ private:
     mutable QList<qint64> inputKeys;
 };
 
-// On pool threads, gives a null image; scaleNow() gets a red one
-class PoolFailureStage : public PrescaleStage
-{
-public:
-    QImage process(const QImage &, QSize pixelSize, ScaleMethod, const std::atomic_bool &) const override
-    {
-        if (onPoolThread()) {
-            entered.release();
-            return QImage();
-        }
-        return filled(pixelSize, Qt::red);
-    }
-
-    mutable QSemaphore entered;
-};
-
 // On pool threads, works until it is cancelled and then gives red; scaleNow() gets blue at once
 class CancellableStage : public PrescaleStage
 {
@@ -214,24 +198,22 @@ private:
     mutable std::atomic_int current = 0;
 };
 
-class DecliningStage : public PrescaleStage
+class DecliningStage : public ColorStage
 {
 public:
+    DecliningStage()
+        : ColorStage({ Qt::yellow })
+    {
+    }
+
     bool isActive(QSize imageSize, QSize) const override
     {
         askedSize = imageSize;
         return false;
     }
 
-    QImage process(const QImage &, QSize pixelSize, ScaleMethod, const std::atomic_bool &) const override
-    {
-        ++calls;
-        return filled(pixelSize, Qt::yellow);
-    }
-
     // isActive() is called on the GUI thread
     mutable QSize askedSize;
-    mutable std::atomic_int calls = 0;
 };
 
 }
@@ -712,7 +694,8 @@ void PagePrescaleTest::keepsThePreviousImageWhenAStageGivesNone()
 
 void PagePrescaleTest::scalesNowAfterTheBackgroundGaveNoImage()
 {
-    const auto stage = std::make_shared<PoolFailureStage>();
+    // no image for the page in the background, red for the barrier and for scaleNow()
+    const auto stage = std::make_shared<ColorStage>(QList<QColor> { QColor(), Qt::red });
     PagePrescaler prescaler({ stage }, 1);
     const PrescaleRequest page = pageRequest(1);
     const PrescaleRequest barrier = pageRequest(2);
@@ -813,6 +796,17 @@ void PagePrescaleTest::drawsADoublePageOnceForAllStages()
     QCOMPARE(first->inputs().size(), 1);
     QCOMPARE(second->inputs(), first->inputs());
     QVERIFY(first->inputs().first() != page.images.first.cacheKey());
+
+    // and once for every size while the window is resized
+    const auto scale = std::make_shared<ColorStage>(QList<QColor> { Qt::red });
+    PagePrescaler resized({ scale }, 1);
+    PrescaleRequest shown = doublePageRequest(2);
+    resized.scaleNow(shown);
+    shown.key.pixelSize = QSize(12, 12);
+    resized.scaleNow(shown);
+
+    QCOMPARE(scale->inputs().size(), 2);
+    QCOMPARE(scale->inputs().at(1), scale->inputs().at(0));
 }
 
 void PagePrescaleTest::limitsTheViewsAStageWorksOnAtOnce()

@@ -80,7 +80,7 @@ QList<PageView> nearbyPageViews(int currentPage, int numPages, bool doublePageMo
     }
 
     bool unknown = false;
-    const PagePairingFunction knownPairingAt = [&](int page) {
+    const PagePairingFunction checkedPairingAt = [&](int page) {
         const PagePairing pairing = pairingAt(page);
         unknown = unknown || pairing == PagePairing::Unknown;
         return pairing;
@@ -88,11 +88,11 @@ QList<PageView> nearbyPageViews(int currentPage, int numPages, bool doublePageMo
     // the view a page turn shows, or nothing when the turn or the view depends on a page that is not decoded yet
     const auto turn = [&](DoublePageNavigation &turned, int page, bool forward) -> std::optional<PageView> {
         unknown = false;
-        const int nextPage = forward ? turned.next(page, numPages, knownPairingAt) : turned.previous(page, knownPairingAt);
+        const int nextPage = forward ? turned.next(page, numPages, checkedPairingAt) : turned.previous(page, checkedPairingAt);
         if (nextPage == page) {
             return std::nullopt;
         }
-        const PageView view { nextPage, turned.showsTwoPages(nextPage, numPages, knownPairingAt) };
+        const PageView view { nextPage, turned.showsTwoPages(nextPage, numPages, checkedPairingAt) };
         if (unknown) {
             return std::nullopt;
         }

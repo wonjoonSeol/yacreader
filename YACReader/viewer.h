@@ -274,6 +274,7 @@ private:
     void applyContinuousPageFit();
     const QPixmap &fullPage() const;
     PageFitOptions pageFitOptions() const;
+    void requestPrescale(int delayMs);
     void schedulePrescale();
     void showImprovedPage(const PrescaleKey &key);
     void invalidateScaledPages();
