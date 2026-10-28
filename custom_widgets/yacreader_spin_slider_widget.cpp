@@ -65,9 +65,7 @@ void YACReaderSpinSliderWidget::setRange(int lowValue, int topValue, int step)
 
 void YACReaderSpinSliderWidget::setValue(int value)
 {
-    disconnect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &YACReaderSpinSliderWidget::setValue);
     spinBox->setValue(value);
-    connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &YACReaderSpinSliderWidget::valueWillChange);
 }
 
 void YACReaderSpinSliderWidget::setText(const QString &text)
