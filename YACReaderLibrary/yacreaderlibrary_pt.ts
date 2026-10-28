@@ -304,28 +304,28 @@
 <context>
     <name>ComicManagementCoordinator</name>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="150"/>
-        <location filename="comic_management_coordinator.cpp" line="152"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found</source>
         <translation>YACReader não encontrado</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="150"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
         <source>YACReader not found. YACReader should be installed in the same folder as YACReaderLibrary.</source>
         <translation>YACReader não encontrado. YACReader deve ser instalado na mesma pasta que YACReaderLibrary.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="152"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found. There might be a problem with your YACReader installation.</source>
         <translation>YACReader não encontrado. Pode haver um problema com a instalação do YACReader.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="159"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="159"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error opening comic with third party reader.</source>
         <translation>Erro ao abrir o quadrinho com leitor de terceiros.</translation>
     </message>
@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="651"/>
+        <location filename="../common/comic.cpp" line="643"/>
         <source>7z not found</source>
         <translation>7z não encontrado</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="537"/>
+        <location filename="../common/comic.cpp" line="529"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>Erro CRC na página (%1): algumas páginas não serão exibidas corretamente</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="544"/>
+        <location filename="../common/comic.cpp" line="536"/>
         <source>Unknown error opening the file</source>
         <translation>Erro desconhecido ao abrir o arquivo</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="657"/>
-        <location filename="../common/comic.cpp" line="673"/>
+        <location filename="../common/comic.cpp" line="649"/>
+        <location filename="../common/comic.cpp" line="665"/>
         <source>Format not supported</source>
         <translation>Formato não suportado</translation>
     </message>
@@ -1105,12 +1105,12 @@
         <translation>A biblioteca &apos;%1&apos; foi criada com uma versão mais antiga do YACReaderLibrary. Deve ser criado novamente. Deseja criar a biblioteca agora?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="220"/>
+        <location filename="comic_management_coordinator.cpp" line="228"/>
         <source>Copying comics...</source>
         <translation>Copiando quadrinhos...</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="236"/>
+        <location filename="comic_management_coordinator.cpp" line="244"/>
         <source>Moving comics...</source>
         <translation>Quadrinhos em movimento...</translation>
     </message>
@@ -1149,7 +1149,7 @@
         <translation>A pasta selecionada e todo o seu conteúdo serão excluídos do disco. Tem certeza?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="651"/>
+        <location filename="comic_management_coordinator.cpp" line="656"/>
         <location filename="folder_management_coordinator.cpp" line="250"/>
         <source>Unable to delete</source>
         <translation>Não foi possível excluir</translation>
@@ -1277,7 +1277,7 @@ Pasta: %1</translation>
         <translation>Não foi possível atualizar o banco de dados da biblioteca nem reverter a renomeação da pasta no disco. Agora a biblioteca precisa ser atualizada manualmente.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="372"/>
+        <location filename="comic_management_coordinator.cpp" line="380"/>
         <source>Save covers</source>
         <translation>Salvar capas</translation>
     </message>
@@ -1481,53 +1481,53 @@ Pode restaurar uma cópia de segurança no menu Biblioteca ou recriar a bibliote
         <translation>Informações da biblioteca</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="652"/>
+        <location filename="comic_management_coordinator.cpp" line="657"/>
         <source>There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder.</source>
         <translation>Ocorreu um problema ao tentar excluir os quadrinhos selecionados. Por favor, verifique as permissões de gravação nos arquivos selecionados ou na pasta que os contém.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="315"/>
+        <location filename="comic_management_coordinator.cpp" line="323"/>
         <source>Assign comics numbers</source>
         <translation>Atribuir números de quadrinhos</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="316"/>
+        <location filename="comic_management_coordinator.cpp" line="324"/>
         <source>Assign numbers starting in:</source>
         <translation>Atribua números começando em:</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="401"/>
+        <location filename="comic_management_coordinator.cpp" line="409"/>
         <location filename="folder_management_coordinator.cpp" line="339"/>
         <source>Invalid image</source>
         <translation>Imagem inválida</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="402"/>
+        <location filename="comic_management_coordinator.cpp" line="410"/>
         <location filename="folder_management_coordinator.cpp" line="340"/>
         <source>The selected file is not a valid image.</source>
         <translation>O arquivo selecionado não é uma imagem válida.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="410"/>
+        <location filename="comic_management_coordinator.cpp" line="418"/>
         <location filename="folder_management_coordinator.cpp" line="347"/>
         <source>Error saving cover</source>
         <translation>Erro ao salvar a capa</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="411"/>
+        <location filename="comic_management_coordinator.cpp" line="419"/>
         <location filename="folder_management_coordinator.cpp" line="348"/>
         <source>There was an error saving the cover image.</source>
         <translation>Ocorreu um erro ao salvar a imagem da capa.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="550"/>
-        <location filename="comic_management_coordinator.cpp" line="642"/>
+        <location filename="comic_management_coordinator.cpp" line="558"/>
+        <location filename="comic_management_coordinator.cpp" line="650"/>
         <location filename="delete_comics_question.cpp" line="11"/>
         <source>Delete comics</source>
         <translation>Excluir quadrinhos</translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="551"/>
+        <location filename="comic_management_coordinator.cpp" line="559"/>
         <source>Could not move %n folder(s) to the trash. Delete their pages permanently? This cannot be undone.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1535,12 +1535,12 @@ Pode restaurar uma cópia de segurança no menu Biblioteca ou recriar a bibliote
         </translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="555"/>
+        <location filename="comic_management_coordinator.cpp" line="563"/>
         <source>Only the images, ComicInfo.xml and system files such as Thumbs.db or .DS_Store are deleted. A folder that holds other files stays on your disk with them.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="557"/>
+        <location filename="comic_management_coordinator.cpp" line="565"/>
         <source>%n comic file(s) that the trash refused were already deleted permanently.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1548,7 +1548,7 @@ Pode restaurar uma cópia de segurança no menu Biblioteca ou recriar a bibliote
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="643"/>
+        <location filename="comic_management_coordinator.cpp" line="651"/>
         <source>%n folder(s) still hold other files, so they stay on your disk.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1587,12 +1587,12 @@ Pode restaurar uma cópia de segurança no menu Biblioteca ou recriar a bibliote
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="603"/>
+        <location filename="comic_management_coordinator.cpp" line="611"/>
         <source>Remove comics</source>
         <translation>Remover quadrinhos</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="604"/>
+        <location filename="comic_management_coordinator.cpp" line="612"/>
         <source>Comics will only be deleted from the current label/list. Are you sure?</source>
         <translation>Os quadrinhos serão excluídos apenas do rótulo/lista atual. Tem certeza?</translation>
     </message>

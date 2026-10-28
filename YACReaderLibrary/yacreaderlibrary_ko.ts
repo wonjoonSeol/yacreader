@@ -304,28 +304,28 @@
 <context>
     <name>ComicManagementCoordinator</name>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="150"/>
-        <location filename="comic_management_coordinator.cpp" line="152"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found</source>
         <translation>YACReader를 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="150"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
         <source>YACReader not found. YACReader should be installed in the same folder as YACReaderLibrary.</source>
         <translation>YACReader를 찾을 수 없습니다. YACReader는 YACReaderLibrary와 같은 폴더에 설치되어야 합니다.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="152"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found. There might be a problem with your YACReader installation.</source>
         <translation>YACReader를 찾을 수 없습니다. YACReader 설치에 문제가 있을 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="159"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error</source>
         <translation>오류</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="159"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error opening comic with third party reader.</source>
         <translation>타사 뷰어로 만화를 여는 중 오류가 발생했습니다.</translation>
     </message>
@@ -686,23 +686,23 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="651"/>
+        <location filename="../common/comic.cpp" line="643"/>
         <source>7z not found</source>
         <translation>7z를 찾을 수 없습니다</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="537"/>
+        <location filename="../common/comic.cpp" line="529"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>%1번 페이지에서 CRC 오류 발생: 일부 페이지가 올바르게 표시되지 않을 수 있습니다</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="544"/>
+        <location filename="../common/comic.cpp" line="536"/>
         <source>Unknown error opening the file</source>
         <translation>파일을 여는 중 알 수 없는 오류가 발생했습니다</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="657"/>
-        <location filename="../common/comic.cpp" line="673"/>
+        <location filename="../common/comic.cpp" line="649"/>
+        <location filename="../common/comic.cpp" line="665"/>
         <source>Format not supported</source>
         <translation>지원하지 않는 형식입니다</translation>
     </message>
@@ -1105,12 +1105,12 @@
         <translation>&apos;%1&apos; 라이브러리는 이전 버전의 YACReaderLibrary로 만들어졌습니다. 다시 만들어야 합니다. 지금 만드시겠습니까?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="220"/>
+        <location filename="comic_management_coordinator.cpp" line="228"/>
         <source>Copying comics...</source>
         <translation>만화 복사 중...</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="236"/>
+        <location filename="comic_management_coordinator.cpp" line="244"/>
         <source>Moving comics...</source>
         <translation>만화 이동 중...</translation>
     </message>
@@ -1149,7 +1149,7 @@
         <translation>선택한 폴더와 그 안의 모든 내용이 디스크에서 삭제됩니다. 계속하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="651"/>
+        <location filename="comic_management_coordinator.cpp" line="656"/>
         <location filename="folder_management_coordinator.cpp" line="250"/>
         <source>Unable to delete</source>
         <translation>삭제할 수 없음</translation>
@@ -1277,7 +1277,7 @@ Folder: %1</source>
         <translation>라이브러리 데이터베이스를 업데이트하지 못했고 디스크의 폴더 이름 변경도 되돌리지 못했습니다. 이제 라이브러리를 수동으로 업데이트해야 합니다.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="372"/>
+        <location filename="comic_management_coordinator.cpp" line="380"/>
         <source>Save covers</source>
         <translation>표지 저장</translation>
     </message>
@@ -1481,72 +1481,72 @@ You can restore a backup from the Library menu or recreate the library.</source>
         <translation>라이브러리 정보</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="652"/>
+        <location filename="comic_management_coordinator.cpp" line="657"/>
         <source>There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder.</source>
         <translation>선택한 만화를 삭제하는 중 문제가 발생했습니다. 선택한 파일이나 포함된 폴더의 쓰기 권한을 확인하세요.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="315"/>
+        <location filename="comic_management_coordinator.cpp" line="323"/>
         <source>Assign comics numbers</source>
         <translation>만화에 번호 부여</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="316"/>
+        <location filename="comic_management_coordinator.cpp" line="324"/>
         <source>Assign numbers starting in:</source>
         <translation>다음 번호부터 부여:</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="401"/>
+        <location filename="comic_management_coordinator.cpp" line="409"/>
         <location filename="folder_management_coordinator.cpp" line="339"/>
         <source>Invalid image</source>
         <translation>잘못된 이미지</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="402"/>
+        <location filename="comic_management_coordinator.cpp" line="410"/>
         <location filename="folder_management_coordinator.cpp" line="340"/>
         <source>The selected file is not a valid image.</source>
         <translation>선택한 파일이 유효한 이미지가 아닙니다.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="410"/>
+        <location filename="comic_management_coordinator.cpp" line="418"/>
         <location filename="folder_management_coordinator.cpp" line="347"/>
         <source>Error saving cover</source>
         <translation>표지 저장 오류</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="411"/>
+        <location filename="comic_management_coordinator.cpp" line="419"/>
         <location filename="folder_management_coordinator.cpp" line="348"/>
         <source>There was an error saving the cover image.</source>
         <translation>표지 이미지를 저장하는 중 오류가 발생했습니다.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="550"/>
-        <location filename="comic_management_coordinator.cpp" line="642"/>
+        <location filename="comic_management_coordinator.cpp" line="558"/>
+        <location filename="comic_management_coordinator.cpp" line="650"/>
         <location filename="delete_comics_question.cpp" line="11"/>
         <source>Delete comics</source>
         <translation>만화 삭제</translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="551"/>
+        <location filename="comic_management_coordinator.cpp" line="559"/>
         <source>Could not move %n folder(s) to the trash. Delete their pages permanently? This cannot be undone.</source>
         <translation>
             <numerusform>폴더 %n개를 휴지통으로 옮기지 못했습니다. 페이지를 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="555"/>
+        <location filename="comic_management_coordinator.cpp" line="563"/>
         <source>Only the images, ComicInfo.xml and system files such as Thumbs.db or .DS_Store are deleted. A folder that holds other files stays on your disk with them.</source>
         <translation>이미지와 ComicInfo.xml, Thumbs.db나 .DS_Store 같은 시스템 파일만 삭제됩니다. 다른 파일이 있는 폴더는 그 파일과 함께 디스크에 남습니다.</translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="557"/>
+        <location filename="comic_management_coordinator.cpp" line="565"/>
         <source>%n comic file(s) that the trash refused were already deleted permanently.</source>
         <translation>
             <numerusform>휴지통으로 옮기지 못한 만화 파일 %n개는 이미 영구적으로 삭제했습니다.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="comic_management_coordinator.cpp" line="643"/>
+        <location filename="comic_management_coordinator.cpp" line="651"/>
         <source>%n folder(s) still hold other files, so they stay on your disk.</source>
         <translation>
             <numerusform>폴더 %n개에 다른 파일이 남아 있어 디스크에 그대로 남습니다.</numerusform>
@@ -1596,12 +1596,12 @@ You can restore a backup from the Library menu or recreate the library.</source>
         </translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="603"/>
+        <location filename="comic_management_coordinator.cpp" line="611"/>
         <source>Remove comics</source>
         <translation>만화 제거</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="604"/>
+        <location filename="comic_management_coordinator.cpp" line="612"/>
         <source>Comics will only be deleted from the current label/list. Are you sure?</source>
         <translation>만화가 현재 라벨/목록에서만 삭제됩니다. 확실합니까?</translation>
     </message>
