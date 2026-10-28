@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with the changes below. Each one also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | Preview PR |
 |---|---|---|
@@ -60,7 +60,7 @@ Options > Image adjustment > **Continuous scroll**
 
 ### Rate and favorite comics while reading
 
-A comic opened from the library gets a favorite button and five stars on the toolbar. They show the comic's rating and whether it is in the library's Favorites, and a change is saved to the library right away. If the library cannot save it, the button goes back and a message says so.
+A comic opened from the library gets a favorite button and five stars on the toolbar. They show the comic's rating and whether it is in the library's Favorites. A change shows at once and is saved to the library in the background. If the library does not save it, a message says so and the buttons show what the library has.
 
 | | Favorite and rating buttons |
 |---|---|
@@ -74,6 +74,7 @@ The library, open at the same time, shows the change:
 - **Rating:** a star sets the rating from 1 to 5, and the current one clears it. Keys 1 to 5 do the same.
 - **Favorite:** the heart adds the comic to the library's Favorites or removes it. An open Favorites list updates too.
 - **Keys:** Options > Shortcuts > Edit shortcuts > Comics. The heart has no key until you set one. If you already gave 1 to 5 to other actions, those ratings start unassigned.
+- **Older YACReaderLibrary:** with a library from upstream or from before this change, the buttons stay greyed out.
 
 ### Next file after an unreadable one
 
