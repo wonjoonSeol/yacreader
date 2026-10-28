@@ -225,7 +225,7 @@ QImage BrightnessFilter::setFilter(const QImage &image)
         return result;*/
     if (level == -1) {
         QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-        return changeBrightness(image, settings.value(BRIGHTNESS, 0).toInt());
+        return changeBrightness(image, settings.value(BRIGHTNESS, brightnessSpec.defaultValue).toInt());
     } else {
         return changeBrightness(image, level);
     }
@@ -300,7 +300,7 @@ QImage ContrastFilter::setFilter(const QImage &image)
         return result;*/
     if (level == -1) {
         QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-        return changeContrast(image, settings.value(CONTRAST, 100).toInt());
+        return changeContrast(image, settings.value(CONTRAST, contrastSpec.defaultValue).toInt());
     } else {
         return changeContrast(image, level);
     }
@@ -318,7 +318,7 @@ QImage GammaFilter::setFilter(const QImage &image)
 {
     if (level == -1) {
         QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-        return changeGamma(image, settings.value(GAMMA, 100).toInt());
+        return changeGamma(image, settings.value(GAMMA, gammaSpec.defaultValue).toInt());
     } else {
         return changeGamma(image, level);
     }
@@ -590,24 +590,12 @@ void Render::load(const QString &path, const ComicDB &comicDB)
     // TODO prepare filters
     for (int i = 0; i < filters.count(); i++) {
         auto *filter = filters.at(i);
-        if (typeid(*filter) == typeid(BrightnessFilter)) {
-            if (comicDB.info.brightness == -1)
-                filter->setLevel(0);
-            else
-                filter->setLevel(comicDB.info.brightness);
-        }
-        if (typeid(*filter) == typeid(ContrastFilter)) {
-            if (comicDB.info.contrast == -1)
-                filter->setLevel(100);
-            else
-                filter->setLevel(comicDB.info.contrast);
-        }
-        if (typeid(*filter) == typeid(GammaFilter)) {
-            if (comicDB.info.gamma == -1)
-                filter->setLevel(100);
-            else
-                filter->setLevel(comicDB.info.gamma);
-        }
+        if (typeid(*filter) == typeid(BrightnessFilter))
+            filter->setLevel(brightnessSpec.levelOrDefault(comicDB.info.brightness));
+        if (typeid(*filter) == typeid(ContrastFilter))
+            filter->setLevel(contrastSpec.levelOrDefault(comicDB.info.contrast));
+        if (typeid(*filter) == typeid(GammaFilter))
+            filter->setLevel(gammaSpec.levelOrDefault(comicDB.info.gamma));
     }
     createComic(path);
     if (comic != nullptr) {

@@ -369,9 +369,9 @@ void Viewer::open(QString pathFile, const ComicDB &comic)
     prepareForOpening();
     // Mirror exactly the filter levels Render::load(comicDB) derives, so the
     // decoded pages match single-page mode.
-    continuousPageProvider->setFilters(comic.info.brightness == -1 ? 0 : comic.info.brightness,
-                                       comic.info.contrast == -1 ? 100 : comic.info.contrast,
-                                       comic.info.gamma == -1 ? 100 : comic.info.gamma);
+    continuousPageProvider->setFilters(brightnessSpec.levelOrDefault(comic.info.brightness),
+                                       contrastSpec.levelOrDefault(comic.info.contrast),
+                                       gammaSpec.levelOrDefault(comic.info.gamma));
     render->load(pathFile, comic);
 }
 
@@ -2351,17 +2351,9 @@ void Viewer::updateComic(ComicDB &comic)
         if (numBookmarks > 2)
             comic.info.bookmark3 = boomarksList[2];
         // set filters
-        // TODO: avoid use settings for this...
-        QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-        int brightness = settings.value(BRIGHTNESS, 0).toInt();
-        int contrast = settings.value(CONTRAST, 100).toInt();
-        int gamma = settings.value(GAMMA, 100).toInt();
-
-        if (brightness != 0 || comic.info.brightness != -1)
-            comic.info.brightness = brightness;
-        if (contrast != 100 || comic.info.contrast != -1)
-            comic.info.contrast = contrast;
-        if (gamma != 100 || comic.info.gamma != -1)
-            comic.info.gamma = gamma;
+        auto &configuration = Configuration::getConfiguration();
+        comic.info.brightness = brightnessSpec.toComicLevel(configuration.getFilterLevel(brightnessSpec), comic.info.brightness);
+        comic.info.contrast = contrastSpec.toComicLevel(configuration.getFilterLevel(contrastSpec), comic.info.contrast);
+        comic.info.gamma = gammaSpec.toComicLevel(configuration.getFilterLevel(gammaSpec), comic.info.gamma);
     }
 }

@@ -10,8 +10,10 @@ class QSlider;
 class YACReaderSpinSliderWidget : public QWidget
 {
     Q_OBJECT
-private:
+protected:
     QLabel *label;
+
+private:
     QSpinBox *spinBox;
     QSlider *slider;
     bool tracking;
