@@ -1,35 +1,22 @@
 #ifndef PAGE_LABEL_WIDGET_H
 #define PAGE_LABEL_WIDGET_H
 
-#include "themable.h"
+#include "info_box_widget.h"
 
-#include <QWidget>
-
-class QLabel;
 class QPropertyAnimation;
 
-class PageLabelWidget : public QWidget, protected Themable
+class PageLabelWidget : public InfoBoxWidget
 {
     Q_OBJECT
 private:
-    QLabel *textLabel;
     QPropertyAnimation *animation;
-    QColor infoBackgroundColor;
-    int fontSizePx = 0;
-
-protected:
-    void paintEvent(QPaintEvent *) override;
-    void applyTheme(const Theme &theme) override;
 
 public:
     PageLabelWidget(QWidget *parent);
-    // grows with the screen height
-    static int fontSizeFor(const QWidget *parent);
 
 public slots:
     void show();
     void hide();
-    void setText(const QString &text);
     void updatePosition();
 };
 

@@ -33,6 +33,8 @@ qt_add_executable(YACReader WIN32
     translator.cpp
     goto_flow_widget.h
     goto_flow_widget.cpp
+    info_box_widget.h
+    info_box_widget.cpp
     page_label_widget.h
     page_label_widget.cpp
     page_counter.h

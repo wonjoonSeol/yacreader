@@ -1,81 +1,59 @@
 #include "page_counter_widget.h"
 
-#include "page_counter.h"
-#include "page_label_widget.h"
-
 #include <QGraphicsOpacityEffect>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPainter>
+#include <QPauseAnimation>
 #include <QPropertyAnimation>
-#include <QTimer>
-#include <QToolBar>
+
+namespace {
+constexpr int shownMs = 1000;
+#ifndef Q_OS_MACOS
+constexpr int fadeOutMs = 400;
+#endif
+}
 
 PageCounterWidget::PageCounterWidget(QWidget *parent)
-    : QWidget(parent), fontSizePx(PageLabelWidget::fontSizeFor(parent))
+    : InfoBoxWidget(parent)
 {
+    // clicks go through to the page, for the "click left or right half" mouse mode
     setAttribute(Qt::WA_TransparentForMouseEvents);
-    setContentsMargins(fontSizePx * 2.3, fontSizePx / 2.3, fontSizePx * 2.3, fontSizePx / 2.3);
 
-    textLabel = new QLabel(this);
-    textLabel->setAlignment(Qt::AlignCenter);
-    auto layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(textLabel);
-
-    opacity = new QGraphicsOpacityEffect(this);
-    // like NotificationsLabelWidget, it hides without fading on macOS
-#ifndef Q_OS_MACOS
+    // TODO check if the effects are still broken in OSX
+#ifdef Q_OS_MACOS
+    // like NotificationsLabelWidget, it hides without fading
+    timeOnScreen = new QPauseAnimation(shownMs, this);
+#else
+    auto opacity = new QGraphicsOpacityEffect(this);
     setGraphicsEffect(opacity);
+    auto fadeOut = new QPropertyAnimation(opacity, "opacity", this);
+    fadeOut->setDuration(shownMs + fadeOutMs);
+    fadeOut->setKeyValueAt(0.0, 1.0);
+    fadeOut->setKeyValueAt(static_cast<qreal>(shownMs) / (shownMs + fadeOutMs), 1.0);
+    fadeOut->setKeyValueAt(1.0, 0.0);
+    timeOnScreen = fadeOut;
 #endif
-    fadeOut = new QPropertyAnimation(opacity, "opacity", this);
-    fadeOut->setDuration(400);
-    fadeOut->setStartValue(1.0);
-    fadeOut->setEndValue(0.0);
-    connect(fadeOut, &QAbstractAnimation::finished, this, &QWidget::hide);
-
-    fadeOutDelay = new QTimer(this);
-    fadeOutDelay->setSingleShot(true);
-    fadeOutDelay->setInterval(1000);
-    connect(fadeOutDelay, &QTimer::timeout, this, [this] { fadeOut->start(); });
+    connect(timeOnScreen, &QAbstractAnimation::finished, this, &QWidget::hide);
 
     hide();
-    initTheme(this);
 }
 
 void PageCounterWidget::flash(const QString &text)
 {
-    QList<QRect> toolBarAreas;
-    const auto toolBars = window()->findChildren<QToolBar *>();
-    for (const QToolBar *toolBar : toolBars) {
-        if (toolBar->isVisible())
-            toolBarAreas << QRect(parentWidget()->mapFromGlobal(toolBar->mapToGlobal(QPoint(0, 0))), toolBar->size());
-    }
-    move(0, YACReader::pageCounterTop(toolBarAreas));
-
-    setText(text);
-    fadeOut->stop();
-    opacity->setOpacity(1.0);
+    timeOnScreen->stop();
+    showText(text);
     show();
     raise();
-    fadeOutDelay->start();
+    timeOnScreen->start();
 }
 
-void PageCounterWidget::setText(const QString &text)
+void PageCounterWidget::refresh(const QString &text)
 {
-    textLabel->setText(text);
+    if (isVisible()) {
+        showText(text);
+    }
+}
+
+void PageCounterWidget::showText(const QString &text)
+{
+    setText(text);
     adjustSize();
-}
-
-void PageCounterWidget::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-    painter.fillRect(rect(), backgroundColor);
-}
-
-void PageCounterWidget::applyTheme(const Theme &theme)
-{
-    backgroundColor = theme.viewer.infoBackgroundColor;
-    textLabel->setStyleSheet(theme.viewer.infoLabelQSS.arg(fontSizePx));
-    update();
 }

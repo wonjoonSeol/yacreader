@@ -1,36 +1,26 @@
 #ifndef PAGE_COUNTER_WIDGET_H
 #define PAGE_COUNTER_WIDGET_H
 
-#include "themable.h"
+#include "info_box_widget.h"
 
-#include <QWidget>
+class QAbstractAnimation;
 
-class QGraphicsOpacityEffect;
-class QLabel;
-class QPropertyAnimation;
-class QTimer;
-
-// Shows the current pages for a moment in the top left corner of the page, with the look of the page information label
-class PageCounterWidget : public QWidget, protected Themable
+class PageCounterWidget : public InfoBoxWidget
 {
     Q_OBJECT
 public:
-    PageCounterWidget(QWidget *parent);
+    explicit PageCounterWidget(QWidget *parent);
 
+    // shows the text for a moment
     void flash(const QString &text);
-    void setText(const QString &text);
-
-protected:
-    void paintEvent(QPaintEvent *) override;
-    void applyTheme(const Theme &theme) override;
+    // Keeps a counter on screen current, such as a double page spread that is only known once both of its
+    // pages are loaded. A hidden counter stays hidden.
+    void refresh(const QString &text);
 
 private:
-    QLabel *textLabel;
-    QGraphicsOpacityEffect *opacity;
-    QPropertyAnimation *fadeOut;
-    QTimer *fadeOutDelay;
-    QColor backgroundColor;
-    int fontSizePx;
+    void showText(const QString &text);
+
+    QAbstractAnimation *timeOnScreen;
 };
 
 #endif

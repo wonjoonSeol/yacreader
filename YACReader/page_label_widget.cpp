@@ -1,58 +1,18 @@
 #include "page_label_widget.h"
 
-#include <QApplication>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPainter>
 #include <QPropertyAnimation>
-#include <QScreen>
 
 PageLabelWidget::PageLabelWidget(QWidget *parent)
-    : QWidget(parent)
+    : InfoBoxWidget(parent)
 {
     animation = new QPropertyAnimation(this, "pos");
     animation->setDuration(150);
     animation->setEndValue(QPoint((parent->geometry().size().width() - this->width()), -this->height()));
 
-    auto layout = new QHBoxLayout;
-    layout->setContentsMargins(0, 0, 0, 0);
-
-    textLabel = new QLabel(this);
-    textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    textLabel->setWordWrap(false); // Wrapping needs to be disabled, we need to show all the text in one line
-
-    fontSizePx = fontSizeFor(parent);
-    setContentsMargins(fontSizePx * 2.3, fontSizePx / 2.3, fontSizePx * 2.3, fontSizePx / 2.3);
-
-    // Instead of fixed size, allow dynamic sizing
-    textLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    layout->addWidget(textLabel, 0, Qt::AlignCenter);
-    setLayout(layout);
-
     adjustSize(); // Resize to fit content
 
     if (parent != nullptr)
         move(QPoint((parent->geometry().size().width() - this->width()), -this->height()));
-
-    initTheme(this);
-}
-
-int PageLabelWidget::fontSizeFor(const QWidget *parent)
-{
-    QScreen *screen = parent != nullptr ? parent->window()->screen() : nullptr;
-    if (screen == nullptr) {
-        screen = QApplication::screens().constFirst();
-    }
-
-    const int verticalRes = screen != nullptr ? screen->size().height() : 600;
-    if (verticalRes <= 1024) {
-        return 12;
-    }
-    if (verticalRes <= 1200) {
-        return 16;
-    }
-    return 20;
 }
 
 void PageLabelWidget::show()
@@ -87,18 +47,6 @@ void PageLabelWidget::hide()
     }
 }
 
-void PageLabelWidget::setText(const QString &text)
-{
-    textLabel->setText(text);
-}
-
-void PageLabelWidget::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-
-    painter.fillRect(rect(), infoBackgroundColor);
-}
-
 void PageLabelWidget::updatePosition()
 {
     auto parent = dynamic_cast<QWidget *>(this->parent());
@@ -111,15 +59,4 @@ void PageLabelWidget::updatePosition()
         move(QPoint((parent->geometry().size().width() - this->width()), 0));
     else
         move(QPoint((parent->geometry().size().width() - this->width()), -this->height()));
-}
-
-void PageLabelWidget::applyTheme(const Theme &theme)
-{
-    const auto viewerTheme = theme.viewer;
-
-    infoBackgroundColor = viewerTheme.infoBackgroundColor;
-
-    textLabel->setStyleSheet(viewerTheme.infoLabelQSS.arg(fontSizePx));
-
-    update();
 }
