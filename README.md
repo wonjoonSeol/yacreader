@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with five changes to the comic reader and one to the library. Each reader change also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with changes to the comic reader and the library, listed below. Each reader change also has a closed preview PR that shows it as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -88,20 +88,24 @@ YACReaderLibrary reads a folder of images as one comic, like a `.cbz`, without c
 
 <img src="docs/fork/library-image-folders.png" width="600" alt="A series folder whose chapter folders show as comics with covers and page counts">
 
-- **What counts as a comic:** a folder with at least one image directly inside, and no subfolders or comic files (`.cbz`, `.cbr`, `.pdf` and the like). Other files, such as `ComicInfo.xml` or a text file, do not matter. A folder whose name starts with a dot is never a comic.
+- **What counts as a comic:** a folder with at least one `.jpg`, `.jpeg`, `.png`, `.gif`, `.tif`, `.tiff`, `.bmp` or `.webp` image directly inside, and no subfolders or comic files (`.cbz`, `.cbr`, `.pdf` and the like). Other files, such as `ComicInfo.xml` or a text file, do not matter, and files whose name starts with a dot, like the `._` files macOS leaves, are not pages. The list is fixed, so YACReaderLibrary and YACReaderLibraryServer agree on it whatever image plugins they have, and YACReader shows these same pages when it opens a folder (upstream showed every format its image plugins read).
+- **Metadata folders:** `@eaDir`, `.@__thumb`, `__MACOSX`, `.AppleDouble`, `.thumbnails` and `.yacreaderlibrary` do not count as subfolders, and neither they nor the folders in them are comics. Only these exact names: your own folders, such as `@Manga`, are scanned like any other, and so are dot folders where the system shows them (Windows), as upstream does for archives.
 - **Layouts:** in `Series/Chapter 1/001.jpg`, Series is a folder and Chapter 1 is a comic. A folder with images and subfolders stays a folder, and its own images are left out.
-- **Like an archive:** cover, page count, `ComicInfo.xml` import when it is turned on, reading progress, and library updates when pages are added or removed.
+- **Like an archive:** cover, page count, `ComicInfo.xml` import when it is turned on, reading progress, and library updates when pages are added, removed or change size. With **Compare the modified date of files when updating a library** on, a folder comic's date is that of its newest page, so a new `ComicInfo.xml` does not count as a change.
 
 | Next to archives | Opened from the library |
 |---|---|
 | <img src="docs/fork/library-image-folders-next-to-archives.png" width="400" alt="Two cbz files and a folder of images side by side as comics"> | <img src="docs/fork/reader-folder-comic.png" width="400" alt="YACReader showing page 5 of 9 of a folder comic"> |
 | `Harbor Lights 03` is a folder, the other two are `.cbz` files | Opens at the page where reading stopped |
 
-- **Deleting:** folder comics are kept unless **Also delete the image folders** is checked. Checked, they go to the trash. If the trash refuses a folder, YACReaderLibrary asks before deleting it permanently.
+- **Deleting:** folder comics stay unless **Also move the image folders to the trash** is checked. Checked, each folder goes to the trash with everything in it. If the trash refuses a folder, YACReaderLibrary asks before deleting it for good, and then deletes only its images, `ComicInfo.xml` and the files Windows and macOS leave (`Thumbs.db`, `desktop.ini`, `.DS_Store`, `._` files). A folder that still holds anything else stays on disk, and the message lists what is left.
 
-  <img src="docs/fork/delete-folder-comics.png" width="450" alt="The delete confirmation with the Also delete the image folders box">
+  <img src="docs/fork/delete-folder-comics.png" width="450" alt="The delete confirmation with the Also move the image folders to the trash box">
+
+  This screenshot comes from the Windows build.
 
 - **Library updates:** a comic or folder that sorts after a new one by number, such as Chapter 10 after a new Chapter 3, is no longer removed and added again, so it keeps its reading lists and labels. This applies to archives too.
+- **Organize files:** a folder comic keeps every dot in its name, and no comic is moved into a folder comic, which would turn it into a plain folder. A comic headed there goes to a numbered folder instead, such as `Vol 1 (1)`.
 - **Not covered:** dragging a folder of images onto the library still imports only comic files, and Organize files does not move a folder comic to another drive.
 
 ---
