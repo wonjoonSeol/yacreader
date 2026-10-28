@@ -1,11 +1,15 @@
 #ifndef INITIALCOMICINFOEXTRACTOR_H
 #define INITIALCOMICINFOEXTRACTOR_H
 
+#include "folder_comic_contents.h"
+
 #include <QImage>
 #include <QObject>
 #include <QPixmap>
 #include <QProcess>
 #include <QString>
+
+#include <optional>
 
 namespace YACReader {
 class InitialComicInfoExtractor : public QObject
@@ -14,8 +18,11 @@ class InitialComicInfoExtractor : public QObject
 
 public:
     InitialComicInfoExtractor(QString fileSource, QString target = "", int coverPage = 1, bool getXMLMetadata = false);
+    // reuses what the caller already listed of a folder comic instead of listing it again
+    void setFolderComic(const FolderComicContents &contents) { _folderComic = contents; }
 
 private:
+    std::optional<FolderComicContents> _folderComic;
     QString _fileSource;
     QString _target;
     QString _currentName;
@@ -28,6 +35,7 @@ private:
     int getXMLMetadata;
     static bool crash;
     QByteArray _xmlInfoData;
+    void extractFromFolder();
     void saveCover(const QString &path, const QImage &cover);
 
 public slots:

@@ -1,36 +1,137 @@
 #include "comics_remover.h"
 
 #include "QsLog.h"
+#include "comic.h"
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 
-ComicsRemover::ComicsRemover(QModelIndexList &il, QList<QString> &ps, qulonglong parentId, QObject *parent)
-    : QObject(parent), indexList(il), paths(ps), parentId(parentId)
+ComicsDeletion::ComicsDeletion(const QList<ComicDB> &comics, const QString &libraryPath)
 {
+    for (int position = 0; position < comics.size(); ++position) {
+        // only a stat here, ComicsRemover checks that a folder is still a comic before deleting it
+        if (QFileInfo(libraryPath + comics.at(position).path).isDir()) {
+            folders.append(position);
+            folderImages += comics.at(position).info.numPages.toInt();
+        } else {
+            files.append(position);
+        }
+    }
+}
+
+QList<int> ComicsDeletion::deleted(bool deleteFolders) const
+{
+    return deleteFolders ? files + folders : files;
+}
+
+ComicsRemover::ComicsRemover(QModelIndexList &il, QList<QString> &ps, qulonglong parentId, FolderDeletion folderDeletion, QObject *parent)
+    : QObject(parent), indexList(il), paths(ps), parentId(parentId), folderDeletion(folderDeletion)
+{
+}
+
+namespace {
+
+// what Windows and macOS leave in the folders they show, deleted with the pages so that the folder can go
+bool isSystemFile(const QString &fileName)
+{
+    return fileName == QStringLiteral(".DS_Store") || fileName.startsWith(QStringLiteral("._")) ||
+            fileName.compare(QStringLiteral("Thumbs.db"), Qt::CaseInsensitive) == 0 ||
+            fileName.compare(QStringLiteral("desktop.ini"), Qt::CaseInsensitive) == 0;
+}
+
+// hidden and system files too: Windows marks Thumbs.db and desktop.ini as both
+QFileInfoList everythingIn(const QString &path)
+{
+    return QDir(path).entryInfoList(QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
+}
+
 }
 
 void ComicsRemover::process()
 {
-    QString currentComicPath;
-    QListIterator<QModelIndex> i(indexList);
-    QListIterator<QString> i2(paths);
-    i.toBack();
-    i2.toBack();
-
-    while (i.hasPrevious() && i2.hasPrevious()) {
-        QModelIndex mi = i.previous();
-        currentComicPath = i2.previous();
-        if (QFile::moveToTrash(currentComicPath))
-            emit remove(mi.row());
-        else if (QFile::remove(currentComicPath))
-            emit remove(mi.row());
-        else
-            emit removeError();
+    for (int position = indexList.size() - 1; position >= 0; --position) {
+        const int row = indexList.at(position).row();
+        const QString &path = paths.at(position);
+        if (QFileInfo(path).isDir()) {
+            removeFolder(position, row, path);
+        } else {
+            removeFile(position, row, path);
+        }
     }
 
     emit finished();
     emit removedItemsFromFolder(parentId);
+}
+
+void ComicsRemover::removeFile(int position, int row, const QString &path)
+{
+    if (trash(path)) {
+        emit remove(row);
+    } else if (QFile::remove(path)) {
+        emit fileDeletedPermanently();
+        emit remove(row);
+    } else {
+        emit removeError(position);
+    }
+}
+
+void ComicsRemover::removeFolder(int position, int row, const QString &path)
+{
+    // a folder that holds more than a comic by now, like a subfolder or an archive, is left alone
+    const auto contents = FolderComic::comicContents(path);
+    if (!contents) {
+        emit removeError(position);
+        return;
+    }
+
+    if (folderDeletion == FolderDeletion::ToTrash) {
+        if (trash(path)) {
+            emit remove(row);
+        } else {
+            emit folderNotTrashed(position);
+        }
+        return;
+    }
+
+    QStringList leftovers;
+    if (!deletePermanently(path, *contents, &leftovers)) {
+        emit removeError(position);
+        return;
+    }
+    emit remove(row);
+    if (!leftovers.isEmpty()) {
+        emit folderNotEmptied(position, leftovers);
+    }
+}
+
+bool ComicsRemover::deletePermanently(const QString &path, const FolderComicContents &contents, QStringList *leftovers)
+{
+    const QFileInfo folder(path);
+    if (folder.isSymbolicLink() || folder.isJunction()) {
+        // only the link, not the folder it points to; rmdir is how Windows removes a link to a folder
+        return QFile::remove(path) || QDir().rmdir(path);
+    }
+
+    for (const QFileInfo &page : contents.pages) {
+        if (!QFile::remove(page.absoluteFilePath())) {
+            return false;
+        }
+    }
+    if (!contents.comicInfoPath.isEmpty()) {
+        QFile::remove(contents.comicInfoPath);
+    }
+    for (const QFileInfo &entry : everythingIn(path)) {
+        if (entry.isFile() && isSystemFile(entry.fileName())) {
+            QFile::remove(entry.absoluteFilePath());
+        }
+    }
+    if (!QDir().rmdir(path)) {
+        for (const QFileInfo &entry : everythingIn(path)) {
+            leftovers->append(entry.fileName());
+        }
+    }
+    return true;
 }
 
 FoldersRemover::FoldersRemover(QModelIndexList &il, QList<QString> &ps, QObject *parent)

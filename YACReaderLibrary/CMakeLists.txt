@@ -4,6 +4,8 @@
 add_library(library_common STATIC
     library_creator.h
     library_creator.cpp
+    library_entry.h
+    library_entry.cpp
     package_manager.h
     package_manager.cpp
     bundle_creator.h
@@ -92,6 +94,8 @@ qt_add_executable(YACReaderLibrary WIN32
     library_search_coordinator.cpp
     comic_management_coordinator.h
     comic_management_coordinator.cpp
+    delete_comics_question.h
+    delete_comics_question.cpp
     reading_list_management_coordinator.h
     reading_list_management_coordinator.cpp
     folder_management_coordinator.h
