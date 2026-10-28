@@ -841,47 +841,47 @@ If none is active, Escape does nothing.</source>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1892"/>
+        <location filename="viewer.cpp" line="1916"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>按下 &apos;O&apos; 以打開漫畫.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Not found</source>
         <translation>未找到</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Comic not found</source>
         <translation>未找到漫畫</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="383"/>
+        <location filename="viewer.cpp" line="386"/>
         <source>Error opening comic</source>
         <translation>打開漫畫時發生錯誤</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="389"/>
+        <location filename="viewer.cpp" line="392"/>
         <source>CRC Error</source>
         <translation>CRC 校驗失敗</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1909"/>
+        <location filename="viewer.cpp" line="1934"/>
         <source>Loading...please wait!</source>
         <translation>載入中... 請稍候!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1920"/>
+        <location filename="viewer.cpp" line="1945"/>
         <source>Page not available!</source>
         <translation>頁面不可用!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2258"/>
+        <location filename="viewer.cpp" line="2286"/>
         <source>Cover!</source>
         <translation>封面!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2272"/>
+        <location filename="viewer.cpp" line="2300"/>
         <source>Last page!</source>
         <translation>尾頁!</translation>
     </message>

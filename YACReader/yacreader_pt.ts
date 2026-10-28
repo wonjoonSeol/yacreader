@@ -841,47 +841,47 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1892"/>
+        <location filename="viewer.cpp" line="1916"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Pressione &apos;O&apos; para abrir um quadrinho.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1909"/>
+        <location filename="viewer.cpp" line="1934"/>
         <source>Loading...please wait!</source>
         <translation>Carregando... por favor, aguarde!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Not found</source>
         <translation>Não encontrado</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Comic not found</source>
         <translation>Quadrinho não encontrado</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="383"/>
+        <location filename="viewer.cpp" line="386"/>
         <source>Error opening comic</source>
         <translation>Erro ao abrir quadrinho</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="389"/>
+        <location filename="viewer.cpp" line="392"/>
         <source>CRC Error</source>
         <translation>Erro CRC</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1920"/>
+        <location filename="viewer.cpp" line="1945"/>
         <source>Page not available!</source>
         <translation>Página não disponível!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2258"/>
+        <location filename="viewer.cpp" line="2286"/>
         <source>Cover!</source>
         <translation>Cobrir!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2272"/>
+        <location filename="viewer.cpp" line="2300"/>
         <source>Last page!</source>
         <translation>Última página!</translation>
     </message>

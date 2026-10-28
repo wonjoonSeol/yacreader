@@ -840,48 +840,48 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1920"/>
+        <location filename="viewer.cpp" line="1945"/>
         <source>Page not available!</source>
         <translation>Pagina non disponibile!</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1892"/>
+        <location filename="viewer.cpp" line="1916"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Premi &quot;O&quot; per aprire il fumettto.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="383"/>
+        <location filename="viewer.cpp" line="386"/>
         <source>Error opening comic</source>
         <translation>Errore nell&apos;apertura</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2258"/>
+        <location filename="viewer.cpp" line="2286"/>
         <source>Cover!</source>
         <translation>Copertina!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="389"/>
+        <location filename="viewer.cpp" line="392"/>
         <source>CRC Error</source>
         <translation>Errore CRC</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Comic not found</source>
         <translation>Fumetto non trovato</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Not found</source>
         <translation>Non trovato</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2272"/>
+        <location filename="viewer.cpp" line="2300"/>
         <source>Last page!</source>
         <translation>Ultima pagina!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1909"/>
+        <location filename="viewer.cpp" line="1934"/>
         <source>Loading...please wait!</source>
         <translation>In caricamento...Attendi!</translation>
     </message>

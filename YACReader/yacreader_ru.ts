@@ -840,48 +840,48 @@ If none is active, Escape does nothing.</source>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="1920"/>
+        <location filename="viewer.cpp" line="1945"/>
         <source>Page not available!</source>
         <translation>Страница недоступна!</translation>
     </message>
     <message>
         <location filename="viewer.cpp" line="127"/>
-        <location filename="viewer.cpp" line="1892"/>
+        <location filename="viewer.cpp" line="1916"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Нажмите &quot;O&quot; чтобы открыть комикс.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="383"/>
+        <location filename="viewer.cpp" line="386"/>
         <source>Error opening comic</source>
         <translation>Ошибка открытия комикса</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2258"/>
+        <location filename="viewer.cpp" line="2286"/>
         <source>Cover!</source>
         <translation>Начало!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="389"/>
+        <location filename="viewer.cpp" line="392"/>
         <source>CRC Error</source>
         <translation>Ошибка CRC</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Comic not found</source>
         <translation>Комикс не найден</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="377"/>
+        <location filename="viewer.cpp" line="380"/>
         <source>Not found</source>
         <translation>Не найдено</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2272"/>
+        <location filename="viewer.cpp" line="2300"/>
         <source>Last page!</source>
         <translation>Конец!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1909"/>
+        <location filename="viewer.cpp" line="1934"/>
         <source>Loading...please wait!</source>
         <translation>Загрузка... Пожалуйста подождите!</translation>
     </message>

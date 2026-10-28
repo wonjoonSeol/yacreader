@@ -2,6 +2,7 @@
 #define __VIEWER_H
 
 #include "mouse_handler.h"
+#include "page_counter_trigger.h"
 #include "scroll_management.h"
 #include "themable.h"
 
@@ -131,6 +132,9 @@ public slots:
     void updateZoomRatio(int ratio);
     bool getIsMangaMode();
     void setContinuousScroll(bool enabled);
+    // The height of a widget laid over the top of the viewer, such as the toolbar shown over the page in
+    // full screen. The page counter goes below it. 0 by default.
+    void setTopOverlayInset(int height);
 
 private:
     bool information;
@@ -146,6 +150,7 @@ private:
 
     PageLabelWidget *informationLabel;
     PageCounterWidget *pageCounter;
+    PageCounterTrigger pageCounterTrigger;
     // QTimer * scroller;
     QPropertyAnimation *verticalScroller;
     QPropertyAnimation *horizontalScroller;
@@ -264,9 +269,10 @@ private:
     void setMangaModeImpl(bool manga, bool persistSettings);
     void goToRelativePage(int offset);
     void applyContinuousPageFit();
+    bool continuousModelActive() const;
     QString currentPagesInformation();
-    // shows the pages for a moment after a page change
-    void flashPageCounter();
+    // Render's page changes and the continuous scroll both end here, once the view is on the new page
+    void onReadingPageChanged();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();
 

@@ -2,7 +2,8 @@
 
 qt_add_executable(page_counter_test
     main.cpp
-    ${PROJECT_SOURCE_DIR}/YACReader/page_counter.h
+    ${PROJECT_SOURCE_DIR}/YACReader/pages_information.h
+    ${PROJECT_SOURCE_DIR}/YACReader/page_counter_trigger.h
 )
 yacreader_apply_build_options(page_counter_test)
 target_include_directories(page_counter_test PRIVATE
