@@ -1,4 +1,5 @@
 #include <memory>
+#include <new>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -747,6 +748,8 @@ namespace ac::core::cpu
         {
             if (buffer.empty() || buffer.width() != width || buffer.height() != height || buffer.type() != type)
                 buffer.create(width, height, channels, type);
+            // YACReader: the convolutions would write through a null pointer.
+            if (buffer.empty()) throw std::bad_alloc{};
 
             return buffer;
         }

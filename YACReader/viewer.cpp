@@ -524,17 +524,16 @@ void Viewer::applyContinuousPageFit()
     continuousViewModel->setPageFit(fitToHeight ? ContinuousViewModel::PageFit::Height : ContinuousViewModel::PageFit::Width);
 }
 
-// The prescaler's keys do not include these options, so changing them drops the prepared pages
+// One reading of the settings for both modes. The prescaler's keys do not include it, so a change drops the
+// prepared pages.
 void Viewer::applyAcnetOptions()
 {
     Configuration &configuration = Configuration::getConfiguration();
-    const bool enabled = configuration.getAnime4kUpscaling();
-    const AcnetModel model = configuration.getAnime4kModel();
-    if (enabled == acnetStage->isEnabled() && model == acnetStage->model()) {
-        return;
+    const std::optional<AcnetModel> model = configuration.getAcnetUpscaling() ? std::optional(configuration.getAcnetModel()) : std::nullopt;
+    continuousWidget->setAcnetModel(model);
+    if (acnetStage->setModel(model)) {
+        prescaler->invalidate();
     }
-    acnetStage->setOptions(enabled, model);
-    prescaler->invalidate();
 }
 
 void Viewer::onImageOptionsChanged()

@@ -1,6 +1,7 @@
 #ifndef CONTINUOUS_PAGE_WIDGET_H
 #define CONTINUOUS_PAGE_WIDGET_H
 
+#include "acnet_upscale.h"
 #include "themable.h"
 
 #include <QHash>
@@ -11,6 +12,8 @@
 #include <QVector>
 #include <QWidget>
 
+#include <atomic>
+#include <memory>
 #include <optional>
 
 class Render;
@@ -33,12 +36,17 @@ public:
     int heightForWidth(int w) const override;
     QSize sizeHint() const override;
 
-    // Delivers the result of a background scaling task, the plain scale or the
-    // ACNet one. Runs on the GUI thread (queued invocation). Public because the
-    // worker lambda is not a friend.
-    void deliverScaledImage(int pageIndex, quint64 generation, bool upscaled, QImage scaledImage,
+    // Delivers the result of a background scaling task. Runs on the GUI thread
+    // (queued invocation). Public because the worker lambda is not a friend.
+    void deliverScaledImage(int pageIndex, quint64 generation, QImage scaledImage,
                             qint64 sourceCacheKey, QSize sourceSize, QSize targetSize,
                             QSize targetPixelSize, qreal devicePixelRatio);
+    // The same for the running ACNet task, with a null image when it did not upscale.
+    void deliverUpscaledImage(QImage image);
+
+    // The ACNet model that sharpens pages shown larger than their size, or none.
+    // A change drops the scaled pages.
+    void setAcnetModel(std::optional<AcnetModel> model);
 
 public slots:
     void onPageAvailable(int absolutePageIndex);
@@ -57,7 +65,7 @@ private:
         QSize targetPixelSize;
         qreal targetDevicePixelRatio = 1.0;
         QImage scaledImage;
-        // ACNet has been tried on it, so it is not queued again
+        // ACNet has run on it, so it is not queued again
         bool upscaled = false;
     };
 
@@ -119,17 +127,20 @@ private:
         }
     };
 
-    struct PendingUpscale {
+    // The ACNet task in flight. It stays here until its result arrives, even once the
+    // result is no longer wanted, so two never run at once.
+    struct RunningUpscale {
         int pageIndex = -1;
-        ScaleRequestKey key;
+        // the plain scale the result replaces, if it is still the page's image then
+        qint64 scaledImageKey = 0;
+        std::shared_ptr<std::atomic_bool> cancelled;
     };
 
     // Returns a cached, still-valid scaled image for the page, or nullptr.
     const QImage *cachedScaledImage(int pageIndex, const QImage *source, const QSize &targetSize, const QSize &targetPixelSize, qreal dpr) const;
     // Schedules a high-quality scale of the page on the background pool.
     void enqueueScale(int pageIndex, const QImage *source, const QSize &targetSize, const QSize &targetPixelSize, qreal dpr);
-    void deliverUpscaledImage(int pageIndex, const ScaleRequestKey &key, QImage image);
-    // Starts ACNet on the next page that needs it, unless one is running.
+    // Starts ACNet on the next cached page that needs it, unless a task is running.
     void startNextUpscale();
     QList<int> upscaleOrder() const;
     // Drops the whole scaled cache and discards/ignores any in-flight work.
@@ -151,8 +162,12 @@ private:
     // are discarded when they arrive from the background pool.
     quint64 cacheGeneration = 0;
     QHash<int, ScaleRequestKey> pendingScaleRequests;
-    std::optional<PendingUpscale> pendingUpscale;
     QThreadPool scalePool;
+
+    std::optional<AcnetModel> acnetModel;
+    std::optional<RunningUpscale> runningUpscale;
+    // One thread, so ACNet never holds a thread the plain scales need
+    QThreadPool upscalePool;
 };
 
 #endif // CONTINUOUS_PAGE_WIDGET_H

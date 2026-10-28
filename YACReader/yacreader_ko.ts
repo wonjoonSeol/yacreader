@@ -152,7 +152,7 @@
 <context>
     <name>ContinuousPageWidget</name>
     <message>
-        <location filename="continuous_page_widget.cpp" line="280"/>
+        <location filename="continuous_page_widget.cpp" line="321"/>
         <source>Loading page %1</source>
         <translation>페이지 %1 불러오는 중</translation>
     </message>
@@ -303,8 +303,8 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="314"/>
-        <source>Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
-        <translation>원본보다 크게 표시되는 페이지를 백그라운드에서 ACNet 신경망으로 두 배 확대해 선을 선명하게 유지합니다. 페이지는 바로 표시되고, 더 선명한 페이지가 준비되면 바뀝니다. CPU 시간과 메모리를 더 사용합니다.</translation>
+        <source>Pages shown at 1.5 times their own size or more, up to 4 megapixels, are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
+        <translation>원본의 1.5배 이상으로 표시되는 400만 화소 이하의 페이지를 백그라운드에서 ACNet 신경망으로 두 배 확대해 선을 선명하게 유지합니다. 페이지는 바로 표시되고, 더 선명한 페이지가 준비되면 바뀝니다. CPU 시간과 메모리를 더 사용합니다.</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="316"/>
@@ -317,22 +317,22 @@
         <translation>F8B8-HDN (느림, 노이즈 제거 강화)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="328"/>
+        <location filename="options_dialog.cpp" line="321"/>
         <source>Model</source>
         <translation>모델</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="355"/>
+        <location filename="options_dialog.cpp" line="361"/>
         <source>General</source>
         <translation>일반</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="358"/>
+        <location filename="options_dialog.cpp" line="364"/>
         <source>Appearance</source>
         <translation>외관</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="374"/>
+        <location filename="options_dialog.cpp" line="380"/>
         <source>Options</source>
         <translation>환경설정</translation>
     </message>
@@ -602,22 +602,22 @@ If none is active, Escape does nothing.</source>
         <translation>작은 페이지를 Anime4K(ACNet)로 확대</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="356"/>
+        <location filename="options_dialog.cpp" line="362"/>
         <source>Page Flow</source>
         <translation>페이지 플로우</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="357"/>
+        <location filename="options_dialog.cpp" line="363"/>
         <source>Image adjustment</source>
         <translation>이미지 조정</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="365"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Restart is needed</source>
         <translation>재시작이 필요합니다</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="390"/>
+        <location filename="options_dialog.cpp" line="396"/>
         <source>Comics directory</source>
         <translation>만화 폴더</translation>
     </message>
@@ -856,7 +856,7 @@ If none is active, Escape does nothing.</source>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1918"/>
+        <location filename="viewer.cpp" line="1917"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>&apos;O&apos;를 눌러 만화를 열어보세요.</translation>
     </message>
@@ -881,22 +881,22 @@ If none is active, Escape does nothing.</source>
         <translation>CRC 오류</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1936"/>
+        <location filename="viewer.cpp" line="1935"/>
         <source>Loading...please wait!</source>
         <translation>불러오는 중... 잠시 기다려주세요!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1947"/>
+        <location filename="viewer.cpp" line="1946"/>
         <source>Page not available!</source>
         <translation>페이지를 불러올 수 없습니다!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2287"/>
+        <location filename="viewer.cpp" line="2286"/>
         <source>Cover!</source>
         <translation>표지!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2301"/>
+        <location filename="viewer.cpp" line="2300"/>
         <source>Last page!</source>
         <translation>마지막 페이지!</translation>
     </message>

@@ -26,6 +26,7 @@
 #include <QTimer>
 #include <QWheelEvent>
 
+#include <memory>
 #include <optional>
 
 class AcnetStage;

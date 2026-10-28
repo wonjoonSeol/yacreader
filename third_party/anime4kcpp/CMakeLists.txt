@@ -79,7 +79,9 @@ if(APPLE)
     endforeach()
 else()
     set(anime4kcpp_simd "")
-    if(MSVC)
+    # MSVC itself, not if(MSVC), which clang-cl matches too: clang-cl needs -mavx for AVX
+    # intrinsics like Clang, so it takes the branches below
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "x64")
             set(anime4kcpp_simd SSE AVX FMA)
         elseif(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64")

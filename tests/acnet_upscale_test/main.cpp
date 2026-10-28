@@ -1,27 +1,27 @@
 #include "AC/Core.hpp"
+#include "AC/Core/SIMD.hpp"
 #include "AC/Util/Parallel.hpp"
 #include "acnet_upscale.h"
 #include "resize_image.h"
 
-#include <QElapsedTimer>
+#include <QSet>
 #include <QTest>
-#include <QThread>
 
 #include <algorithm>
 #include <atomic>
-#include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
-#include <mutex>
-#include <set>
-#include <thread>
+#include <utility>
 #include <vector>
 
 using AcnetVariant = ac::core::model::ACNet<8>::Variant;
 
 Q_DECLARE_METATYPE(AcnetModel)
 Q_DECLARE_METATYPE(AcnetVariant)
+Q_DECLARE_METATYPE(ScaleMethod)
 
+// The thread pool tests are in acnet_thread_pool_test: what they check depends on which upscale runs first.
 class AcnetUpscaleTest : public QObject
 {
     Q_OBJECT
@@ -31,16 +31,23 @@ private slots:
     void cleanup();
     void doublesTheSize_data();
     void doublesTheSize();
+    void refusesPagesOverThePixelLimit();
     void matchesAnime4kcppOnTheWholeImage_data();
     void matchesAnime4kcppOnTheWholeImage();
+    void backendsMatchGenericWithinOne();
     void resultDoesNotDependOnTheThreadCount();
     void keepsTransparencyAndColourAtAlphaEdges();
     void beatsLanczosOnLineArt();
-    void scalesThroughAcnetOnlyWhenEnlarging_data();
-    void scalesThroughAcnetOnlyWhenEnlarging();
-    void parallelForStaysWithinTheThreadLimit();
-    void concurrentLoopsShareTheThreadLimit();
-    void reportsTheTime();
+    void upscalesFromOneAndAHalfTimesUpToTheLimit_data();
+    void upscalesFromOneAndAHalfTimesUpToTheLimit();
+    void scalesThroughAcnetOnlyWhenItUpscales_data();
+    void scalesThroughAcnetOnlyWhenItUpscales();
+    void returnsNothingWhenCancelled();
+    void timesTheUpscale_data();
+    void timesTheUpscale();
+
+private:
+    unsigned int defaultThreads = 0;
 };
 
 namespace {
@@ -131,6 +138,11 @@ double psnr(const QImage &a, const QImage &b)
     return 10.0 * std::log10(255.0 * 255.0 * x.width() * x.height() / squaredError);
 }
 
+ac::core::Image pixelsOf(const QImage &image)
+{
+    return { image.width(), image.height(), image.depth() / 8, ac::core::Image::UInt8, const_cast<uchar *>(image.constBits()), int(image.bytesPerLine()) };
+}
+
 // Anime4KCPP's own whole-image path, as the reference for the wrapper's strips and formats.
 QImage anime4kcppUpscale(const QImage &image, AcnetVariant variant)
 {
@@ -138,10 +150,9 @@ QImage anime4kcppUpscale(const QImage &image, AcnetVariant variant)
             : image.hasAlphaChannel()                                         ? QImage::Format_RGBA8888
                                                                               : QImage::Format_RGB888;
     const QImage src = image.convertToFormat(format);
-    const ac::core::Image in(src.width(), src.height(), src.depth() / 8, ac::core::Image::UInt8, const_cast<uchar *>(src.constBits()), int(src.bytesPerLine()));
 
     const auto processor = ac::core::Processor::create<ac::core::Processor::CPU>(0, ac::core::model::ACNet<8> { variant });
-    const ac::core::Image out = processor->process(in, 2.0);
+    const ac::core::Image out = processor->process(pixelsOf(src), 2.0);
 
     QImage result(out.width(), out.height(), format);
     for (int y = 0; y < out.height(); ++y)
@@ -163,19 +174,34 @@ QImage withTransparentHalf(const QImage &image)
     return result;
 }
 
+// The same test the processor makes when it picks a backend by itself
+bool cpuRuns(const QByteArray &backend)
+{
+    if (backend == "SSE")
+        return ac::core::simd::supportSSE();
+    if (backend == "AVX")
+        return ac::core::simd::supportAVX();
+    if (backend == "FMA")
+        return ac::core::simd::supportFMA();
+    if (backend == "NEON")
+        return ac::core::simd::supportNEON();
+    return false;
+}
+
 }
 
 void AcnetUpscaleTest::initTestCase()
 {
     const auto processor = ac::core::Processor::create<ac::core::Processor::CPU>(0, ac::core::model::ACNet<8> { AcnetVariant::B4_NORMAL });
-    qInfo("Anime4KCPP CPU backend: %s", processor->name());
-    // The first upscale creates the threads, here with the default limit
+    // The first upscale sets the thread limit
     upscale2xAcnet(lineArt(16, 16));
+    defaultThreads = ac::util::parallelForThreads;
+    qInfo("Anime4KCPP CPU backend: %s, on %u threads", processor->name(), defaultThreads);
 }
 
 void AcnetUpscaleTest::cleanup()
 {
-    setAcnetMaxThreads(0);
+    ac::util::parallelForThreads = defaultThreads;
 }
 
 void AcnetUpscaleTest::doublesTheSize_data()
@@ -205,6 +231,15 @@ void AcnetUpscaleTest::doublesTheSize()
     QVERIFY(upscale2xAcnet(QImage()).isNull());
 }
 
+void AcnetUpscaleTest::refusesPagesOverThePixelLimit()
+{
+    QImage page(2001, 2000, QImage::Format_Grayscale8);
+    page.fill(255);
+    QVERIFY(qint64(page.width()) * page.height() > kAcnetMaxPixels);
+
+    QVERIFY(upscale2xAcnet(page).isNull());
+}
+
 void AcnetUpscaleTest::matchesAnime4kcppOnTheWholeImage_data()
 {
     QTest::addColumn<QImage>("image");
@@ -218,6 +253,14 @@ void AcnetUpscaleTest::matchesAnime4kcppOnTheWholeImage_data()
     QTest::newRow("gray f8b8-hdn") << gray << AcnetModel::F8B8Hdn << AcnetVariant::B8_HDN;
     QTest::newRow("colour f8b4") << colour << AcnetModel::F8B4 << AcnetVariant::B4_NORMAL;
     QTest::newRow("alpha f8b8-hdn") << withTransparentHalf(colour) << AcnetModel::F8B8Hdn << AcnetVariant::B8_HDN;
+
+    // Around the 256 row strips and their overlap of one row per convolution: 6 for F8B4, 10 for F8B8
+    for (const int height : { 1, 2, 255, 256, 257, 262, 268, 511, 512, 513 }) {
+        QTest::addRow("%d rows f8b4", height) << lineArt(40, height) << AcnetModel::F8B4 << AcnetVariant::B4_NORMAL;
+    }
+    for (const int height : { 266, 276, 522 }) {
+        QTest::addRow("%d rows f8b8-hdn", height) << lineArt(40, height) << AcnetModel::F8B8Hdn << AcnetVariant::B8_HDN;
+    }
 }
 
 void AcnetUpscaleTest::matchesAnime4kcppOnTheWholeImage()
@@ -229,13 +272,50 @@ void AcnetUpscaleTest::matchesAnime4kcppOnTheWholeImage()
     QCOMPARE(upscale2xAcnet(image, model), anime4kcppUpscale(image, variant));
 }
 
+// Every SIMD backend that is built and that this CPU runs, against the plain C++ one. They
+// round differently, so pixels may differ by one level.
+void AcnetUpscaleTest::backendsMatchGenericWithinOne()
+{
+    const QImage page = lineArt(120, 90);
+    const auto upscaleWith = [&page](int backend) {
+        const auto processor = ac::core::Processor::create<ac::core::Processor::CPU>(backend, ac::core::model::ACNet<8> { AcnetVariant::B4_NORMAL });
+        return std::pair { QByteArray(processor->name()), processor->process(pixelsOf(page), 2.0) };
+    };
+
+    // 0 lets the processor choose, 1 is Generic, then come the SIMD ones; past the last, it chooses again
+    const auto [genericName, generic] = upscaleWith(1);
+    QCOMPARE(genericName, QByteArray("Generic"));
+    QSet<QByteArray> seen { genericName };
+    for (int backend = 2;; ++backend) {
+        const auto [name, result] = upscaleWith(backend);
+        if (seen.contains(name)) {
+            break;
+        }
+        seen.insert(name);
+        if (!cpuRuns(name)) {
+            qInfo("%s is built but this CPU does not run it", name.constData());
+            continue;
+        }
+
+        QCOMPARE(result.width(), generic.width());
+        QCOMPARE(result.height(), generic.height());
+        for (int y = 0; y < result.height(); ++y) {
+            const uchar *line = result.line(y), *expected = generic.line(y);
+            for (int x = 0; x < result.width(); ++x) {
+                QVERIFY2(std::abs(line[x] - expected[x]) <= 1, qPrintable(QStringLiteral("%1 at (%2, %3): %4, Generic %5").arg(QString::fromLatin1(name)).arg(x).arg(y).arg(line[x]).arg(expected[x])));
+            }
+        }
+        qInfo("%s matches Generic", name.constData());
+    }
+}
+
 void AcnetUpscaleTest::resultDoesNotDependOnTheThreadCount()
 {
     const QImage page = colourPage(200, 300);
 
-    setAcnetMaxThreads(1);
+    ac::util::parallelForThreads = 1;
     const QImage singleThreaded = upscale2xAcnet(page);
-    setAcnetMaxThreads(3);
+    ac::util::parallelForThreads = 3;
 
     QCOMPARE(upscale2xAcnet(page), singleThreaded);
 }
@@ -279,99 +359,100 @@ void AcnetUpscaleTest::beatsLanczosOnLineArt()
     QVERIFY2(quality > lanczos + 3.0, "ACNet F8B8-HDN should beat Lanczos4 by more than 3 dB");
 }
 
-void AcnetUpscaleTest::parallelForStaysWithinTheThreadLimit()
+void AcnetUpscaleTest::upscalesFromOneAndAHalfTimesUpToTheLimit_data()
 {
-    constexpr int count = 64;
-    std::vector<std::atomic<int>> visits(count);
-    std::mutex mutex;
-    std::set<std::thread::id> threads;
+    QTest::addColumn<QSize>("imageSize");
+    QTest::addColumn<QSize>("targetSize");
+    QTest::addColumn<bool>("upscales");
 
-    ac::util::parallelForThreads = 2;
-    ac::util::parallelFor(0, count, [&](int i) {
-        visits[i]++;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        const std::lock_guard lock(mutex);
-        threads.insert(std::this_thread::get_id());
-    });
-
-    for (int i = 0; i < count; ++i)
-        QCOMPARE(visits[i].load(), 1);
-    QVERIFY(threads.size() <= 2);
+    QTest::newRow("smaller") << QSize(1000, 1500) << QSize(500, 750) << false;
+    QTest::newRow("same size") << QSize(1000, 1500) << QSize(1000, 1500) << false;
+    QTest::newRow("1.49x") << QSize(1000, 1500) << QSize(1490, 2235) << false;
+    QTest::newRow("1.5x") << QSize(1000, 1500) << QSize(1500, 2250) << true;
+    QTest::newRow("1.5x wider only") << QSize(1000, 1500) << QSize(1500, 1500) << true;
+    QTest::newRow("1.5x taller only") << QSize(1000, 1500) << QSize(1000, 2250) << true;
+    QTest::newRow("4 MP") << QSize(2000, 2000) << QSize(3000, 3000) << true;
+    QTest::newRow("over 4 MP") << QSize(2001, 2000) << QSize(3002, 3000) << false;
+    QTest::newRow("strip of 4 MP") << QSize(800, 5000) << QSize(1600, 10000) << true;
+    QTest::newRow("strip over 4 MP") << QSize(800, 5001) << QSize(1600, 10002) << false;
+    QTest::newRow("empty image") << QSize(0, 0) << QSize(100, 100) << false;
+    QTest::newRow("empty target") << QSize(100, 100) << QSize(0, 0) << false;
 }
 
-void AcnetUpscaleTest::concurrentLoopsShareTheThreadLimit()
+void AcnetUpscaleTest::upscalesFromOneAndAHalfTimesUpToTheLimit()
 {
-    std::mutex mutex;
-    std::set<std::thread::id> threads, callerThreads;
+    QFETCH(QSize, imageSize);
+    QFETCH(QSize, targetSize);
+    QFETCH(bool, upscales);
 
-    // Each loop asks for every hardware thread, from three threads at once
-    ac::util::parallelForThreads = 0;
-    std::vector<std::thread> callers;
-    for (int caller = 0; caller < 3; ++caller)
-        callers.emplace_back([&] {
-            {
-                const std::lock_guard lock(mutex);
-                callerThreads.insert(std::this_thread::get_id());
-            }
-            ac::util::parallelFor(0, 64, [&](int) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                const std::lock_guard lock(mutex);
-                threads.insert(std::this_thread::get_id());
-            });
-        });
-    for (std::thread &caller : callers)
-        caller.join();
-    for (const std::thread::id &caller : callerThreads)
-        threads.erase(caller);
-
-    // initTestCase created the pool with the default limit
-    QVERIFY(threads.size() <= size_t(std::max(1, QThread::idealThreadCount() / 2)));
+    QCOMPARE(acnetUpscales(imageSize, targetSize), upscales);
 }
 
-void AcnetUpscaleTest::scalesThroughAcnetOnlyWhenEnlarging_data()
+void AcnetUpscaleTest::scalesThroughAcnetOnlyWhenItUpscales_data()
 {
     QTest::addColumn<QSize>("size");
     QTest::addColumn<bool>("upscaled");
+    QTest::addColumn<ScaleMethod>("method");
 
-    // the page is 60x40
-    QTest::newRow("smaller") << QSize(30, 20) << false;
-    QTest::newRow("same size") << QSize(60, 40) << false;
-    QTest::newRow("wider only") << QSize(61, 40) << true;
-    QTest::newRow("1.5x") << QSize(90, 60) << true;
-    QTest::newRow("2x") << QSize(120, 80) << true;
-    QTest::newRow("3x") << QSize(180, 120) << true;
+    // The page is 60x40 and the selected method Nearest; Lanczos takes the doubled page down
+    QTest::newRow("smaller") << QSize(30, 20) << false << ScaleMethod::Nearest;
+    QTest::newRow("same size") << QSize(60, 40) << false << ScaleMethod::Nearest;
+    QTest::newRow("1.4x") << QSize(84, 56) << false << ScaleMethod::Nearest;
+    QTest::newRow("1.5x") << QSize(90, 60) << true << ScaleMethod::Lanczos;
+    QTest::newRow("1.5x wider only") << QSize(90, 40) << true << ScaleMethod::Lanczos;
+    QTest::newRow("1.5x taller only") << QSize(60, 60) << true << ScaleMethod::Lanczos;
+    QTest::newRow("2x") << QSize(120, 80) << true << ScaleMethod::Lanczos;
+    QTest::newRow("past 2x wider only") << QSize(130, 80) << true << ScaleMethod::Nearest;
+    QTest::newRow("3x") << QSize(180, 120) << true << ScaleMethod::Nearest;
 }
 
-void AcnetUpscaleTest::scalesThroughAcnetOnlyWhenEnlarging()
+void AcnetUpscaleTest::scalesThroughAcnetOnlyWhenItUpscales()
 {
     QFETCH(QSize, size);
     QFETCH(bool, upscaled);
+    QFETCH(ScaleMethod, method);
     const QImage page = colourPage(60, 40);
+    const std::atomic_bool notCancelled = false;
 
-    const QImage result = scaleImageWithAcnet(page, size, ScaleMethod::Bilinear, AcnetModel::F8B8Hdn);
+    const QImage result = scaleImageWithAcnet(page, size, ScaleMethod::Nearest, AcnetModel::F8B8Hdn, notCancelled);
 
     if (upscaled)
-        QCOMPARE(result, scaleImage(upscale2xAcnet(page, AcnetModel::F8B8Hdn), size.width(), size.height(), ScaleMethod::Bilinear));
+        QCOMPARE(result, scaleImage(upscale2xAcnet(page, AcnetModel::F8B8Hdn), size.width(), size.height(), method));
     else
         QVERIFY(result.isNull());
 }
 
-void AcnetUpscaleTest::reportsTheTime()
+void AcnetUpscaleTest::returnsNothingWhenCancelled()
 {
+    const std::atomic_bool cancelled = true;
+
+    QVERIFY(scaleImageWithAcnet(lineArt(60, 40), QSize(120, 80), ScaleMethod::Lanczos, AcnetModel::F8B4, cancelled).isNull());
+    QVERIFY(scaleImageWithAcnet(colourPage(60, 40), QSize(120, 80), ScaleMethod::Lanczos, AcnetModel::F8B4, cancelled).isNull());
+}
+
+void AcnetUpscaleTest::timesTheUpscale_data()
+{
+    QTest::addColumn<QImage>("page");
+    QTest::addColumn<AcnetModel>("model");
+
     const QImage gray = lineArt(1000, 1500);
     const QImage colour = colourPage(1000, 1500);
+    QTest::newRow("F8B4, 1000x1500 gray") << gray << AcnetModel::F8B4;
+    QTest::newRow("F8B4, 1000x1500 colour") << colour << AcnetModel::F8B4;
+    QTest::newRow("F8B8-HDN, 1000x1500 gray") << gray << AcnetModel::F8B8Hdn;
+    QTest::newRow("F8B8-HDN, 1000x1500 colour") << colour << AcnetModel::F8B8Hdn;
+}
 
-    for (const AcnetModel model : { AcnetModel::F8B4, AcnetModel::F8B8Hdn }) {
-        for (const QImage *page : { &gray, &colour }) {
-            QElapsedTimer timer;
-            timer.start();
-            const QImage result = upscale2xAcnet(*page, model);
-            qInfo("ACNet %s 2x of a 1000x1500 %s page: %lld ms on %d threads",
-                  model == AcnetModel::F8B4 ? "F8B4" : "F8B8-HDN", page == &gray ? "gray" : "colour", timer.elapsed(),
-                  std::max(1, QThread::idealThreadCount() / 2));
-            QCOMPARE(result.width(), 2000);
-        }
+void AcnetUpscaleTest::timesTheUpscale()
+{
+    QFETCH(QImage, page);
+    QFETCH(AcnetModel, model);
+
+    QImage result;
+    QBENCHMARK_ONCE {
+        result = upscale2xAcnet(page, model);
     }
+    QCOMPARE(result.width(), 2000);
 }
 
 QTEST_GUILESS_MAIN(AcnetUpscaleTest)

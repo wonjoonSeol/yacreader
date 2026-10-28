@@ -309,26 +309,32 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     scalingMethodLayout->addWidget(scalingMethodCombo);
     scalingMethodLayout->addStretch();
     scalingLayout->addLayout(scalingMethodLayout);
-    auto anime4kLayout = new QHBoxLayout();
-    anime4kUpscalingCheckBox = new QCheckBox(tr("Upscale small pages with Anime4K (ACNet)"));
-    anime4kUpscalingCheckBox->setToolTip(tr("Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory."));
-    anime4kModelCombo = new QComboBox();
-    anime4kModelCombo->addItem(tr("F8B4 (faster)"));
-    anime4kModelCombo->addItem(tr("F8B8-HDN (slower, more denoising)"));
-    connect(anime4kUpscalingCheckBox, &QCheckBox::clicked, this, [this](bool checked) {
-        Configuration::getConfiguration().setAnime4kUpscaling(checked);
-        anime4kModelCombo->setEnabled(checked);
+    auto acnetLayout = new QHBoxLayout();
+    acnetUpscalingCheckBox = new QCheckBox(tr("Upscale small pages with Anime4K (ACNet)"));
+    acnetUpscalingCheckBox->setToolTip(tr("Pages shown at 1.5 times their own size or more, up to 4 megapixels, are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory."));
+    acnetModelCombo = new QComboBox();
+    acnetModelCombo->addItem(tr("F8B4 (faster)"));
+    acnetModelCombo->addItem(tr("F8B8-HDN (slower, more denoising)"));
+    auto acnetModelRow = new QWidget();
+    auto acnetModelLayout = new QHBoxLayout(acnetModelRow);
+    acnetModelLayout->setContentsMargins(0, 0, 0, 0);
+    acnetModelLayout->addWidget(new QLabel(tr("Model")));
+    acnetModelLayout->addWidget(acnetModelCombo);
+    acnetModelRow->setEnabled(false);
+    // toggled, unlike clicked, also follows restoreOptions
+    connect(acnetUpscalingCheckBox, &QCheckBox::toggled, acnetModelRow, &QWidget::setEnabled);
+    connect(acnetUpscalingCheckBox, &QCheckBox::clicked, this, [this](bool checked) {
+        Configuration::getConfiguration().setAcnetUpscaling(checked);
         emit changedImageOptions();
     });
-    connect(anime4kModelCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setAnime4kModel(static_cast<AcnetModel>(index));
+    connect(acnetModelCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
+        Configuration::getConfiguration().setAcnetModel(static_cast<AcnetModel>(index));
         emit changedImageOptions();
     });
-    anime4kLayout->addWidget(anime4kUpscalingCheckBox);
-    anime4kLayout->addWidget(new QLabel(tr("Model")));
-    anime4kLayout->addWidget(anime4kModelCombo);
-    anime4kLayout->addStretch();
-    scalingLayout->addLayout(anime4kLayout);
+    acnetLayout->addWidget(acnetUpscalingCheckBox);
+    acnetLayout->addWidget(acnetModelRow);
+    acnetLayout->addStretch();
+    scalingLayout->addLayout(acnetLayout);
     scalingBox->setLayout(scalingLayout);
     layoutImageV->addWidget(scalingBox);
 
@@ -536,12 +542,11 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         QSignalBlocker blocker(scalingMethodCombo);
         scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
     }
-    anime4kUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAnime4kUpscaling());
+    acnetUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAcnetUpscaling());
     {
-        QSignalBlocker blocker(anime4kModelCombo);
-        anime4kModelCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getAnime4kModel()));
+        QSignalBlocker blocker(acnetModelCombo);
+        acnetModelCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getAcnetModel()));
     }
-    anime4kModelCombo->setEnabled(anime4kUpscalingCheckBox->isChecked());
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
 

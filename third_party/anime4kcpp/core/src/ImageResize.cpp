@@ -26,7 +26,11 @@ extern const decltype(&stbir_resize_extended) stbir_resize_extended_wasm;
 
 namespace ac::core::detail
 {
-   const auto stbir_resize_extended_auto = []() {
+   // YACReader: chosen on first use instead of during static initialisation, so a program that
+   // links the library does not probe the CPU (ruapu_init) when it starts.
+   static auto stbir_resize_extended_auto()
+   {
+    static const auto chosen = []() {
         // x86
 #   ifdef AC_CORE_WITH_AVX2
         if (ac::core::simd::supportAVX2()) return stbir_resize_extended_avx2;
@@ -48,6 +52,8 @@ namespace ac::core::detail
         // generic
         return stbir_resize_extended;
     }();
+    return chosen;
+   }
 
     static inline float sinc(const float x) noexcept
     {
@@ -269,7 +275,7 @@ namespace ac::core::detail
         stbir_set_edgemodes(&ctx, STBIR_EDGE_CLAMP, STBIR_EDGE_CLAMP);
         stbir_set_filter_callbacks(&ctx, filter, support, filter, support);
 
-        stbir_resize_extended_auto(&ctx);
+        stbir_resize_extended_auto()(&ctx);
     }
 }
 

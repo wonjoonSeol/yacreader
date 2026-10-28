@@ -152,7 +152,7 @@
 <context>
     <name>ContinuousPageWidget</name>
     <message>
-        <location filename="continuous_page_widget.cpp" line="280"/>
+        <location filename="continuous_page_widget.cpp" line="321"/>
         <source>Loading page %1</source>
         <translation>Carregando página %1</translation>
     </message>
@@ -282,12 +282,12 @@
         <translation>Tamanho de &quot;Ir para Comic Flow&quot;</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="358"/>
+        <location filename="options_dialog.cpp" line="364"/>
         <source>Appearance</source>
         <translation>Aparência</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="374"/>
+        <location filename="options_dialog.cpp" line="380"/>
         <source>Options</source>
         <translation>Opções</translation>
     </message>
@@ -323,7 +323,8 @@
     </message>
     <message>
         <location filename="options_dialog.cpp" line="314"/>
-        <source>Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
+        <source>Pages shown at 1.5 times their own size or more, up to 4 megapixels, are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
+        <oldsource>Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -337,17 +338,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="328"/>
+        <location filename="options_dialog.cpp" line="321"/>
         <source>Model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="390"/>
+        <location filename="options_dialog.cpp" line="396"/>
         <source>Comics directory</source>
         <translation>Diretório de quadrinhos</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="365"/>
+        <location filename="options_dialog.cpp" line="371"/>
         <source>Restart is needed</source>
         <translation>Reiniciar é necessário</translation>
     </message>
@@ -607,17 +608,17 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="355"/>
+        <location filename="options_dialog.cpp" line="361"/>
         <source>General</source>
         <translation>Em geral</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="356"/>
+        <location filename="options_dialog.cpp" line="362"/>
         <source>Page Flow</source>
         <translation>Fluxo de página</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="357"/>
+        <location filename="options_dialog.cpp" line="363"/>
         <source>Image adjustment</source>
         <translation>Ajuste de imagem</translation>
     </message>
@@ -856,12 +857,12 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
     <name>Viewer</name>
     <message>
         <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1918"/>
+        <location filename="viewer.cpp" line="1917"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>Pressione &apos;O&apos; para abrir um quadrinho.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1936"/>
+        <location filename="viewer.cpp" line="1935"/>
         <source>Loading...please wait!</source>
         <translation>Carregando... por favor, aguarde!</translation>
     </message>
@@ -886,17 +887,17 @@ Se nenhum estiver ativo, a tecla Escape não faz nada.</translation>
         <translation>Erro CRC</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1947"/>
+        <location filename="viewer.cpp" line="1946"/>
         <source>Page not available!</source>
         <translation>Página não disponível!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2287"/>
+        <location filename="viewer.cpp" line="2286"/>
         <source>Cover!</source>
         <translation>Cobrir!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2301"/>
+        <location filename="viewer.cpp" line="2300"/>
         <source>Last page!</source>
         <translation>Última página!</translation>
     </message>

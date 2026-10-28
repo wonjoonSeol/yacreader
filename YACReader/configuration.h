@@ -136,10 +136,10 @@ public:
 
     ScaleMethod getScalingMethod() { return static_cast<ScaleMethod>(settings->value(SCALING_METHOD, static_cast<int>(ScaleMethod::Lanczos)).toInt()); }
     void setScalingMethod(ScaleMethod method) { settings->setValue(SCALING_METHOD, static_cast<int>(method)); }
-    bool getAnime4kUpscaling() { return settings->value(ANIME4K_UPSCALING, false).toBool(); }
-    void setAnime4kUpscaling(bool b) { settings->setValue(ANIME4K_UPSCALING, b); }
-    AcnetModel getAnime4kModel() { return settings->value(ANIME4K_MODEL, 0).toInt() == static_cast<int>(AcnetModel::F8B8Hdn) ? AcnetModel::F8B8Hdn : AcnetModel::F8B4; }
-    void setAnime4kModel(AcnetModel model) { settings->setValue(ANIME4K_MODEL, static_cast<int>(model)); }
+    bool getAcnetUpscaling() { return settings->value(ANIME4K_UPSCALING, false).toBool(); }
+    void setAcnetUpscaling(bool b) { settings->setValue(ANIME4K_UPSCALING, b); }
+    AcnetModel getAcnetModel() { return settings->value(ANIME4K_MODEL, 0).toInt() == static_cast<int>(AcnetModel::F8B8Hdn) ? AcnetModel::F8B8Hdn : AcnetModel::F8B4; }
+    void setAcnetModel(AcnetModel model) { settings->setValue(ANIME4K_MODEL, static_cast<int>(model)); }
 };
 
 }

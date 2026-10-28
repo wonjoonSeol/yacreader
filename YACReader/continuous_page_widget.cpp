@@ -11,7 +11,6 @@
 #include <QRunnable>
 #include <QThread>
 
-#include <optional>
 #include <utility>
 
 namespace {
@@ -25,14 +24,13 @@ constexpr int kPrefetchAhead = 2;
 // through a queued invocation. The widget is the invocation context, so if it is
 // destroyed before the result is delivered Qt drops the call; the widget's
 // destructor waits for running tasks so the raw pointer stays valid during run().
-// With an ACNet model it is the second pass, whose result replaces the plain scale.
 class PageScaleTask : public QRunnable
 {
 public:
     PageScaleTask(ContinuousPageWidget *widget, int pageIndex, quint64 generation,
                   QImage source, QSize sourceSize, qint64 sourceCacheKey,
                   QSize targetSize, QSize targetPixelSize, qreal devicePixelRatio,
-                  ScaleMethod method, std::optional<AcnetModel> acnetModel = { })
+                  ScaleMethod method)
         : m_widget(widget),
           m_pageIndex(pageIndex),
           m_generation(generation),
@@ -42,17 +40,14 @@ public:
           m_targetSize(targetSize),
           m_targetPixelSize(targetPixelSize),
           m_devicePixelRatio(devicePixelRatio),
-          m_method(method),
-          m_acnetModel(acnetModel)
+          m_method(method)
     {
         setAutoDelete(true);
     }
 
     void run() override
     {
-        QImage scaled = m_acnetModel
-                ? scaleImageWithAcnet(m_source, m_targetPixelSize, m_method, *m_acnetModel)
-                : scaleImage(m_source, m_targetPixelSize.width(), m_targetPixelSize.height(), m_method);
+        QImage scaled = scaleImage(m_source, m_targetPixelSize.width(), m_targetPixelSize.height(), m_method);
         if (!scaled.isNull()) {
             scaled.setDevicePixelRatio(m_devicePixelRatio);
         }
@@ -60,7 +55,6 @@ public:
         ContinuousPageWidget *widget = m_widget;
         const int pageIndex = m_pageIndex;
         const quint64 generation = m_generation;
-        const bool upscaled = m_acnetModel.has_value();
         const qint64 sourceCacheKey = m_sourceCacheKey;
         const QSize sourceSize = m_sourceSize;
         const QSize targetSize = m_targetSize;
@@ -69,8 +63,8 @@ public:
 
         QMetaObject::invokeMethod(
                 widget,
-                [widget, pageIndex, generation, upscaled, scaled = std::move(scaled), sourceCacheKey, sourceSize, targetSize, targetPixelSize, dpr]() mutable {
-                    widget->deliverScaledImage(pageIndex, generation, upscaled, std::move(scaled), sourceCacheKey, sourceSize, targetSize, targetPixelSize, dpr);
+                [widget, pageIndex, generation, scaled = std::move(scaled), sourceCacheKey, sourceSize, targetSize, targetPixelSize, dpr]() mutable {
+                    widget->deliverScaledImage(pageIndex, generation, std::move(scaled), sourceCacheKey, sourceSize, targetSize, targetPixelSize, dpr);
                 },
                 Qt::QueuedConnection);
     }
@@ -86,7 +80,50 @@ private:
     QSize m_targetPixelSize;
     qreal m_devicePixelRatio;
     ScaleMethod m_method;
-    std::optional<AcnetModel> m_acnetModel;
+};
+
+// ACNet's pass over a page already shown with the plain scale. It hands its result back like
+// PageScaleTask; the widget knows which page it is for, since one runs at a time.
+class PageUpscaleTask : public QRunnable
+{
+public:
+    PageUpscaleTask(ContinuousPageWidget *widget, QImage source, QSize targetPixelSize, qreal devicePixelRatio,
+                    ScaleMethod method, AcnetModel model, std::shared_ptr<const std::atomic_bool> cancelled)
+        : m_widget(widget),
+          m_source(std::move(source)),
+          m_targetPixelSize(targetPixelSize),
+          m_devicePixelRatio(devicePixelRatio),
+          m_method(method),
+          m_model(model),
+          m_cancelled(std::move(cancelled))
+    {
+        setAutoDelete(true);
+    }
+
+    void run() override
+    {
+        QImage upscaled = scaleImageWithAcnet(m_source, m_targetPixelSize, m_method, m_model, *m_cancelled);
+        if (!upscaled.isNull()) {
+            upscaled.setDevicePixelRatio(m_devicePixelRatio);
+        }
+
+        ContinuousPageWidget *widget = m_widget;
+        QMetaObject::invokeMethod(
+                widget,
+                [widget, upscaled = std::move(upscaled)]() mutable {
+                    widget->deliverUpscaledImage(std::move(upscaled));
+                },
+                Qt::QueuedConnection);
+    }
+
+private:
+    ContinuousPageWidget *m_widget;
+    QImage m_source;
+    QSize m_targetPixelSize;
+    qreal m_devicePixelRatio;
+    ScaleMethod m_method;
+    AcnetModel m_model;
+    std::shared_ptr<const std::atomic_bool> m_cancelled;
 };
 
 ContinuousPageWidget::ContinuousPageWidget(QWidget *parent)
@@ -101,6 +138,7 @@ ContinuousPageWidget::ContinuousPageWidget(QWidget *parent)
     // Leave headroom for the page-decoding threads; scaling is heavy but should
     // not monopolize every core.
     scalePool.setMaxThreadCount(std::max(1, QThread::idealThreadCount() / 2));
+    upscalePool.setMaxThreadCount(1);
 }
 
 ContinuousPageWidget::~ContinuousPageWidget()
@@ -110,7 +148,11 @@ ContinuousPageWidget::~ContinuousPageWidget()
     // task's queued invocation targets a valid object; Qt removes that posted
     // event when this QObject is destroyed.
     scalePool.clear();
+    if (runningUpscale) {
+        *runningUpscale->cancelled = true;
+    }
     scalePool.waitForDone();
+    upscalePool.waitForDone();
 }
 
 void ContinuousPageWidget::applyTheme(const Theme &)
@@ -221,7 +263,6 @@ void ContinuousPageWidget::paintEvent(QPaintEvent *event)
         scaledPageCache.invalidateForWidth(effectivePixelWidth);
         ++cacheGeneration;
         pendingScaleRequests.clear();
-        pendingUpscale.reset();
         scalePool.clear();
     }
 
@@ -356,7 +397,7 @@ void ContinuousPageWidget::enqueueScale(int pageIndex, const QImage *source, con
     scalePool.start(task);
 }
 
-void ContinuousPageWidget::deliverScaledImage(int pageIndex, quint64 generation, bool upscaled, QImage scaledImage,
+void ContinuousPageWidget::deliverScaledImage(int pageIndex, quint64 generation, QImage scaledImage,
                                               qint64 sourceCacheKey, QSize sourceSize, QSize targetSize,
                                               QSize targetPixelSize, qreal devicePixelRatio)
 {
@@ -365,11 +406,6 @@ void ContinuousPageWidget::deliverScaledImage(int pageIndex, quint64 generation,
     deliveredKey.targetPixelSize = targetPixelSize;
     deliveredKey.devicePixelRatio = devicePixelRatio;
     deliveredKey.generation = generation;
-
-    if (upscaled) {
-        deliverUpscaledImage(pageIndex, deliveredKey, std::move(scaledImage));
-        return;
-    }
 
     // Only consume this result if it still matches the page's pending request.
     // A stale task (older source / superseded request) is dropped without
@@ -398,58 +434,62 @@ void ContinuousPageWidget::deliverScaledImage(int pageIndex, quint64 generation,
     startNextUpscale();
 }
 
-// The ACNet image replaces the plain one only while the page still shows the same source at the same size, in the
-// same generation; option changes start a new generation.
-void ContinuousPageWidget::deliverUpscaledImage(int pageIndex, const ScaleRequestKey &key, QImage image)
+void ContinuousPageWidget::deliverUpscaledImage(QImage image)
 {
-    if (!pendingUpscale || pendingUpscale->pageIndex != pageIndex || !(pendingUpscale->key == key)) {
+    if (!runningUpscale) {
         return;
     }
-    pendingUpscale.reset();
+    const RunningUpscale upscale = *std::exchange(runningUpscale, std::nullopt);
 
-    const auto entry = scaledPageCache.pages.find(pageIndex);
-    if (key.generation == cacheGeneration && entry != scaledPageCache.pages.end() && entry->sourceCacheKey == key.sourceCacheKey && entry->targetPixelSize == key.targetPixelSize && qFuzzyCompare(entry->targetDevicePixelRatio, key.devicePixelRatio)) {
+    const auto entry = scaledPageCache.pages.find(upscale.pageIndex);
+    if (!*upscale.cancelled && entry != scaledPageCache.pages.end() && entry->scaledImage.cacheKey() == upscale.scaledImageKey) {
         entry->upscaled = true;
         if (!image.isNull()) {
             entry->scaledImage = std::move(image);
-            update(pageRectFor(pageIndex));
+            update(pageRectFor(upscale.pageIndex));
         }
     }
 
     startNextUpscale();
 }
 
-// ACNet's pass over the cached pages shown larger than their size. One page at a time, since each one already uses
-// all the threads ACNet may take, and at a lower priority than the plain scales. Visible pages go first, then the
-// ones ahead, then the ones behind.
+void ContinuousPageWidget::setAcnetModel(std::optional<AcnetModel> model)
+{
+    if (acnetModel == model) {
+        return;
+    }
+    acnetModel = model;
+    resetScaledCache();
+    update();
+}
+
+// ACNet's pass over the cached pages that it enlarges, one page at a time since each one
+// already uses all the threads ACNet may take: visible pages first, then the ones ahead,
+// then the ones behind.
 void ContinuousPageWidget::startNextUpscale()
 {
-    Configuration &configuration = Configuration::getConfiguration();
-    if (pendingUpscale || !provider || !configuration.getAnime4kUpscaling()) {
+    if (runningUpscale) {
+        // Stop it early once its page scrolled out of the cache or was scaled again
+        const auto entry = scaledPageCache.pages.constFind(runningUpscale->pageIndex);
+        if (entry == scaledPageCache.pages.cend() || entry->scaledImage.cacheKey() != runningUpscale->scaledImageKey) {
+            *runningUpscale->cancelled = true;
+        }
+        return;
+    }
+    if (!acnetModel || !provider) {
         return;
     }
 
     for (const int pageIndex : upscaleOrder()) {
         const auto entry = scaledPageCache.pages.constFind(pageIndex);
         const QImage *source = provider->image(pageIndex);
-        if (entry == scaledPageCache.pages.cend() || entry->upscaled || !source || source->isNull() || source->cacheKey() != entry->sourceCacheKey) {
-            continue;
-        }
-        if (entry->targetPixelSize.width() <= source->width() && entry->targetPixelSize.height() <= source->height()) {
+        if (entry == scaledPageCache.pages.cend() || entry->upscaled || !source || source->isNull() || source->cacheKey() != entry->sourceCacheKey || !acnetUpscales(source->size(), entry->targetPixelSize)) {
             continue;
         }
 
-        ScaleRequestKey key;
-        key.sourceCacheKey = entry->sourceCacheKey;
-        key.targetPixelSize = entry->targetPixelSize;
-        key.devicePixelRatio = entry->targetDevicePixelRatio;
-        key.generation = cacheGeneration;
-        pendingUpscale = PendingUpscale { pageIndex, key };
-
-        auto *task = new PageScaleTask(this, pageIndex, cacheGeneration, *source, source->size(), source->cacheKey(),
-                                       entry->targetSize, entry->targetPixelSize, entry->targetDevicePixelRatio,
-                                       configuration.getScalingMethod(), configuration.getAnime4kModel());
-        scalePool.start(task, -1);
+        runningUpscale = RunningUpscale { pageIndex, entry->scaledImage.cacheKey(), std::make_shared<std::atomic_bool>(false) };
+        upscalePool.start(new PageUpscaleTask(this, *source, entry->targetPixelSize, entry->targetDevicePixelRatio,
+                                              Configuration::getConfiguration().getScalingMethod(), *acnetModel, runningUpscale->cancelled));
         return;
     }
 }
@@ -478,7 +518,6 @@ void ContinuousPageWidget::resetScaledCache()
     scaledPageCache.invalidateAll();
     ++cacheGeneration;
     pendingScaleRequests.clear();
-    pendingUpscale.reset();
     scalePool.clear();
 }
 
