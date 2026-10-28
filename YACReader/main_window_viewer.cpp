@@ -1845,7 +1845,9 @@ void MainWindowViewer::applyTheme(const Theme &theme)
     setIcon(showInfoAction, toolbarTheme.showInfoAction, toolbarTheme.showInfoAction18x18);
     setIcon(closeAction, toolbarTheme.closeAction, toolbarTheme.closeAction18x18);
     setIcon(exitAction, toolbarTheme.closeAction, toolbarTheme.closeAction18x18);
-    setIcon(toggleFullScreenAction, toolbarTheme.exitFullScreenAction, toolbarTheme.exitFullScreenAction18x18);
+    // only the full screen toolbar button exits; the action itself toggles, so the shortcuts editor shows it without an icon as before
+    if (auto *exitFullScreenTBAction = toggleFullScreenAction->property("wrappedToolbarAction").value<QAction *>())
+        exitFullScreenTBAction->setIcon(toolbarTheme.exitFullScreenAction18x18);
     setIcon(showDictionaryAction, toolbarTheme.showDictionaryAction, toolbarTheme.showDictionaryAction18x18);
     setIcon(adjustToFullSizeAction, toolbarTheme.adjustToFullSizeAction, toolbarTheme.adjustToFullSizeAction18x18);
     setIcon(fitToPageAction, toolbarTheme.fitToPageAction, toolbarTheme.fitToPageAction18x18);
