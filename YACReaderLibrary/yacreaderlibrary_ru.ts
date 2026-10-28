@@ -519,7 +519,7 @@
 <context>
     <name>DBHelper</name>
     <message>
-        <location filename="db_helper.cpp" line="1365"/>
+        <location filename="db_helper.cpp" line="1384"/>
         <source>The folder entry could not be found in the library database.</source>
         <translation>Запись о папке не найдена в базе данных библиотеки.</translation>
     </message>
@@ -809,32 +809,32 @@
         <translation type="obsolete">Недавно добавленные</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="853"/>
+        <location filename="grid_comics_view.cpp" line="838"/>
         <source>Manga</source>
         <translation>Манга</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="856"/>
+        <location filename="grid_comics_view.cpp" line="841"/>
         <source>Western manga</source>
         <translation>Западная манга</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="859"/>
+        <location filename="grid_comics_view.cpp" line="844"/>
         <source>Web comic</source>
         <translation>Веб-комикс</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="862"/>
+        <location filename="grid_comics_view.cpp" line="847"/>
         <source>Yonkoma</source>
         <translation>Ёнкома</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="866"/>
+        <location filename="grid_comics_view.cpp" line="851"/>
         <source>Comic</source>
         <translation>Комикс</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="870"/>
+        <location filename="grid_comics_view.cpp" line="855"/>
         <source>Unknown</source>
         <translation>Неизвестно</translation>
     </message>

@@ -87,6 +87,26 @@ struct ThemeParams {
     TranslatorParams translatorParams;
 };
 
+void setToolbarIcon(QIcon &icon,
+                    const QString &path,
+                    const QColor &iconColor,
+                    const QColor &disabledColor,
+                    const QColor &checkedColor,
+                    const QString &themeId)
+{
+    // Normal
+    const QString normalPath = recoloredSvgToThemeFile(path, iconColor, themeId);
+    // Disabled
+    const QString disabledPath = recoloredSvgToThemeFile(path, disabledColor, themeId, { .suffix = "_disabled" });
+    // Checked (On state)
+    const QString checkedPath = recoloredSvgToThemeFile(path, checkedColor, themeId, { .suffix = "_checked" });
+
+    icon.addFile(normalPath, QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(disabledPath, QSize(), QIcon::Disabled, QIcon::Off);
+    icon.addFile(checkedPath, QSize(), QIcon::Normal, QIcon::On);
+    icon.addFile(disabledPath, QSize(), QIcon::Disabled, QIcon::On);
+}
+
 void setToolbarIconPair(QIcon &icon,
                         QIcon &icon18,
                         const QString &basePath,
@@ -101,25 +121,8 @@ void setToolbarIconPair(QIcon &icon,
     else
         path18.append("_18x18");
 
-    // Normal
-    const QString normalPath = recoloredSvgToThemeFile(basePath, iconColor, themeId);
-    const QString normalPath18 = recoloredSvgToThemeFile(path18, iconColor, themeId);
-    // Disabled
-    const QString disabledPath = recoloredSvgToThemeFile(basePath, disabledColor, themeId, { .suffix = "_disabled" });
-    const QString disabledPath18 = recoloredSvgToThemeFile(path18, disabledColor, themeId, { .suffix = "_disabled" });
-    // Checked (On state)
-    const QString checkedPath = recoloredSvgToThemeFile(basePath, checkedColor, themeId, { .suffix = "_checked" });
-    const QString checkedPath18 = recoloredSvgToThemeFile(path18, checkedColor, themeId, { .suffix = "_checked" });
-
-    icon.addFile(normalPath, QSize(), QIcon::Normal, QIcon::Off);
-    icon.addFile(disabledPath, QSize(), QIcon::Disabled, QIcon::Off);
-    icon.addFile(checkedPath, QSize(), QIcon::Normal, QIcon::On);
-    icon.addFile(disabledPath, QSize(), QIcon::Disabled, QIcon::On);
-
-    icon18.addFile(normalPath18, QSize(), QIcon::Normal, QIcon::Off);
-    icon18.addFile(disabledPath18, QSize(), QIcon::Disabled, QIcon::Off);
-    icon18.addFile(checkedPath18, QSize(), QIcon::Normal, QIcon::On);
-    icon18.addFile(disabledPath18, QSize(), QIcon::Disabled, QIcon::On);
+    setToolbarIcon(icon, basePath, iconColor, disabledColor, checkedColor, themeId);
+    setToolbarIcon(icon18, path18, iconColor, disabledColor, checkedColor, themeId);
 }
 
 Theme makeTheme(const ThemeParams &params)
@@ -157,6 +160,10 @@ Theme makeTheme(const ThemeParams &params)
     setToolbarIconPairT(theme.toolbar.showMagnifyingGlassAction, theme.toolbar.showMagnifyingGlassAction18x18, ":/images/viewer_toolbar/magnifyingGlass.svg");
     setToolbarIconPairT(theme.toolbar.setBookmarkAction, theme.toolbar.setBookmarkAction18x18, ":/images/viewer_toolbar/bookmark.svg");
     setToolbarIconPairT(theme.toolbar.showBookmarksAction, theme.toolbar.showBookmarksAction18x18, ":/images/viewer_toolbar/showBookmarks.svg");
+    setToolbarIconPairT(theme.toolbar.toggleFavoriteAction, theme.toolbar.toggleFavoriteAction18x18, ":/images/viewer_toolbar/favorite.svg");
+    setToolbarIconPairT(theme.toolbar.ratingStar, theme.toolbar.ratingStar18x18, ":/images/viewer_toolbar/ratingStar.svg");
+    // only the toolbar shows empty stars
+    setToolbarIcon(theme.toolbar.ratingStarEmpty18x18, ":/images/viewer_toolbar/ratingStarEmpty_18x18.svg", params.toolbarParams.iconColor, params.toolbarParams.iconDisabledColor, params.toolbarParams.iconCheckedColor, params.meta.id);
     setToolbarIconPairT(theme.toolbar.showShorcutsAction, theme.toolbar.showShorcutsAction18x18, ":/images/viewer_toolbar/shortcuts.svg");
     setToolbarIconPairT(theme.toolbar.showInfoAction, theme.toolbar.showInfoAction18x18, ":/images/viewer_toolbar/info.svg");
     setToolbarIconPairT(theme.toolbar.closeAction, theme.toolbar.closeAction18x18, ":/images/viewer_toolbar/close.svg");

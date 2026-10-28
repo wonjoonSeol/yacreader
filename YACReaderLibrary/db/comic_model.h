@@ -131,6 +131,7 @@ public:
     void reload(const ComicDB &comic);
     void resetComicRating(const QModelIndex &mi);
     void notifyCoverChange(const ComicDB &comic);
+    void notifyFavoriteChange(qulonglong comicId);
 
     Q_INVOKABLE QUrl getCoverUrlPathForComicHash(const QString &hash) const;
 

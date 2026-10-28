@@ -519,7 +519,7 @@
 <context>
     <name>DBHelper</name>
     <message>
-        <location filename="db_helper.cpp" line="1365"/>
+        <location filename="db_helper.cpp" line="1384"/>
         <source>The folder entry could not be found in the library database.</source>
         <translation>라이브러리 데이터베이스에서 폴더 항목을 찾을 수 없습니다.</translation>
     </message>
@@ -809,32 +809,32 @@
         <translation type="obsolete">최근 추가</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="853"/>
+        <location filename="grid_comics_view.cpp" line="838"/>
         <source>Manga</source>
         <translation>망가</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="856"/>
+        <location filename="grid_comics_view.cpp" line="841"/>
         <source>Western manga</source>
         <translation>서양식 망가</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="859"/>
+        <location filename="grid_comics_view.cpp" line="844"/>
         <source>Web comic</source>
         <translation>웹툰</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="862"/>
+        <location filename="grid_comics_view.cpp" line="847"/>
         <source>Yonkoma</source>
         <translation>4컷 만화</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="866"/>
+        <location filename="grid_comics_view.cpp" line="851"/>
         <source>Comic</source>
         <translation>만화</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="870"/>
+        <location filename="grid_comics_view.cpp" line="855"/>
         <source>Unknown</source>
         <translation>알 수 없음</translation>
     </message>

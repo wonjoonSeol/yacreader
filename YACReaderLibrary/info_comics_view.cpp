@@ -70,6 +70,7 @@ void InfoComicsView::setModel(ComicModel *model)
     comicInfoHelper->setModel(model);
 
     ComicsView::setModel(model);
+    connectInfoPanelRefresh([] { return true; });
 
     QQmlContext *ctxt = view->rootContext();
 

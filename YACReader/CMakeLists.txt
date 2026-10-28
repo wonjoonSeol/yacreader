@@ -64,6 +64,8 @@ qt_add_executable(YACReader WIN32
     notifications_label_widget.cpp
     yacreader_local_client.h
     yacreader_local_client.cpp
+    rating_favorite_controller.h
+    rating_favorite_controller.cpp
     main.cpp
     # App-specific themes + shared theme_manager (depends on app theme.h)
     themes/theme.h
@@ -143,6 +145,8 @@ set(yacreader_image_files
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/toWidth.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/translator.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/zoom.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/favorite.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/ratingStar.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/bookmark_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/close_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/doublePage_18x18.svg
@@ -173,6 +177,9 @@ set(yacreader_image_files
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/toWidth_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/translator_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/zoom_18x18.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/favorite_18x18.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/ratingStar_18x18.svg
+    ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/ratingStarEmpty_18x18.svg
     ${PROJECT_SOURCE_DIR}/images/viewer_toolbar/menuArrow.svg
 )
 set(yacreader_file_files

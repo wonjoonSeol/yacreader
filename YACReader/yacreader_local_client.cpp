@@ -28,20 +28,11 @@ void YACReaderLocalClient::readMessage()
 }
 #include <QMessageBox>
 
-bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, OpenComicSource source)
+bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, const ComicDB &comic, OpenComicSource source, ComicInfoAnswer &answer)
 {
     localSocket->connectToServer(YACREADERLIBRARY_GUID);
     if (localSocket->isOpen()) {
-        QByteArray block;
-        QDataStream out(&block, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_4_8);
-        out << (quint32)0;
-        out << (quint8)YACReader::RequestComicInfo;
-        out << libraryId;
-        out << source;
-        out << comic;
-        out.device()->seek(0);
-        out << (quint32)(block.size() - sizeof(quint32));
+        const QByteArray block = comicInfoRequest(libraryId, source, comic);
 
         int written = 0;
         int previousWritten = 0;
@@ -105,8 +96,8 @@ bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, Q
         }
 
         QDataStream dataStream(data);
-        dataStream >> comic;
-        dataStream >> siblings;
+        dataStream.setVersion(QDataStream::Qt_4_8);
+        dataStream >> answer;
         localSocket->close();
         return true;
     } else {

@@ -6,8 +6,11 @@ class QString;
 
 #include <QList>
 #include <QMap>
+#include <QSet>
 #include <QUuid>
 #include <QVariantMap>
+
+#include <functional>
 
 class ComicDB;
 class Folder;
@@ -25,6 +28,8 @@ class DBHelper
 public:
     // server
     static YACReaderLibraries getLibraries();
+    // runs function on the database of the library; false, without running it, when the library is unknown or its database cannot be opened
+    static bool withLibraryDatabase(qulonglong libraryId, const std::function<void(QSqlDatabase &)> &function);
     static QList<LibraryItem *> getFolderSubfoldersFromLibrary(qulonglong libraryId, qulonglong folderId);
     static QList<LibraryItem *> getFolderComicsFromLibrary(qulonglong libraryId, qulonglong folderId);
     static QList<LibraryItem *> getFolderComicsFromLibrary(qulonglong libraryId, qulonglong folderId, bool sort);
@@ -58,6 +63,8 @@ public:
     static qulonglong insertReadingList(const QString &name, QSqlDatabase &db);
     static qulonglong insertReadingSubList(const QString &name, qulonglong parentId, int ordering, QSqlDatabase &db);
     static void insertComicsInFavorites(const QList<ComicDB> &comicsList, QSqlDatabase &db);
+    // adds the comic at the end of the favorites or removes it; false when the comic is not in the library
+    static bool setComicFavorite(qulonglong comicId, bool favorite, QSqlDatabase &db);
     static void insertComicsInLabel(const QList<ComicDB> &comicsList, qulonglong labelId, QSqlDatabase &db);
     static void insertComicsInReadingList(const QList<ComicDB> &comicsList, qulonglong readingListId, QSqlDatabase &db);
     // updates
@@ -74,6 +81,7 @@ public:
     // targeted updates, they only write the columns that change; unread matches ComicModel::setComicsRead(Unread)
     static bool setComicRead(qulonglong comicId, bool read, QSqlDatabase &db);
     static bool setComicType(qulonglong comicId, YACReader::FileType type, QSqlDatabase &db);
+    static bool setComicRating(qulonglong comicId, int rating, QSqlDatabase &db);
     static bool setFolderFinished(qulonglong folderId, bool finished, QSqlDatabase &db);
     static bool setFolderCompleted(qulonglong folderId, bool completed, QSqlDatabase &db);
     static void setComicAsReading(qulonglong libraryId, const ComicInfo &comicInfo);
@@ -115,6 +123,7 @@ public:
     static ComicInfo getComicInfoFromQuery(QSqlQuery &query, const QString &idKey = "id");
     // queries
     static bool isFavoriteComic(qulonglong id, QSqlDatabase &db);
+    static QSet<qulonglong> getFavoriteComicIds(QSqlDatabase &db);
 
     // library
     static QVariantMap getLibraryInfoData(QUuid id);

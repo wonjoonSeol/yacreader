@@ -185,7 +185,6 @@ private:
     QTimer *viewStateTimer;
     std::optional<ContentViewState> pendingViewState;
     QMetaObject::Connection modelDataChangedConnection;
-    QMetaObject::Connection modelFavoritesChangedConnection;
 
     ComicDB currentComic;
 

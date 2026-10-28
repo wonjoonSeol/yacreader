@@ -64,6 +64,8 @@ target_sources(worker INTERFACE
 add_library(common_all STATIC
     comic_db.h
     comic_db.cpp
+    yacreader_ipc.h
+    yacreader_ipc.cpp
     folder.h
     folder.cpp
     library_item.h

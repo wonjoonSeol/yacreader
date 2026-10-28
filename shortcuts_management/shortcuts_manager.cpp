@@ -52,6 +52,11 @@ void ShortcutsManager::initDefaultShorcuts()
     defaultShorcuts.insert(SHOW_MAGNIFYING_GLASS_ACTION_Y, Qt::Key_Z);
     defaultShorcuts.insert(SET_BOOKMARK_ACTION_Y, Qt::CTRL | Qt::Key_M);
     defaultShorcuts.insert(SHOW_BOOKMARKS_ACTION_Y, Qt::Key_M);
+    defaultShorcuts.insert(RATE_1_ACTION_Y, Qt::Key_1);
+    defaultShorcuts.insert(RATE_2_ACTION_Y, Qt::Key_2);
+    defaultShorcuts.insert(RATE_3_ACTION_Y, Qt::Key_3);
+    defaultShorcuts.insert(RATE_4_ACTION_Y, Qt::Key_4);
+    defaultShorcuts.insert(RATE_5_ACTION_Y, Qt::Key_5);
     defaultShorcuts.insert(SHOW_INFO_ACTION_Y, Qt::Key_I);
     defaultShorcuts.insert(CLOSE_ACTION_Y, Qt::Key_Escape);
     defaultShorcuts.insert(SHOW_DICTIONARY_ACTION_Y, Qt::Key_T);
@@ -97,27 +102,36 @@ void ShortcutsManager::resetToDefaults()
     // TODO reset to defaults
 }
 
-QString ShortcutsManager::getShortcut(const QString &name)
+namespace {
+QString settingsFilePath()
 {
 #ifdef YACREADER
-    QString filePath = "/YACReader.ini";
+    return YACReader::getSettingsPath() + "/YACReader.ini";
 #else
-    QString filePath = "/YACReaderLibrary.ini";
+    return YACReader::getSettingsPath() + "/YACReaderLibrary.ini";
 #endif
-    QSettings s(YACReader::getSettingsPath() + filePath, QSettings::IniFormat);
+}
+}
+
+QString ShortcutsManager::getShortcut(const QString &name)
+{
+    QSettings s(settingsFilePath(), QSettings::IniFormat);
     s.beginGroup("shortcuts");
 
     return s.value(name, defaultShorcuts.value(name)).toString();
 }
 
+bool ShortcutsManager::hasSavedShortcut(const QString &name)
+{
+    QSettings s(settingsFilePath(), QSettings::IniFormat);
+    s.beginGroup("shortcuts");
+
+    return s.contains(name);
+}
+
 void ShortcutsManager::saveShortcut(QAction *action)
 {
-#ifdef YACREADER
-    QString filePath = "/YACReader.ini";
-#else
-    QString filePath = "/YACReaderLibrary.ini";
-#endif
-    QSettings s(YACReader::getSettingsPath() + filePath, QSettings::IniFormat);
+    QSettings s(settingsFilePath(), QSettings::IniFormat);
     s.beginGroup("shortcuts");
 
     return s.setValue(action->data().toString(), action->shortcut().toString());
@@ -140,4 +154,12 @@ bool ShortcutsManager::checkConflicts(const QKeySequence &shortcut, const QActio
     }
 
     return false;
+}
+
+void ShortcutsManager::clearConflictingDefaults(const QList<QAction *> &actionsWithNewDefaults)
+{
+    for (auto *action : actionsWithNewDefaults) {
+        if (!hasSavedShortcut(action->data().toString()) && checkConflicts(action->shortcut(), action))
+            action->setShortcut(QKeySequence());
+    }
 }

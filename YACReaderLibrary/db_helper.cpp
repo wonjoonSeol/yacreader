@@ -37,6 +37,25 @@ YACReaderLibraries DBHelper::getLibraries()
     return libraries;
 }
 
+bool DBHelper::withLibraryDatabase(qulonglong libraryId, const std::function<void(QSqlDatabase &)> &function)
+{
+    // an unknown library has an empty path, which would make the database path relative to the working directory
+    const QString libraryPath = DBHelper::getLibraries().getPath(libraryId);
+    if (libraryPath.isEmpty())
+        return false;
+
+    QString connectionName;
+    {
+        QSqlDatabase db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(libraryPath));
+        if (!db.isValid())
+            return false;
+        function(db);
+        connectionName = db.connectionName();
+    }
+    QSqlDatabase::removeDatabase(connectionName);
+    return true;
+}
+
 QList<LibraryItem *> DBHelper::getFolderSubfoldersFromLibrary(qulonglong libraryId, qulonglong folderId)
 {
     QString libraryPath = DBHelper::getLibraries().getPath(libraryId);
@@ -1640,28 +1659,64 @@ qulonglong DBHelper::insertReadingSubList(const QString &name, qulonglong parent
     return query.lastInsertId().toULongLong();
 }
 
-void DBHelper::insertComicsInFavorites(const QList<ComicDB> &comicsList, QSqlDatabase &db)
+namespace {
+// Adds the comics, in order, after the last favorite, so none shares a place with one, as counting the favorites
+// would after a removal. A comic that is already a favorite keeps its place. False if any of them failed.
+bool appendToFavorites(const QList<qulonglong> &comicIds, QSqlDatabase &db)
 {
-    QSqlQuery getNumComicsInFavoritesQuery("SELECT count(*) FROM comic_default_reading_list WHERE default_reading_list_id = 1;", db);
-    getNumComicsInFavoritesQuery.next();
-
-    int numComics = getNumComicsInFavoritesQuery.value(0).toInt();
-
-    db.transaction();
+    QSqlQuery lastOrdering("SELECT COALESCE(MAX(ordering) + 1, 0) FROM comic_default_reading_list WHERE default_reading_list_id = 1", db);
+    int ordering = lastOrdering.next() ? lastOrdering.value(0).toInt() : 0;
 
     QSqlQuery query(db);
-    query.prepare("INSERT INTO comic_default_reading_list (default_reading_list_id, comic_id, ordering) "
+    query.prepare("INSERT OR IGNORE INTO comic_default_reading_list (default_reading_list_id, comic_id, ordering) "
                   "VALUES (1, :comic_id, :ordering)");
-
-    for (const auto &comic : comicsList) {
-        query.bindValue(":comic_id", comic.id);
-        query.bindValue(":ordering", numComics++);
-        query.exec();
+    bool appended = true;
+    for (const auto comicId : comicIds) {
+        query.bindValue(":comic_id", comicId);
+        query.bindValue(":ordering", ordering);
+        if (!query.exec()) {
+            QLOG_ERROR() << "appendToFavorites failed for comic" << comicId << ":" << query.lastError().text();
+            appended = false;
+        } else if (query.numRowsAffected() > 0) {
+            ordering++;
+        }
     }
+    return appended;
+}
+}
 
-    QLOG_TRACE() << query.lastError();
+void DBHelper::insertComicsInFavorites(const QList<ComicDB> &comicsList, QSqlDatabase &db)
+{
+    QList<qulonglong> comicIds;
+    comicIds.reserve(comicsList.size());
+    for (const auto &comic : comicsList)
+        comicIds << comic.id;
 
+    db.transaction();
+    appendToFavorites(comicIds, db);
     db.commit();
+}
+
+bool DBHelper::setComicFavorite(qulonglong comicId, bool favorite, QSqlDatabase &db)
+{
+    if (favorite)
+        return appendToFavorites({ comicId }, db);
+
+    QSqlQuery query(db);
+    query.prepare("DELETE FROM comic_default_reading_list WHERE default_reading_list_id = 1 AND comic_id = :comic_id");
+    query.bindValue(":comic_id", comicId);
+    if (!query.exec()) {
+        QLOG_ERROR() << "setComicFavorite failed for comic" << comicId << ":" << query.lastError().text();
+        return false;
+    }
+    if (query.numRowsAffected() > 0)
+        return true;
+
+    // a comic that was not a favorite is already where the caller wants it, which a repeated removal relies on
+    QSqlQuery comicQuery(db);
+    comicQuery.prepare("SELECT 1 FROM comic WHERE id = :comic_id");
+    comicQuery.bindValue(":comic_id", comicId);
+    return comicQuery.exec() && comicQuery.next();
 }
 
 void DBHelper::insertComicsInLabel(const QList<ComicDB> &comicsList, qulonglong labelId, QSqlDatabase &db)
@@ -1969,6 +2024,24 @@ bool DBHelper::setComicType(qulonglong comicId, YACReader::FileType type, QSqlDa
     }
 
     return true;
+}
+
+// false when the comic is not in the library
+bool DBHelper::setComicRating(qulonglong comicId, int rating, QSqlDatabase &db)
+{
+    QSqlQuery updateComicInfo(db);
+    updateComicInfo.prepare("UPDATE comic_info SET "
+                            "rating = :rating "
+                            "WHERE id = (SELECT comicInfoId FROM comic WHERE id = :id)");
+    updateComicInfo.bindValue(":rating", rating);
+    updateComicInfo.bindValue(":id", comicId);
+
+    if (!updateComicInfo.exec()) {
+        QLOG_ERROR() << "setComicRating failed for comic" << comicId << ":" << updateComicInfo.lastError().text();
+        return false;
+    }
+
+    return updateComicInfo.numRowsAffected() == 1;
 }
 
 bool DBHelper::setFolderFinished(qulonglong folderId, bool finished, QSqlDatabase &db)
@@ -2352,6 +2425,18 @@ bool DBHelper::isFavoriteComic(qulonglong id, QSqlDatabase &db)
     }
 
     return false;
+}
+
+QSet<qulonglong> DBHelper::getFavoriteComicIds(QSqlDatabase &db)
+{
+    QSet<qulonglong> comicIds;
+    QSqlQuery selectQuery(db);
+    selectQuery.prepare("SELECT comic_id FROM comic_default_reading_list WHERE default_reading_list_id = 1");
+    selectQuery.exec();
+    while (selectQuery.next())
+        comicIds.insert(selectQuery.value(0).toULongLong());
+
+    return comicIds;
 }
 
 QVariantMap DBHelper::getLibraryInfoData(QUuid id)
