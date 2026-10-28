@@ -12,6 +12,7 @@
 #include "qnaturalsorting.h"
 #include "shortcuts_manager.h"
 #include "theme_manager.h"
+#include "toolbar_overlay.h"
 #include "viewer.h"
 #include "whats_new_controller.h"
 #include "width_slider.h"
@@ -188,6 +189,8 @@ void MainWindowViewer::syncModeActions(bool manga, bool continuousScroll)
 
 MainWindowViewer::~MainWindowViewer()
 {
+    // first, so its application filter doesn't see the events of a window being destroyed
+    delete toolBarOverlay;
     delete settings;
     delete viewer;
     delete had;
@@ -591,6 +594,9 @@ void MainWindowViewer::createActions()
     exitAction = new QAction(tr("Close"), this);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
 
+    toggleFullScreenAction = addActionWithShortcut(tr("Toggle fullscreen mode"), TOGGLE_FULL_SCREEN_ACTION_Y);
+    connect(toggleFullScreenAction, &QAction::triggered, this, &MainWindowViewer::toggleFullScreen);
+
     showDictionaryAction = new QAction(tr("Show Dictionary"), this);
     // showDictionaryAction->setCheckable(true);
     showDictionaryAction->setData(SHOW_DICTIONARY_ACTION_Y);
@@ -738,6 +744,18 @@ void MainWindowViewer::createToolBars()
     comicToolBar->addAction(wrappedToolbarAction(helpAboutAction));
 
 #ifndef Y_MAC_UI
+    auto *fullScreenSeparator = comicToolBar->addSeparator();
+    auto *exitFullScreenTBAction = wrappedToolbarAction(toggleFullScreenAction);
+    exitFullScreenTBAction->setText(tr("Exit fullscreen mode"));
+    comicToolBar->addAction(exitFullScreenTBAction);
+    auto *closeTBAction = wrappedToolbarAction(exitAction);
+    comicToolBar->addAction(closeTBAction);
+    fullScreenToolBarActions = { fullScreenSeparator, exitFullScreenTBAction, closeTBAction };
+    setFullScreenToolBarActionsVisible(false);
+
+    // the window manager can take the window out of full screen without toNormal
+    toolBarOverlay = new ToolBarOverlay(this, comicToolBar, [this] { return isFullScreen() && !viewer->magnifyingGlassIsVisible(); });
+
     comicToolBar->setMovable(false);
 #endif
 
@@ -1275,6 +1293,9 @@ void MainWindowViewer::toFullScreen()
     fromMaximized = this->isMaximized();
 
     hideToolBars();
+    setFullScreenToolBarActionsVisible(true);
+    if (toolBarOverlay)
+        toolBarOverlay->setActive(true);
     viewer->hide();
     viewer->fullscreen = true; // TODO, change by the right use of windowState();
     setWindowState(Qt::WindowFullScreen);
@@ -1294,6 +1315,9 @@ void MainWindowViewer::toNormal()
     else
         showNormal();
 
+    setFullScreenToolBarActionsVisible(false);
+    if (toolBarOverlay)
+        toolBarOverlay->setActive(false);
     if (Configuration::getConfiguration().getShowToolbars())
         showToolBars();
     viewer->show();
@@ -1319,9 +1343,19 @@ void MainWindowViewer::hideToolBars()
 
 void MainWindowViewer::showToolBars()
 {
+    // in full screen the toolbar can be over the page, out of the layout
+    if (toolBarOverlay)
+        toolBarOverlay->dock();
     this->comicToolBar->show();
     toolbars = true;
 }
+
+void MainWindowViewer::setFullScreenToolBarActionsVisible(bool visible)
+{
+    for (auto *a : std::as_const(fullScreenToolBarActions))
+        a->setVisible(visible);
+}
+
 void MainWindowViewer::fitToWidth()
 {
     Configuration::getConfiguration().setFitMode(YACReader::FitMode::ToWidth);
@@ -1396,9 +1430,6 @@ void MainWindowViewer::setUpShortcutsManagement()
                                                      openComicOnTheRightAction });
 
     allActions << tmpList;
-
-    auto *const toggleFullScreenAction = addActionWithShortcut(tr("Toggle fullscreen mode"), TOGGLE_FULL_SCREEN_ACTION_Y);
-    connect(toggleFullScreenAction, &QAction::triggered, this, &MainWindowViewer::toggleFullScreen);
 
     auto *const toggleToolbarsAction = addActionWithShortcut(tr("Hide/show toolbar"), TOGGLE_TOOL_BARS_ACTION_Y);
     connect(toggleToolbarsAction, &QAction::triggered, this, &MainWindowViewer::toggleToolBars);
@@ -1838,6 +1869,9 @@ void MainWindowViewer::applyTheme(const Theme &theme)
     setIcon(showInfoAction, toolbarTheme.showInfoAction, toolbarTheme.showInfoAction18x18);
     setIcon(closeAction, toolbarTheme.closeAction, toolbarTheme.closeAction18x18);
     setIcon(exitAction, toolbarTheme.closeAction, toolbarTheme.closeAction18x18);
+    // only the full screen toolbar button exits; the action itself toggles, so the shortcuts editor shows it without an icon as before
+    if (auto *exitFullScreenTBAction = toggleFullScreenAction->property("wrappedToolbarAction").value<QAction *>())
+        exitFullScreenTBAction->setIcon(toolbarTheme.exitFullScreenAction18x18);
     setIcon(showDictionaryAction, toolbarTheme.showDictionaryAction, toolbarTheme.showDictionaryAction18x18);
     setIcon(adjustToFullSizeAction, toolbarTheme.adjustToFullSizeAction, toolbarTheme.adjustToFullSizeAction18x18);
     setIcon(fitToPageAction, toolbarTheme.fitToPageAction, toolbarTheme.fitToPageAction18x18);
