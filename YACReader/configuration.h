@@ -109,7 +109,7 @@ public:
     void setShowInformation(bool b) { settings->setValue(SHOW_INFO, b); }
     bool getShowTimeInInformation() { return settings->value(SHOW_TIME_IN_INFO, true).toBool(); }
     void setShowTimeInInformation(bool b) { settings->setValue(SHOW_TIME_IN_INFO, b); }
-    bool getShowPageCounter() { return settings->value(SHOW_PAGE_COUNTER, true).toBool(); }
+    bool getShowPageCounter() { return settings->value(SHOW_PAGE_COUNTER, false).toBool(); }
     void setShowPageCounter(bool b) { settings->setValue(SHOW_PAGE_COUNTER, b); }
     OpenComicsAt getOpenComicsAt() { return static_cast<OpenComicsAt>(settings->value(OPEN_COMICS_AT, static_cast<int>(OpenComicsAt::LastReadPage)).toInt()); }
     void setOpenComicsAt(OpenComicsAt openComicsAt) { settings->setValue(OPEN_COMICS_AT, static_cast<int>(openComicsAt)); }

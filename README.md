@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -60,9 +60,9 @@ Options > Image adjustment > **Continuous scroll**
 
 ### Page number when the page changes
 
-Turning a page shows the page number in the top left corner for a moment, then it fades out. Options > General > Display > **Briefly show the page number when the page changes**, on by default.
+Options > General > Display > **Briefly show the page number when the page changes**, off by default. With it on, turning a page shows the page number in the top left corner for a moment, then it fades out.
 
-<img src="docs/fork/page-counter-option.png" width="600" alt="The Display group in Options, General">
+<img src="docs/fork/page-counter-option.png" width="600" alt="The Display group in Options, General, with the option turned on">
 
 | Single page | Double page |
 |---|---|
@@ -71,7 +71,7 @@ Turning a page shows the page number in the top left corner for a moment, then i
 - **When:** next and previous page, Go 5 or 10 pages, Go to page, the page flow, bookmarks, first and last page, opening a comic, and scrolling onto another page in continuous scroll. It stays hidden when the page doesn't change, such as Next on the last page.
 - **Double page mode:** a spread shows both pages, such as 12-13/100. In manga mode they read right to left, 13-12/100, as in the page information label.
 - **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
-- **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides without fading.
+- **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides after the second without fading.
 
 ### Next file after an unreadable one
 
