@@ -312,32 +312,32 @@
         <translation>Schaalmethode</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="15"/>
+        <location filename="image_adjustment.cpp" line="14"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Dichtstbijzijnde (snel, lage kwaliteit)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="16"/>
+        <location filename="image_adjustment.cpp" line="15"/>
         <source>Bilinear</source>
         <translation>Bilineair</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="17"/>
+        <location filename="image_adjustment.cpp" line="16"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="18"/>
+        <location filename="image_adjustment.cpp" line="17"/>
         <source>Lanczos3 (balanced)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="19"/>
+        <location filename="image_adjustment.cpp" line="18"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Image adjustment</source>
         <translation>Beeldaanpassing</translation>
     </message>
@@ -362,12 +362,12 @@
         <translation>Contrastwaarde</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Appearance</source>
         <translation>Verschijning</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="351"/>
         <source>Options</source>
         <translation>Opties</translation>
     </message>
@@ -392,7 +392,7 @@
         <translation>Duidelijk</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="367"/>
         <source>Comics directory</source>
         <translation>Strips map</translation>
     </message>
@@ -402,12 +402,12 @@
         <translation>Achtergrondkleur</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="333"/>
         <source>Page Flow</source>
         <translation>Omslagbrowser</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="332"/>
         <source>General</source>
         <translation>Algemeen</translation>
     </message>
@@ -417,7 +417,7 @@
         <translation>Helderheid</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="342"/>
         <source>Restart is needed</source>
         <translation>Herstart is nodig</translation>
     </message>

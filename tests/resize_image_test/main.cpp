@@ -5,6 +5,7 @@
 #include <QTest>
 
 #include <algorithm>
+#include <cstdlib>
 
 class ResizeImageTest : public QObject
 {
@@ -13,10 +14,18 @@ class ResizeImageTest : public QObject
 private slots:
     void scalesToTheRequestedSize_data();
     void scalesToTheRequestedSize();
+    void scalesEveryPixelFormat_data();
+    void scalesEveryPixelFormat();
+    void keepsTheAlpha_data();
+    void keepsTheAlpha();
+    void scalesFromAndToOnePixel_data();
+    void scalesFromAndToOnePixel();
+    void givesANullImageForAnEmptySize_data();
+    void givesANullImageForAnEmptySize();
     void fewerLobesSpreadLessFromAnEdge();
     void lanczos2RingsLessThanLanczos4WhenEnlarging();
     void readsTheStoredValues();
-    void fallsBackToLanczos4ForUnknownValues();
+    void readsNoMethodFromOtherValues();
 };
 
 namespace {
@@ -30,7 +39,7 @@ struct Method {
 constexpr Method methods[] = {
     { "Nearest", ScaleMethod::Nearest, 0 },
     { "Bilinear", ScaleMethod::Bilinear, 1 },
-    { "Lanczos4", ScaleMethod::Lanczos4, 2 },
+    { "Lanczos4", ScaleMethod::Lanczos, 2 },
     { "Lanczos3", ScaleMethod::Lanczos3, 4 },
     { "Lanczos2", ScaleMethod::Lanczos2, 5 },
 };
@@ -38,11 +47,34 @@ constexpr Method methods[] = {
 constexpr int dark = 64;
 constexpr int light = 192;
 
+QImage filled(QSize size, QImage::Format format, const QColor &color)
+{
+    QImage image(size, format);
+    image.fill(color);
+    return image;
+}
+
+// the largest difference from color in any channel of any pixel, alpha included
+int largestDifference(const QImage &image, const QColor &color)
+{
+    int largest = 0;
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            const QColor pixel = image.pixelColor(x, y);
+            largest = std::max({ largest,
+                                 std::abs(pixel.red() - color.red()),
+                                 std::abs(pixel.green() - color.green()),
+                                 std::abs(pixel.blue() - color.blue()),
+                                 std::abs(pixel.alpha() - color.alpha()) });
+        }
+    }
+    return largest;
+}
+
 // a vertical edge between two greys far enough from black and white that ringing is not clipped
 QImage edge(QSize size)
 {
-    QImage image(size, QImage::Format_ARGB32);
-    image.fill(QColor(dark, dark, dark));
+    QImage image = filled(size, QImage::Format_ARGB32, QColor(dark, dark, dark));
     for (int y = 0; y < size.height(); ++y) {
         for (int x = size.width() / 2; x < size.width(); ++x)
             image.setPixelColor(x, y, QColor(light, light, light));
@@ -102,9 +134,105 @@ void ResizeImageTest::scalesToTheRequestedSize()
     QCOMPARE(scaleImage(edge(QSize(40, 30)), size.width(), size.height(), method).size(), size);
 }
 
+void ResizeImageTest::scalesEveryPixelFormat_data()
+{
+    QTest::addColumn<ScaleMethod>("method");
+    QTest::addColumn<QImage::Format>("format");
+    QTest::addColumn<QColor>("color");
+
+    const QColor orange(200, 100, 50);
+    for (const auto &entry : methods) {
+        QTest::addRow("%s RGB32", entry.name) << entry.method << QImage::Format_RGB32 << orange;
+        QTest::addRow("%s ARGB32", entry.name) << entry.method << QImage::Format_ARGB32 << orange;
+        QTest::addRow("%s ARGB32 premultiplied", entry.name) << entry.method << QImage::Format_ARGB32_Premultiplied << orange;
+        QTest::addRow("%s Grayscale8", entry.name) << entry.method << QImage::Format_Grayscale8 << QColor(128, 128, 128);
+    }
+}
+
+// a flat page stays flat, so every output pixel was written and the channels were read in the right order
+void ResizeImageTest::scalesEveryPixelFormat()
+{
+    QFETCH(ScaleMethod, method);
+    QFETCH(QImage::Format, format);
+    QFETCH(QColor, color);
+
+    const QImage scaled = scaleImage(filled(QSize(30, 20), format, color), 70, 50, method);
+
+    QCOMPARE(scaled.size(), QSize(70, 50));
+    QCOMPARE_LE(largestDifference(scaled, color), 1);
+}
+
+void ResizeImageTest::keepsTheAlpha_data()
+{
+    QTest::addColumn<ScaleMethod>("method");
+    QTest::addColumn<QColor>("color");
+
+    for (const auto &entry : methods) {
+        QTest::addRow("%s transparent", entry.name) << entry.method << QColor(Qt::transparent);
+        QTest::addRow("%s half transparent", entry.name) << entry.method << QColor(200, 100, 50, 128);
+    }
+}
+
+void ResizeImageTest::keepsTheAlpha()
+{
+    QFETCH(ScaleMethod, method);
+    QFETCH(QColor, color);
+
+    const QImage page = filled(QSize(30, 20), QImage::Format_ARGB32, color);
+
+    // Qt's smooth scaling goes through premultiplied alpha, which rounds the colour by up to 1
+    QCOMPARE_LE(largestDifference(scaleImage(page, 70, 50, method), color), 1);
+    QCOMPARE_LE(largestDifference(scaleImage(page, 12, 8, method), color), 1);
+}
+
+void ResizeImageTest::scalesFromAndToOnePixel_data()
+{
+    QTest::addColumn<ScaleMethod>("method");
+    QTest::addColumn<QSize>("from");
+    QTest::addColumn<QSize>("to");
+
+    for (const auto &entry : methods) {
+        QTest::addRow("%s from one pixel", entry.name) << entry.method << QSize(1, 1) << QSize(4, 3);
+        QTest::addRow("%s to one pixel", entry.name) << entry.method << QSize(4, 3) << QSize(1, 1);
+    }
+}
+
+void ResizeImageTest::scalesFromAndToOnePixel()
+{
+    QFETCH(ScaleMethod, method);
+    QFETCH(QSize, from);
+    QFETCH(QSize, to);
+
+    const QColor orange(200, 100, 50);
+    const QImage scaled = scaleImage(filled(from, QImage::Format_ARGB32, orange), to.width(), to.height(), method);
+
+    QCOMPARE(scaled.size(), to);
+    QCOMPARE_LE(largestDifference(scaled, orange), 1);
+}
+
+void ResizeImageTest::givesANullImageForAnEmptySize_data()
+{
+    QTest::addColumn<ScaleMethod>("method");
+    QTest::addColumn<QSize>("size");
+
+    for (const auto &entry : methods) {
+        QTest::addRow("%s no width", entry.name) << entry.method << QSize(0, 30);
+        QTest::addRow("%s no height", entry.name) << entry.method << QSize(40, 0);
+    }
+}
+
+void ResizeImageTest::givesANullImageForAnEmptySize()
+{
+    QFETCH(ScaleMethod, method);
+    QFETCH(QSize, size);
+
+    QVERIFY(scaleImage(edge(QSize(20, 10)), size.width(), size.height(), method).isNull());
+}
+
+// Swapping any two of the lobe counts breaks this order
 void ResizeImageTest::fewerLobesSpreadLessFromAnEdge()
 {
-    const int lanczos4 = spread(enlargedEdge(ScaleMethod::Lanczos4));
+    const int lanczos4 = spread(enlargedEdge(ScaleMethod::Lanczos));
     const int lanczos3 = spread(enlargedEdge(ScaleMethod::Lanczos3));
     const int lanczos2 = spread(enlargedEdge(ScaleMethod::Lanczos2));
 
@@ -115,7 +243,7 @@ void ResizeImageTest::fewerLobesSpreadLessFromAnEdge()
 void ResizeImageTest::lanczos2RingsLessThanLanczos4WhenEnlarging()
 {
     const int lanczos2 = ringing(enlargedEdge(ScaleMethod::Lanczos2));
-    const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos4));
+    const int lanczos4 = ringing(enlargedEdge(ScaleMethod::Lanczos));
 
     QCOMPARE_LT(lanczos2, lanczos4);
 }
@@ -124,16 +252,15 @@ void ResizeImageTest::readsTheStoredValues()
 {
     for (const auto &entry : methods) {
         QCOMPARE(static_cast<int>(entry.method), entry.storedValue);
-        QCOMPARE(scaleMethodFromSetting(entry.storedValue), entry.method);
-        // ini files give the values back as strings
-        QCOMPARE(scaleMethodFromSetting(QString::number(entry.storedValue)), entry.method);
+        QCOMPARE(scaleMethodFromInt(entry.storedValue), std::optional(entry.method));
     }
 }
 
-void ResizeImageTest::fallsBackToLanczos4ForUnknownValues()
+// 3 is left free for Bicubic, and 6 is what a build with one more method could store
+void ResizeImageTest::readsNoMethodFromOtherValues()
 {
-    for (const QVariant &value : { QVariant(), QVariant(-1), QVariant(3), QVariant(6), QVariant("Lanczos3") })
-        QCOMPARE(scaleMethodFromSetting(value), ScaleMethod::Lanczos4);
+    for (const int value : { -1, 3, 6 })
+        QVERIFY(!scaleMethodFromInt(value).has_value());
 }
 
 QTEST_GUILESS_MAIN(ResizeImageTest)

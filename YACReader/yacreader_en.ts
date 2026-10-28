@@ -322,22 +322,22 @@
         <translation>Scaling method</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="15"/>
+        <location filename="image_adjustment.cpp" line="14"/>
         <source>Nearest (fast, low quality)</source>
         <translation>Nearest (fast, low quality)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="16"/>
+        <location filename="image_adjustment.cpp" line="15"/>
         <source>Bilinear</source>
         <translation>Bilinear</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="17"/>
+        <location filename="image_adjustment.cpp" line="16"/>
         <source>Lanczos4 (more detail, more halos)</source>
         <translation>Lanczos4 (more detail, more halos)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="343"/>
+        <location filename="options_dialog.cpp" line="342"/>
         <source>Restart is needed</source>
         <translation>Restart is needed</translation>
     </message>
@@ -562,22 +562,22 @@ If none is active, Escape does nothing.</translation>
         <translation>Show book fold shadow</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="18"/>
+        <location filename="image_adjustment.cpp" line="17"/>
         <source>Lanczos3 (balanced)</source>
         <translation>Lanczos3 (balanced)</translation>
     </message>
     <message>
-        <location filename="image_adjustment.cpp" line="19"/>
+        <location filename="image_adjustment.cpp" line="18"/>
         <source>Lanczos2 (fewer halos, less detail)</source>
         <translation>Lanczos2 (fewer halos, less detail)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="333"/>
+        <location filename="options_dialog.cpp" line="332"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="336"/>
+        <location filename="options_dialog.cpp" line="335"/>
         <source>Appearance</source>
         <translation>Appearance</translation>
     </message>
@@ -587,22 +587,22 @@ If none is active, Escape does nothing.</translation>
         <translation>Clear</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="334"/>
+        <location filename="options_dialog.cpp" line="333"/>
         <source>Page Flow</source>
         <translation>Page Flow</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="335"/>
+        <location filename="options_dialog.cpp" line="334"/>
         <source>Image adjustment</source>
         <translation>Image adjustment</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="352"/>
+        <location filename="options_dialog.cpp" line="351"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="368"/>
+        <location filename="options_dialog.cpp" line="367"/>
         <source>Comics directory</source>
         <translation>Comics directory</translation>
     </message>

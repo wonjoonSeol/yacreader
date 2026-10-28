@@ -4,21 +4,21 @@
 #include <QImage>
 #include <QPixmap>
 
-class QVariant;
+#include <optional>
 
-// The values are stored in settings and must not be renumbered. 3 is kept for Bicubic (upstream PR #620).
+// The values are stored in settings and must not be renumbered. 3 is left free for Bicubic, which an upstream proposal stores as 3.
 enum class ScaleMethod {
     Nearest = 0,
     Bilinear = 1,
-    Lanczos4 = 2,
+    Lanczos = 2, // four lobes, labelled Lanczos4
     Lanczos3 = 4,
     Lanczos2 = 5
 };
 
-constexpr ScaleMethod defaultScaleMethod = ScaleMethod::Lanczos4;
+constexpr ScaleMethod defaultScaleMethod = ScaleMethod::Lanczos;
 
-// Unknown or missing values give the default method.
-ScaleMethod scaleMethodFromSetting(const QVariant &value);
+// The method stored as value, or nothing if no method is
+std::optional<ScaleMethod> scaleMethodFromInt(int value);
 
 // Base scaling API - callers are responsible for supplying the correct target dimensions.
 

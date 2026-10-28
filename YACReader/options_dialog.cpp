@@ -299,10 +299,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingLayout = new QHBoxLayout();
     scalingLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    for (const auto &choice : scalingMethodChoices())
-        scalingMethodCombo->addItem(choice.text());
-    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(index).method);
+    addScalingMethodItems(scalingMethodCombo);
+    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this] {
+        Configuration::getConfiguration().setScalingMethod(selectedScalingMethod(scalingMethodCombo));
         emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
@@ -430,9 +429,6 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(scalingMethodChoices().at(scalingMethodCombo->currentIndex()).method);
-    emit changedImageOptions();
-
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
     if (selectedLanguage.isEmpty())
         settings->remove(UI_LANGUAGE);
@@ -512,7 +508,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
 
     {
         QSignalBlocker blocker(scalingMethodCombo);
-        scalingMethodCombo->setCurrentIndex(scalingMethodChoiceIndex(scalingMethodChoices(), Configuration::getConfiguration().getScalingMethod()));
+        selectScalingMethod(scalingMethodCombo, Configuration::getConfiguration().getScalingMethod());
     }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
