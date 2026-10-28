@@ -14,7 +14,6 @@ class QPushButton;
 class QSlider;
 class QPushButton;
 class QRadioButton;
-class YACReaderSpinSliderWidget;
 
 class OptionsDialog : public YACReaderOptionsDialog, protected Themable
 {
@@ -32,6 +31,7 @@ private:
     QComboBox *languageCombo;
 
     QCheckBox *showTimeInInformationLabel;
+    QCheckBox *showPageCounter;
     QRadioButton *openAtLastReadPageRadioButton;
     QRadioButton *openAtFirstPageIfFinishedRadioButton;
     QRadioButton *openAtFirstPageRadioButton;
@@ -67,12 +67,6 @@ private:
     QCheckBox *useSingleScrollStepToTurnPage;
     QCheckBox *disableScrollAnimations;
 
-    YACReaderSpinSliderWidget *brightnessS;
-
-    YACReaderSpinSliderWidget *contrastS;
-
-    YACReaderSpinSliderWidget *gammaS;
-
     QColor currentColor;
     bool backgroundColorFollowsTheme = true;
 
@@ -87,6 +81,9 @@ private:
     QRadioButton *escapeQuitsRadioButton;
     QRadioButton *escapeCancelsModeRadioButton;
 
+    // The Image adjustment page except brightness, contrast and gamma, which show the stored levels themselves
+    void reloadImageOptions();
+
 public slots:
     void saveOptions() override;
     void restoreOptions(QSettings *settings) override;
@@ -94,18 +91,13 @@ public slots:
     void showColorDialog();
     void updateColor(const QColor &color);
     // void fitToWidthRatio(int value);
-    void brightnessChanged(int value);
-    void contrastChanged(int value);
-    void gammaChanged(int value);
-    void resetImageConfig();
     void show();
-    void setFilters(int brightness, int contrast, int gamma);
     void clearBackgroundColor();
 
 signals:
     void changedOptions();
+    // the cover or book fold option of Double page changed; Configuration reports the other image options
     void changedImageOptions();
-    void changedFilters(int brightness, int contrast, int gamma);
     // void fitToWidthRatioChanged(float ratio);
 };
 

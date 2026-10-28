@@ -2,6 +2,7 @@
 #define __VIEWER_H
 
 #include "mouse_handler.h"
+#include "page_counter_trigger.h"
 #include "page_fit.h"
 #include "page_prescaler.h"
 #include "scroll_management.h"
@@ -45,6 +46,7 @@ class ContinuousPageWidget;
 class ContinuousPageProvider;
 class ContinuousViewModel;
 class PageLabelWidget;
+class PageCounterWidget;
 class NotificationsLabelWidget;
 
 class Viewer : public QScrollArea, public ScrollManagement, protected Themable
@@ -136,6 +138,9 @@ public slots:
     void updateZoomRatio(int ratio);
     bool getIsMangaMode();
     void setContinuousScroll(bool enabled);
+    // The height of a widget laid over the top of the viewer, such as the toolbar shown over the page in
+    // full screen. The page counter goes below it. 0 by default.
+    void setTopOverlayInset(int height);
 
 private:
     bool information;
@@ -150,6 +155,8 @@ private:
     int zoom;
 
     PageLabelWidget *informationLabel;
+    PageCounterWidget *pageCounter;
+    PageCounterTrigger pageCounterTrigger;
     // QTimer * scroller;
     QPropertyAnimation *verticalScroller;
     QPropertyAnimation *horizontalScroller;
@@ -275,6 +282,12 @@ private:
     void setMangaModeImpl(bool manga, bool persistSettings);
     void goToRelativePage(int offset);
     void applyContinuousPageFit();
+    bool continuousModelActive() const;
+    QString currentPagesInformation() const;
+    bool pageCounterAllowed() const;
+    // Render's page changes, the continuous scroll and Go to page in continuous scroll end here, once the
+    // view is on the new page
+    void onReadingPageChanged();
     const QPixmap &fullPage() const;
     PageFitOptions pageFitOptions() const;
     void requestPrescale(int delayMs);

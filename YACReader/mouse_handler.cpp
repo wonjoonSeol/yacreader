@@ -116,7 +116,7 @@ void YACReader::MouseHandler::mouseMoveEvent(QMouseEvent *event)
                     // Don't pop up the bottom page-selection bar while the
                     // magnifying glass is active: it prevents magnifying that area.
                     int umbral = (viewer->width() - viewer->goToFlow->width()) / 2;
-                    if ((position.y() > viewer->height() - 15) && (position.x() > umbral) && (position.x() < viewer->width() - umbral)) {
+                    if ((position.y() > viewer->height() - mouseOverActivationHeight) && (position.x() > umbral) && (position.x() < viewer->width() - umbral)) {
 
                         viewer->animateShowGoToFlow();
                         viewer->hideCursorTimer->stop();

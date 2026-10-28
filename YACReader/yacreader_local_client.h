@@ -3,6 +3,7 @@
 
 #include "comic_db.h"
 #include "yacreader_global.h"
+#include "yacreader_ipc.h"
 
 #include <QObject>
 
@@ -18,7 +19,7 @@ signals:
     void finished();
 public slots:
     void readMessage();
-    bool requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, YACReader::OpenComicSource source);
+    bool requestComicInfo(quint64 libraryId, const ComicDB &comic, YACReader::OpenComicSource source, YACReader::ComicInfoAnswer &answer);
     bool sendComicInfo(quint64 libraryId, ComicDB &comic);
     bool sendComicInfo(quint64 libraryId, ComicDB &comic, qulonglong nextComicId);
 

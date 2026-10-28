@@ -3,11 +3,12 @@
 #include "app_language_utils.h"
 #include "appearance_tab_widget.h"
 #include "configuration.h"
+#include "image_adjustment.h"
+#include "image_filter_slider.h"
 #include "theme_factory.h"
 #include "theme_manager.h"
 #include "yacreader_3d_flow_config_widget.h"
 #include "yacreader_settings_widget.h"
-#include "yacreader_spin_slider_widget.h"
 
 #include <QCheckBox>
 #include <QColorDialog>
@@ -56,9 +57,12 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     languageBox->setLayout(languageLayout);
 
     QGroupBox *displayBox = new QGroupBox(tr("Display"));
-    auto displayLayout = new QHBoxLayout();
+    auto displayLayout = new QVBoxLayout();
     showTimeInInformationLabel = new QCheckBox(tr("Show time in current page information label"));
+    showPageCounter = new QCheckBox(tr("Briefly show the page number when the page changes"));
+    showPageCounter->setToolTip(tr("Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on."));
     displayLayout->addWidget(showTimeInInformationLabel);
+    displayLayout->addWidget(showPageCounter);
     displayBox->setLayout(displayLayout);
 
     auto openComicsAtBox = new QGroupBox(tr("Open comics at"));
@@ -211,50 +215,21 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
     QWidget *pageImage = new QWidget();
     auto layoutImageV = new QVBoxLayout();
-    auto layoutImage = new QGridLayout();
-
-    brightnessS = new YACReaderSpinSliderWidget(this, true);
-    brightnessS->setRange(0, 100);
-    // brightnessS->setText(tr("Brightness"));
-    brightnessS->setTracking(false);
-    connect(brightnessS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::brightnessChanged);
-
-    contrastS = new YACReaderSpinSliderWidget(this, true);
-    contrastS->setRange(0, 250);
-    // contrastS->setText(tr("Contrast"));
-    contrastS->setTracking(false);
-    connect(contrastS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::contrastChanged);
-
-    gammaS = new YACReaderSpinSliderWidget(this, true);
-    gammaS->setRange(0, 250);
-    // gammaS->setText(tr("Gamma"));
-    gammaS->setTracking(false);
-    connect(gammaS, &YACReaderSpinSliderWidget::valueChanged, this, &OptionsDialog::gammaChanged);
-    // connect(brightnessS,SIGNAL(valueChanged(int)),this,SIGNAL(changedOptions()));
-
-    layoutImage->addWidget(new QLabel(tr("Brightness")), 0, 0);
-    layoutImage->addWidget(new QLabel(tr("Contrast")), 1, 0);
-    layoutImage->addWidget(new QLabel(tr("Gamma")), 2, 0);
-    layoutImage->addWidget(brightnessS, 0, 1);
-    layoutImage->addWidget(contrastS, 1, 1);
-    layoutImage->addWidget(gammaS, 2, 1);
-    QPushButton *pushButton = new QPushButton(tr("Reset"));
-    connect(pushButton, &QAbstractButton::pressed, this, &OptionsDialog::resetImageConfig);
-    layoutImage->addWidget(pushButton, 3, 0);
-    layoutImage->setColumnStretch(1, 1);
 
     QGroupBox *imageBox = new QGroupBox(tr("Image options"));
-    imageBox->setLayout(layoutImage);
+    auto layoutImage = new QVBoxLayout(imageBox);
+    for (auto *widget : createImageFilterWidgets())
+        layoutImage->addWidget(widget);
     layoutImageV->addWidget(imageBox);
 
+    // The enlarge, continuous scroll and scaling options reach the viewer through
+    // Configuration::imageOptionsChanged, as they do from the image adjustment menu
     auto scaleBox = new QGroupBox(tr("Fit options"));
     auto scaleLayout = new QVBoxLayout();
     scaleCheckbox = new QCheckBox(tr("Enlarge images to fit width/height"));
-    connect(scaleCheckbox, &QCheckBox::clicked, scaleCheckbox,
-            [=, this](bool checked) {
-                Configuration::getConfiguration().setEnlargeImages(checked);
-                emit changedImageOptions();
-            });
+    connect(scaleCheckbox, &QCheckBox::clicked, scaleCheckbox, [](bool checked) {
+        Configuration::getConfiguration().setEnlargeImages(checked);
+    });
 
     scaleLayout->addWidget(scaleCheckbox);
     scaleBox->setLayout(scaleLayout);
@@ -265,9 +240,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     continuousScrollFitToWidthRadioButton = new QRadioButton(tr("Fit pages to width"));
     continuousScrollFitToHeightRadioButton = new QRadioButton(tr("Fit pages to height"));
     continuousScrollFitToHeightRadioButton->setToolTip(tr("Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width."));
-    connect(continuousScrollFitToHeightRadioButton, &QRadioButton::toggled, this, [this](bool checked) {
+    connect(continuousScrollFitToHeightRadioButton, &QRadioButton::toggled, this, [](bool checked) {
         Configuration::getConfiguration().setContinuousScrollFitToHeight(checked);
-        emit changedImageOptions();
     });
     continuousScrollLayout->addWidget(continuousScrollFitToWidthRadioButton);
     continuousScrollLayout->addWidget(continuousScrollFitToHeightRadioButton);
@@ -299,12 +273,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingMethodLayout = new QHBoxLayout();
     scalingMethodLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"));
-    scalingMethodCombo->addItem(tr("Bilinear"));
-    scalingMethodCombo->addItem(tr("Lanczos (better quality)"));
-    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(index));
-        emit changedImageOptions();
+    addScalingMethodItems(scalingMethodCombo);
+    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this] {
+        Configuration::getConfiguration().setScalingMethod(selectedScalingMethod(scalingMethodCombo));
     });
     scalingMethodLayout->addWidget(scalingMethodCombo);
     scalingMethodLayout->addStretch();
@@ -339,6 +310,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     layoutImageV->addWidget(scalingBox);
 
     layoutImageV->addStretch();
+
+    connect(&Configuration::getConfiguration(), &Configuration::imageOptionsChanged, this, &OptionsDialog::reloadImageOptions);
 
     // IMAGE ADJUSTMENTS END -----------------------------
 
@@ -417,6 +390,7 @@ void OptionsDialog::saveOptions()
     settings->setValue(PATH, pathEdit->text());
 
     Configuration::getConfiguration().setShowTimeInInformation(showTimeInInformationLabel->isChecked());
+    Configuration::getConfiguration().setShowPageCounter(showPageCounter->isChecked());
     auto openComicsAt = OpenComicsAt::LastReadPage;
     if (openAtFirstPageIfFinishedRadioButton->isChecked()) {
         openComicsAt = OpenComicsAt::FirstPageIfFinished;
@@ -458,9 +432,6 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentIndex()));
-    emit changedImageOptions();
-
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
     if (selectedLanguage.isEmpty())
         settings->remove(UI_LANGUAGE);
@@ -485,6 +456,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     languageCombo->setCurrentIndex(languageIndex);
 
     showTimeInInformationLabel->setChecked(Configuration::getConfiguration().getShowTimeInInformation());
+    showPageCounter->setChecked(Configuration::getConfiguration().getShowPageCounter());
     switch (Configuration::getConfiguration().getOpenComicsAt()) {
     case OpenComicsAt::FirstPageIfFinished:
         openAtFirstPageIfFinishedRadioButton->setChecked(true);
@@ -513,20 +485,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     quickNavi->setChecked(settings->value(QUICK_NAVI_MODE).toBool());
     disableShowOnMouseOver->setChecked(settings->value(DISABLE_MOUSE_OVER_GOTO_FLOW).toBool());
 
-    brightnessS->setValue(settings->value(BRIGHTNESS, 0).toInt());
-    contrastS->setValue(settings->value(CONTRAST, 100).toInt());
-    gammaS->setValue(settings->value(GAMMA, 100).toInt());
-
-    scaleCheckbox->setChecked(settings->value(ENLARGE_IMAGES, true).toBool());
-    coverSPCheckBox->setChecked(settings->value(COVER_IS_SP, true).toBool());
-    doublePageShadowCheckBox->setChecked(Configuration::getConfiguration().getDoublePageShadow());
-    {
-        QSignalBlocker blocker(continuousScrollFitToHeightRadioButton);
-        if (Configuration::getConfiguration().getContinuousScrollFitToHeight())
-            continuousScrollFitToHeightRadioButton->setChecked(true);
-        else
-            continuousScrollFitToWidthRadioButton->setChecked(true);
-    }
+    reloadImageOptions();
 
     doNotTurnPageOnScroll->setChecked(settings->value(DO_NOT_TURN_PAGE_ON_SCROLL, false).toBool());
     useSingleScrollStepToTurnPage->setChecked(settings->value(USE_SINGLE_SCROLL_STEP_TO_TURN_PAGE, false).toBool());
@@ -538,10 +497,6 @@ void OptionsDialog::restoreOptions(QSettings *settings)
 #endif
     disableScrollAnimations->setChecked(settings->value(DISABLE_SCROLL_ANIMATION, defaultDisableScrollAnimationsValue).toBool());
 
-    {
-        QSignalBlocker blocker(scalingMethodCombo);
-        scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
-    }
     acnetUpscalingCheckBox->setChecked(Configuration::getConfiguration().getAcnetUpscaling());
     {
         QSignalBlocker blocker(acnetModelCombo);
@@ -568,6 +523,27 @@ void OptionsDialog::restoreOptions(QSettings *settings)
         escapeQuitsRadioButton->setChecked(true);
 }
 
+void OptionsDialog::reloadImageOptions()
+{
+    auto &configuration = Configuration::getConfiguration();
+
+    scaleCheckbox->setChecked(configuration.getEnlargeImages());
+    coverSPCheckBox->setChecked(settings->value(COVER_IS_SP, true).toBool());
+    doublePageShadowCheckBox->setChecked(configuration.getDoublePageShadow());
+    {
+        QSignalBlocker blocker(continuousScrollFitToHeightRadioButton);
+        if (configuration.getContinuousScrollFitToHeight())
+            continuousScrollFitToHeightRadioButton->setChecked(true);
+        else
+            continuousScrollFitToWidthRadioButton->setChecked(true);
+    }
+
+    {
+        QSignalBlocker blocker(scalingMethodCombo);
+        selectScalingMethod(scalingMethodCombo, configuration.getScalingMethod());
+    }
+}
+
 void OptionsDialog::updateColor(const QColor &color)
 {
     QPalette pal = backgroundColor->palette();
@@ -579,43 +555,6 @@ void OptionsDialog::updateColor(const QColor &color)
     emit changedOptions();
 }
 
-void OptionsDialog::brightnessChanged(int value)
-{
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(BRIGHTNESS, value);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    // emit(changedImageOptions());
-}
-
-void OptionsDialog::contrastChanged(int value)
-{
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(CONTRAST, value);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    /// emit(changedImageOptions());
-}
-
-void OptionsDialog::gammaChanged(int value)
-{
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(GAMMA, value);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    // emit(changedImageOptions());
-}
-
-void OptionsDialog::resetImageConfig()
-{
-    brightnessS->setValue(0);
-    contrastS->setValue(100);
-    gammaS->setValue(100);
-    QSettings settings(YACReader::getSettingsPath() + "/YACReader.ini", QSettings::IniFormat);
-    settings.setValue(BRIGHTNESS, 0);
-    settings.setValue(CONTRAST, 100);
-    settings.setValue(GAMMA, 100);
-    emit changedFilters(brightnessS->getValue(), contrastS->getValue(), gammaS->getValue());
-    // emit(changedImageOptions());
-}
-
 void OptionsDialog::show()
 {
     // TODO solucionar el tema de las settings, esto sólo debería aparecer en una única línea de código
@@ -625,22 +564,6 @@ void OptionsDialog::show()
     // connect(fitToWidthRatioS,SIGNAL(valueChanged(int)),this,SLOT(fitToWidthRatio(int)));
     QDialog::show();
     delete s;
-}
-
-void OptionsDialog::setFilters(int brightness, int contrast, int gamma)
-{
-    if (brightness != -1)
-        brightnessS->setValue(brightness);
-    else
-        brightnessS->setValue(0);
-    if (contrast != -1)
-        contrastS->setValue(contrast);
-    else
-        contrastS->setValue(100);
-    if (gamma != -1)
-        gammaS->setValue(gamma);
-    else
-        gammaS->setValue(100);
 }
 
 void OptionsDialog::clearBackgroundColor()

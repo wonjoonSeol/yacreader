@@ -304,28 +304,28 @@
 <context>
     <name>ComicManagementCoordinator</name>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="138"/>
-        <location filename="comic_management_coordinator.cpp" line="140"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found</source>
         <translation>YACReader 未找到</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="138"/>
+        <location filename="comic_management_coordinator.cpp" line="158"/>
         <source>YACReader not found. YACReader should be installed in the same folder as YACReaderLibrary.</source>
         <translation>未找到YACReader. YACReader应安装在与YACReaderLibrary相同的文件夹中.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="140"/>
+        <location filename="comic_management_coordinator.cpp" line="160"/>
         <source>YACReader not found. There might be a problem with your YACReader installation.</source>
         <translation>未找到YACReader. YACReader的安装可能有问题.</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="147"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="147"/>
+        <location filename="comic_management_coordinator.cpp" line="167"/>
         <source>Error opening comic with third party reader.</source>
         <translation>使用第三方阅读器打开漫画时出错。</translation>
     </message>
@@ -519,7 +519,7 @@
 <context>
     <name>DBHelper</name>
     <message>
-        <location filename="db_helper.cpp" line="1365"/>
+        <location filename="db_helper.cpp" line="1384"/>
         <source>The folder entry could not be found in the library database.</source>
         <translation>在库数据库中找不到该文件夹的记录。</translation>
     </message>
@@ -686,18 +686,18 @@
 <context>
     <name>FileComic</name>
     <message>
-        <location filename="../common/comic.cpp" line="626"/>
-        <location filename="../common/comic.cpp" line="642"/>
+        <location filename="../common/comic.cpp" line="649"/>
+        <location filename="../common/comic.cpp" line="665"/>
         <source>Format not supported</source>
         <translation>不支持的文件格式</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="620"/>
+        <location filename="../common/comic.cpp" line="643"/>
         <source>7z not found</source>
         <translation>未找到 7z</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="513"/>
+        <location filename="../common/comic.cpp" line="536"/>
         <source>Unknown error opening the file</source>
         <translation>打开文件时出现未知错误</translation>
     </message>
@@ -706,7 +706,7 @@
         <translation type="vanished">不支持的 EPUB 格式：%1</translation>
     </message>
     <message>
-        <location filename="../common/comic.cpp" line="506"/>
+        <location filename="../common/comic.cpp" line="529"/>
         <source>CRC error on page (%1): some of the pages will not be displayed correctly</source>
         <translation>第 %1 页 CRC 校验失败: 部分页面将无法正确显示</translation>
     </message>
@@ -813,32 +813,32 @@
         <translation type="obsolete">最近添加</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="853"/>
+        <location filename="grid_comics_view.cpp" line="838"/>
         <source>Manga</source>
         <translation>日式漫画</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="856"/>
+        <location filename="grid_comics_view.cpp" line="841"/>
         <source>Western manga</source>
         <translation>西式漫画</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="859"/>
+        <location filename="grid_comics_view.cpp" line="844"/>
         <source>Web comic</source>
         <translation>网络漫画</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="862"/>
+        <location filename="grid_comics_view.cpp" line="847"/>
         <source>Yonkoma</source>
         <translation>四格漫画</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="866"/>
+        <location filename="grid_comics_view.cpp" line="851"/>
         <source>Comic</source>
         <translation>漫画</translation>
     </message>
     <message>
-        <location filename="grid_comics_view.cpp" line="870"/>
+        <location filename="grid_comics_view.cpp" line="855"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
@@ -1079,7 +1079,7 @@
         <translation>访问文件夹的路径时出错</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="561"/>
+        <location filename="comic_management_coordinator.cpp" line="612"/>
         <source>Comics will only be deleted from the current label/list. Are you sure?</source>
         <translation>漫画只会从当前标签/列表中删除。 你确定吗?</translation>
     </message>
@@ -1089,12 +1089,12 @@
         <translation>此库是使用较新版本的YACReaderLibrary创建的。 立即下载新版本?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="224"/>
+        <location filename="comic_management_coordinator.cpp" line="244"/>
         <source>Moving comics...</source>
         <translation>移动漫画中...</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="208"/>
+        <location filename="comic_management_coordinator.cpp" line="228"/>
         <source>Copying comics...</source>
         <translation>复制漫画中...</translation>
     </message>
@@ -1119,7 +1119,7 @@
         <translation>库 &apos;%1&apos; 是通过旧版本的YACReaderLibrary创建的。 必须再次创建。 你想现在创建吗?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="360"/>
+        <location filename="comic_management_coordinator.cpp" line="380"/>
         <source>Save covers</source>
         <translation>保存封面</translation>
     </message>
@@ -1137,7 +1137,7 @@ YACReaderLibrary will not stop you from creating more libraries but you should k
 YACReaderLibrary不会阻止您创建更多的库，但是您应该保持较低的库数量来提升性能。</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="303"/>
+        <location filename="comic_management_coordinator.cpp" line="323"/>
         <source>Assign comics numbers</source>
         <translation>分配漫画编号</translation>
     </message>
@@ -1159,7 +1159,7 @@ YACReaderLibrary不会阻止您创建更多的库，但是您应该保持较低�
         <translation>库不可用</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="596"/>
+        <location filename="comic_management_coordinator.cpp" line="657"/>
         <source>There was an issue trying to delete the selected comics. Please, check for write permissions in the selected files or containing folder.</source>
         <translation>尝试删除所选漫画时出现问题。 请检查所选文件或包含文件夹中的写入权限。</translation>
     </message>
@@ -1194,7 +1194,7 @@ YACReaderLibrary不会阻止您创建更多的库，但是您应该保持较低�
         <translation>删除文件夹</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="304"/>
+        <location filename="comic_management_coordinator.cpp" line="324"/>
         <source>Assign numbers starting in:</source>
         <translation>从以下位置开始分配编号:</translation>
     </message>
@@ -1487,33 +1487,61 @@ You can restore a backup from the Library menu or recreate the library.</source>
         <translation>图书馆信息</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="389"/>
+        <location filename="comic_management_coordinator.cpp" line="409"/>
         <location filename="folder_management_coordinator.cpp" line="339"/>
         <source>Invalid image</source>
         <translation>图片无效</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="390"/>
+        <location filename="comic_management_coordinator.cpp" line="410"/>
         <location filename="folder_management_coordinator.cpp" line="340"/>
         <source>The selected file is not a valid image.</source>
         <translation>所选文件不是有效图像。</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="398"/>
+        <location filename="comic_management_coordinator.cpp" line="418"/>
         <location filename="folder_management_coordinator.cpp" line="347"/>
         <source>Error saving cover</source>
         <translation>保存封面时出错</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="399"/>
+        <location filename="comic_management_coordinator.cpp" line="419"/>
         <location filename="folder_management_coordinator.cpp" line="348"/>
         <source>There was an error saving the cover image.</source>
         <translation>保存封面图像时出错。</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="520"/>
+        <location filename="comic_management_coordinator.cpp" line="558"/>
+        <location filename="comic_management_coordinator.cpp" line="650"/>
+        <location filename="delete_comics_question.cpp" line="11"/>
         <source>Delete comics</source>
         <translation>删除漫画</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="559"/>
+        <source>Could not move %n folder(s) to the trash. Delete their pages permanently? This cannot be undone.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="comic_management_coordinator.cpp" line="563"/>
+        <source>Only the images, ComicInfo.xml and system files such as Thumbs.db or .DS_Store are deleted. A folder that holds other files stays on your disk with them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="565"/>
+        <source>%n comic file(s) that the trash refused were already deleted permanently.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="comic_management_coordinator.cpp" line="651"/>
+        <source>%n folder(s) still hold other files, so they stay on your disk.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
         <location filename="folder_management_coordinator.cpp" line="133"/>
@@ -1523,12 +1551,36 @@ You can restore a backup from the Library menu or recreate the library.</source>
         <translation>没有选中的文件夹</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="521"/>
+        <location filename="delete_comics_question.cpp" line="12"/>
         <source>All the selected comics will be deleted from your disk. Are you sure?</source>
         <translation>所有选定的漫画都将从您的磁盘中删除。你确定吗?</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="560"/>
+        <location filename="delete_comics_question.cpp" line="21"/>
+        <source>Folder comics stay on your disk and in the library unless the box below is checked. Checked, each image folder goes to the trash with everything in it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="delete_comics_question.cpp" line="22"/>
+        <source>%n folder(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="delete_comics_question.cpp" line="23"/>
+        <source>%n image(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="delete_comics_question.cpp" line="24"/>
+        <source>Also move the image folders to the trash (%1, %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="comic_management_coordinator.cpp" line="611"/>
         <source>Remove comics</source>
         <translation>移除漫画</translation>
     </message>
@@ -1538,7 +1590,7 @@ You can restore a backup from the Library menu or recreate the library.</source>
         <translation>未找到库</translation>
     </message>
     <message>
-        <location filename="comic_management_coordinator.cpp" line="595"/>
+        <location filename="comic_management_coordinator.cpp" line="656"/>
         <location filename="folder_management_coordinator.cpp" line="250"/>
         <source>Unable to delete</source>
         <translation>无法删除</translation>
@@ -2513,12 +2565,12 @@ To stop an automatic update tap on the loading indicator next to the Libraries t
 <context>
     <name>OrganizeFiles</name>
     <message>
-        <location filename="organize_files/organize_files_plan.cpp" line="540"/>
+        <location filename="organize_files/organize_files_plan.cpp" line="594"/>
         <source>Renamed, %1 is already in use</source>
         <translation>已重命名，%1 已被占用</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_plan.cpp" line="543"/>
+        <location filename="organize_files/organize_files_plan.cpp" line="597"/>
         <source>Missing metadata: %1</source>
         <translation>缺少元数据：%1</translation>
     </message>
@@ -2527,62 +2579,92 @@ To stop an automatic update tap on the loading indicator next to the Libraries t
         <source>%1 could not be created</source>
         <translation>无法创建 %1</translation>
     </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="81"/>
+        <source>%1 (a folder comic cannot be moved to another drive)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="87"/>
+        <source>%1 (copy also failed: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="93"/>
+        <source>the copy did not have the same size as the original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="99"/>
+        <source>the original could not be deleted after it was copied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="310"/>
+        <source>The destination folder could not be created.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="organize_files/organize_files_worker.cpp" line="364"/>
+        <source>%1 (the file was left at %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OrganizeFilesCoordinator</name>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="175"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="146"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="178"/>
         <source>Organize files</source>
         <translation>整理文件</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="143"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="146"/>
         <source>This folder does not contain any comics.</source>
         <translation>此文件夹不包含任何漫画。</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="176"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="179"/>
         <source>This library is busy: %1</source>
         <translation>此库正忙：%1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="219"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="222"/>
         <source>the library database could not be opened</source>
         <translation>无法打开库数据库</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="226"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="229"/>
         <source>the library database could not be locked for writing</source>
         <translation>无法锁定库数据库以进行写入</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="235"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="238"/>
         <source>a folder entry could not be restored</source>
         <translation>无法恢复某个文件夹记录</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="246"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="249"/>
         <source>a comic entry could not be updated</source>
         <translation>无法更新某条漫画记录</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="265"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="268"/>
         <source>the library database could not be saved: %1</source>
         <translation>无法保存库数据库：%1</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="310"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="313"/>
         <source>the record of the last organize run could not be read</source>
         <translation>无法读取上次整理的记录</translation>
     </message>
     <message>
-        <location filename="organize_files/organize_files_coordinator.cpp" line="335"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="338"/>
         <source>the folder %1 could not be created</source>
         <translation>无法创建文件夹 %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="organize_files/organize_files_coordinator.cpp" line="383"/>
+        <location filename="organize_files/organize_files_coordinator.cpp" line="386"/>
         <source>%n file(s) could not be moved back</source>
         <translation>
             <numerusform>有 %n 个文件无法移回</numerusform>

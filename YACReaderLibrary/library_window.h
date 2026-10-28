@@ -218,6 +218,7 @@ public slots:
     void updateViewsOnLibraryContentChanged(const QUuid &libraryId);
     void updateViewsOnComicUpdateWithId(quint64 libraryId, quint64 comicId);
     void updateViewsOnComicUpdate(quint64 libraryId, const ComicDB &comic);
+    void updateViewsOnComicFavoriteChange(quint64 libraryId, qulonglong comicId);
     void loadCoversFromCurrentModel();
     void reloadCurrentFolderComicsContent();
     void reloadAfterCopyMove(const QModelIndex &mi);
@@ -237,6 +238,7 @@ public slots:
 
 private:
     bool startsHiddenInTray() const;
+    bool isCurrentLibrary(quint64 libraryId) const;
 
     void applyLoadedLibrary(const QString &libraryDataPath, bool readOnly);
     void showLibraryManagementOnly();

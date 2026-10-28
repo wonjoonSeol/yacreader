@@ -393,6 +393,16 @@
         <translation>Mostra l&apos;ora nell&apos;etichetta delle informazioni della pagina corrente</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="67"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation type="unfinished"></translation>
@@ -573,9 +583,19 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <translation>Bilineare</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (qualità migliore)</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="313"/>
@@ -654,6 +674,29 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <location filename="../common/themes/theme_repository.cpp" line="161"/>
         <source>This theme is for %1, not %2.</source>
         <translation>Questo tema è per %1, non %2.</translation>
+    </message>
+</context>
+<context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1345,6 +1388,11 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <translation>Apri i recenti</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="777"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="785"/>
         <source>File</source>
         <translation>Documento</translation>
@@ -1410,6 +1458,11 @@ Se non è attiva alcuna modalità, il tasto Esc non esegue alcuna azione.</trans
         <location filename="main_window_viewer.cpp" line="1382"/>
         <source>General</source>
         <translation>Generale</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="204"/>
+        <source>The library did not save this change.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1401"/>

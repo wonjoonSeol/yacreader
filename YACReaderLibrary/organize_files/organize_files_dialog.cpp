@@ -806,7 +806,7 @@ void OrganizeFilesDialog::rebuildTree()
         auto fileItem = parent != nullptr ? new QTreeWidgetItem(parent) : new QTreeWidgetItem(tree);
         fileItem->setText(0, segments.last());
         fileItem->setData(0, SourceRole, move.sourceAbsolute);
-        fileItem->setData(0, ExtensionRole, QFileInfo(segments.last()).suffix().isEmpty() ? QString() : QLatin1Char('.') + QFileInfo(segments.last()).suffix());
+        fileItem->setData(0, ExtensionRole, move.extension);
 
         // In rename mode the folder part is identical on both sides, so printing
         // the whole path again would only repeat the tree above it.

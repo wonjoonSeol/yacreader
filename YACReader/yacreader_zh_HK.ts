@@ -332,9 +332,9 @@
         <translation>雙線性</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos（品質更好）</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="314"/>
@@ -376,6 +376,16 @@
         <location filename="options_dialog.cpp" line="60"/>
         <source>Show time in current page information label</source>
         <translation>在目前頁面資訊標籤中顯示時間</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="67"/>
@@ -568,6 +578,16 @@ If none is active, Escape does nothing.</source>
         <translation>顯示書頁摺疊陰影</translation>
     </message>
     <message>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="313"/>
         <source>Upscale small pages with Anime4K (ACNet)</source>
         <translation type="unfinished"></translation>
@@ -654,6 +674,29 @@ If none is active, Escape does nothing.</source>
         <location filename="../common/themes/theme_repository.cpp" line="161"/>
         <source>This theme is for %1, not %2.</source>
         <translation>此主題適用於 %1，而不是 %2。</translation>
+    </message>
+</context>
+<context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1345,6 +1388,11 @@ If none is active, Escape does nothing.</source>
         <translation>最近打開的檔</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="777"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="785"/>
         <source>File</source>
         <translation>檔</translation>
@@ -1410,6 +1458,11 @@ If none is active, Escape does nothing.</source>
         <location filename="main_window_viewer.cpp" line="1382"/>
         <source>General</source>
         <translation>常規</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="204"/>
+        <source>The library did not save this change.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1401"/>

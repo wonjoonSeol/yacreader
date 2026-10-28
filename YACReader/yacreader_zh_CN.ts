@@ -351,6 +351,16 @@
         <translation>在当前页面信息标签中显示时间</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="67"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation type="unfinished"></translation>
@@ -486,6 +496,16 @@ If none is active, Escape does nothing.</source>
         <translation>显示书页折叠阴影</translation>
     </message>
     <message>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="313"/>
         <source>Upscale small pages with Anime4K (ACNet)</source>
         <translation type="unfinished"></translation>
@@ -581,9 +601,9 @@ If none is active, Escape does nothing.</source>
         <translation>双线性</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos（质量更好）</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="314"/>
@@ -658,6 +678,29 @@ If none is active, Escape does nothing.</source>
         <location filename="../common/themes/theme_repository.cpp" line="161"/>
         <source>This theme is for %1, not %2.</source>
         <translation>此主题适用于 %1，而不是 %2。</translation>
+    </message>
+</context>
+<context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1234,6 +1277,11 @@ If none is active, Escape does nothing.</source>
         <translation>打开最近阅读漫画</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="204"/>
+        <source>The library did not save this change.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="330"/>
         <source>Open a comic</source>
         <translation>打开漫画</translation>
@@ -1445,6 +1493,11 @@ If none is active, Escape does nothing.</source>
         <location filename="main_window_viewer.cpp" line="588"/>
         <source>Show Dictionary</source>
         <translation>显示字典</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="777"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1110"/>

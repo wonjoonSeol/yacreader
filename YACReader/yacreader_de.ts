@@ -322,9 +322,19 @@
         <translation>Bilinear-Filter</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos (better quality)</source>
-        <translation>Lanczos (bessere Qualität)</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="313"/>
@@ -451,6 +461,16 @@
         <location filename="options_dialog.cpp" line="60"/>
         <source>Show time in current page information label</source>
         <translation>Zeit im Informationsetikett der aktuellen Seite anzeigen</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="67"/>
@@ -654,6 +674,29 @@ Wenn keiner aktiv ist, geschieht beim Drücken der Escape-Taste nichts.</transla
         <location filename="../common/themes/theme_repository.cpp" line="161"/>
         <source>This theme is for %1, not %2.</source>
         <translation>Dieses Thema ist für %1, nicht für %2.</translation>
+    </message>
+</context>
+<context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1345,6 +1388,11 @@ Wenn keiner aktiv ist, geschieht beim Drücken der Escape-Taste nichts.</transla
         <translation>Kürzlich geöffnet</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="777"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="785"/>
         <source>File</source>
         <translation>Datei</translation>
@@ -1410,6 +1458,11 @@ Wenn keiner aktiv ist, geschieht beim Drücken der Escape-Taste nichts.</transla
         <location filename="main_window_viewer.cpp" line="1382"/>
         <source>General</source>
         <translation>Allgemein</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="204"/>
+        <source>The library did not save this change.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1401"/>

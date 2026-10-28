@@ -2,12 +2,15 @@
 #define __COMIC_H
 #include "bookmarks.h"
 #include "extract_delegate.h"
+#include "folder_comic_contents.h"
 #include "yacreader_global.h"
 
 #include <QByteArray>
 #include <QImage>
 #include <QMap>
 #include <QtCore>
+
+#include <optional>
 
 #ifndef NO_PDF
 #include "pdf_comic.h"
@@ -45,9 +48,12 @@ protected:
     bool _errorOpening;
 
     void resolveStartPage();
+    // how a comic opened from the library starts, at the bookmarks and the page saved there
+    bool loadFromLibrary(const QString &path, const ComicDB &comic, bool found);
 
 public:
-    static const QStringList imageExtensions;
+    // the images a folder comic is made of, a fixed list so that every app that shares a library, whatever
+    // image plugins it has, agrees on which folders are comics and on their pages
     static const QStringList literalImageExtensions;
     static const QStringList comicExtensions;
     static const QStringList literalComicExtensions;
@@ -83,10 +89,11 @@ public:
     // check if the comic has failed loading
     bool hasBeenAnErrorOpening();
 
-    static QStringList getSupportedImageFormats();
     static QStringList getSupportedImageLiteralFormats();
 
     static bool fileIsComic(const QString &path);
+    // a folder with images and no comic files or subfolders other than metadata ones like @eaDir, the library reads it as one comic
+    static bool folderIsComic(const QString &path);
     static bool fileIsEpub(const QString &path);
     static QList<QString> findValidComicFiles(const QList<QUrl> &list);
     static QList<QString> findValidComicFilesInFolder(const QString &path);
@@ -164,6 +171,15 @@ public:
     ~FolderComic();
 
     bool load(const QString &path, int atPage = -1);
+    bool load(const QString &path, const ComicDB &comic);
+    // every image in the folder in reading order, the pages the reader shows
+    static QFileInfoList pageFiles(const QString &path);
+    // nothing when the folder is not a comic
+    static std::optional<FolderComicContents> comicContents(const QString &path);
+    // the same from the listing() of the folder, for a caller that already has it
+    static std::optional<FolderComicContents> comicContents(const QString &path, const QFileInfoList &entries);
+    // the files and folders in a folder, without the hidden ones
+    static QFileInfoList listing(const QString &path);
 
 public slots:
 

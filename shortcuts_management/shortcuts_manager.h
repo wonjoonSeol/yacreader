@@ -28,9 +28,12 @@ public:
 
     void resetToDefaults();
     QString getShortcut(const QString &name);
+    bool hasSavedShortcut(const QString &name);
     void saveShortcut(QAction *action);
     void registerActions(const QList<QAction *> &actions);
     bool checkConflicts(const QKeySequence &shortcut, const QAction *dest);
+    // defaults added after users could customize shortcuts must not take a key the user gave to another action
+    void clearConflictingDefaults(const QList<QAction *> &actionsWithNewDefaults);
 };
 
 // ACTION NAMES YACReaderLibrary
@@ -133,6 +136,12 @@ public:
 #define SHOW_MAGNIFYING_GLASS_ACTION_Y "SHOW_MAGNIFYING_GLASS_ACTION_Y"
 #define SET_BOOKMARK_ACTION_Y "SET_BOOKMARK_ACTION_Y"
 #define SHOW_BOOKMARKS_ACTION_Y "SHOW_BOOKMARKS_ACTION_Y"
+#define TOGGLE_FAVORITE_ACTION_Y "TOGGLE_FAVORITE_ACTION_Y"
+#define RATE_1_ACTION_Y "RATE_1_ACTION_Y"
+#define RATE_2_ACTION_Y "RATE_2_ACTION_Y"
+#define RATE_3_ACTION_Y "RATE_3_ACTION_Y"
+#define RATE_4_ACTION_Y "RATE_4_ACTION_Y"
+#define RATE_5_ACTION_Y "RATE_5_ACTION_Y"
 #define SHOW_SHORCUTS_ACTION_Y "SHOW_SHORCUTS_ACTION_Y"
 #define SHOW_INFO_ACTION_Y "SHOW_INFO_ACTION_Y"
 #define CLOSE_ACTION_Y "CLOSE_ACTION_Y"

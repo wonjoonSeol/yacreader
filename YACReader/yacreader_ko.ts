@@ -352,6 +352,16 @@
         <translation>현재 페이지 정보 라벨에 시간 표시</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation>페이지가 바뀌면 페이지 번호를 잠깐 표시</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation>현재 페이지와 전체 페이지 수를 10/100처럼 왼쪽 위에 표시합니다. 정보 보기가 켜져 있으면 표시하지 않습니다.</translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="67"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation>다 읽은 만화는 첫 페이지, 그 외에는 마지막으로 읽은 페이지</translation>
@@ -592,9 +602,19 @@ If none is active, Escape does nothing.</source>
         <translation>보통 모드 (중간 품질)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
-        <source>Lanczos (better quality)</source>
-        <translation>고화질 모드 (더 좋은 화질)</translation>
+        <location filename="image_adjustment.cpp" line="16"/>
+        <source>Lanczos4 (more detail, more halos)</source>
+        <translation>Lanczos4 (디테일 많음, 헤일로 많음)</translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="17"/>
+        <source>Lanczos3 (balanced)</source>
+        <translation>Lanczos3 (균형)</translation>
+    </message>
+    <message>
+        <location filename="image_adjustment.cpp" line="18"/>
+        <source>Lanczos2 (fewer halos, less detail)</source>
+        <translation>Lanczos2 (헤일로 적음, 디테일 적음)</translation>
     </message>
     <message>
         <location filename="options_dialog.cpp" line="313"/>
@@ -653,6 +673,29 @@ If none is active, Escape does nothing.</source>
         <location filename="../common/themes/theme_repository.cpp" line="161"/>
         <source>This theme is for %1, not %2.</source>
         <translation>이 테마는 %2가 아닌 %1용입니다.</translation>
+    </message>
+</context>
+<context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation>즐겨찾기</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation>만화를 라이브러리 즐겨찾기에 추가하거나 제거</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation>평점 %1점 주기 (%2점 만점)</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation>평점</translation>
     </message>
 </context>
 <context>
@@ -1022,6 +1065,11 @@ If none is active, Escape does nothing.</source>
 <context>
     <name>YACReader::MainWindowViewer</name>
     <message>
+        <location filename="main_window_viewer.cpp" line="204"/>
+        <source>The library did not save this change.</source>
+        <translation>라이브러리에 이 변경 사항이 저장되지 않았습니다.</translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="329"/>
         <source>&amp;Open</source>
         <translation>열기(&amp;O)</translation>
@@ -1342,6 +1390,11 @@ If none is active, Escape does nothing.</source>
         <location filename="main_window_viewer.cpp" line="797"/>
         <source>Open recent</source>
         <translation>최근 항목 열기</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="777"/>
+        <source>Exit fullscreen mode</source>
+        <translation>전체화면 종료</translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="785"/>
