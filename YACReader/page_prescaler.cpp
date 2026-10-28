@@ -4,6 +4,8 @@
 #include <QThread>
 
 #include <algorithm>
+#include <limits>
+#include <mutex>
 #include <utility>
 
 namespace {
@@ -11,10 +13,9 @@ namespace {
 // Larger than the number of views, so every view's first stage runs before any view's second one
 constexpr int kStagePriorityStep = 1000;
 
-// Render decodes one page at a time, so a couple of threads next to it keep most cores free
-int defaultThreadCount()
+qsizetype imageBytes(QSize pixelSize)
 {
-    return std::clamp(QThread::idealThreadCount() / 4, 1, 2);
+    return qsizetype(pixelSize.width()) * pixelSize.height() * 4;
 }
 
 bool hasTransparentPixels(const QImage &image)
@@ -39,9 +40,14 @@ QImage displayReady(QImage image, qreal devicePixelRatio)
     if (!image.hasAlphaChannel()) {
         image.convertTo(QImage::Format_RGB32);
     } else {
-        image.convertTo(QImage::Format_ARGB32_Premultiplied);
+        if (image.format() != QImage::Format_ARGB32) {
+            image.convertTo(QImage::Format_ARGB32_Premultiplied);
+        }
+        // an opaque ARGB32 image already is RGB32, so it needs no premultiplying
         if (!hasTransparentPixels(image)) {
             image.reinterpretAsFormat(QImage::Format_RGB32);
+        } else {
+            image.convertTo(QImage::Format_ARGB32_Premultiplied);
         }
     }
     image.setDevicePixelRatio(devicePixelRatio);
@@ -50,19 +56,49 @@ QImage displayReady(QImage image, qreal devicePixelRatio)
 
 }
 
-QImage ScaleStage::process(const QImage &image, QSize pixelSize, ScaleMethod scaleMethod) const
+// Drawing a double page at full resolution takes a while, so the stages of a view share it
+struct PagePrescaler::Source {
+    explicit Source(PageViewImages images)
+        : images(std::move(images))
+    {
+    }
+
+    // called on several threads
+    const QImage &image()
+    {
+        std::call_once(drawn, [this] { fullImage = images.image(); });
+        return fullImage;
+    }
+
+    const PageViewImages images;
+    std::once_flag drawn;
+    QImage fullImage;
+};
+
+bool PrescaleStage::isActive(QSize, QSize) const
+{
+    return true;
+}
+
+int PrescaleStage::maxConcurrent() const
+{
+    return std::numeric_limits<int>::max();
+}
+
+QImage ScaleStage::process(const QImage &image, QSize pixelSize, ScaleMethod scaleMethod, const std::atomic_bool &) const
 {
     return scaleImage(image, pixelSize.width(), pixelSize.height(), scaleMethod);
 }
 
-PagePrescaler::PagePrescaler(QObject *parent)
-    : PagePrescaler({ std::make_shared<ScaleStage>() }, defaultThreadCount(), parent)
+int PagePrescaler::defaultThreadCount()
 {
+    return std::clamp(QThread::idealThreadCount() / 4, 1, 2);
 }
 
-PagePrescaler::PagePrescaler(QList<std::shared_ptr<const PrescaleStage>> stages, int maxThreads, QObject *parent)
-    : QObject(parent), stages(std::move(stages))
+PagePrescaler::PagePrescaler(QList<std::shared_ptr<const PrescaleStage>> stages, int maxThreads, qsizetype maxBytes, QObject *parent)
+    : QObject(parent), stages(std::move(stages)), maxBytes(maxBytes), busy(this->stages.size(), 0)
 {
+    Q_ASSERT(!this->stages.isEmpty());
     pool.setMaxThreadCount(maxThreads);
 }
 
@@ -74,49 +110,73 @@ PagePrescaler::~PagePrescaler()
 
 QImage PagePrescaler::image(const PrescaleKey &key) const
 {
-    const auto entry = entries.constFind(key.view.firstPage);
-    return entry != entries.cend() && entry->key == key ? entry->image : QImage();
+    const auto view = views.constFind(key);
+    return view != views.cend() ? view->image : QImage();
 }
 
-void PagePrescaler::store(const PrescaleKey &key, const QImage &image)
+QImage PagePrescaler::scaleNow(const PrescaleRequest &request)
 {
-    keep(key, image, 0);
-
-    const auto job = jobs.constFind(key.view.firstPage);
-    if (job != jobs.cend() && job->key == key && job->stage == 0) {
-        job->state->cancelled = true;
-        jobs.erase(job);
+    if (request.key.pixelSize.isEmpty()) {
+        return QImage();
     }
+
+    // a window being resized asks for a new size at every step, so only the last view outside the schedule is kept
+    views.removeIf([this, &request](QHash<PrescaleKey, View>::iterator view) {
+        return view.key() != request.key && !isRequested(view.key());
+    });
+
+    View &view = views[request.key];
+    if (!view.image.isNull()) {
+        return view.image;
+    }
+
+    if (view.job && view.job->stage == 0) {
+        cancel(view);
+    }
+    if (!view.source) {
+        view.source = std::make_shared<Source>(request.images);
+    }
+    const std::atomic_bool notCancelled = false;
+    view.image = displayReady(stages.first()->process(view.source->image(), request.key.pixelSize, request.key.scaleMethod, notCancelled),
+                              request.key.devicePixelRatio);
+    view.stage = std::max(view.stage, 0);
+    return view.image;
 }
 
 void PagePrescaler::schedule(const QList<PrescaleRequest> &newRequests)
 {
-    requests = newRequests;
-
-    // what has not started yet is started again below, in the new order
-    pool.clear();
-    for (auto job = jobs.begin(); job != jobs.end();) {
-        if (!job->state->started || !isRequested(job->key)) {
-            job->state->cancelled = true;
-            job = jobs.erase(job);
-        } else {
-            ++job;
+    requests.clear();
+    qsizetype bytes = 0;
+    for (const PrescaleRequest &request : newRequests) {
+        bytes += imageBytes(request.key.pixelSize);
+        if (!requests.isEmpty() && bytes > maxBytes) {
+            break;
         }
+        requests.append(request);
     }
-    entries.removeIf([this](QHash<int, Entry>::iterator entry) { return !isRequested(entry->key); });
+
+    // what has not started yet is queued again below, in the new order
+    views.removeIf([this](QHash<PrescaleKey, View>::iterator view) {
+        if (!isRequested(view.key())) {
+            cancel(*view);
+            return true;
+        }
+        takeBack(*view);
+        return false;
+    });
+    // every job left in the queue has been taken back
+    pool.clear();
 
     startMissingStages();
 }
 
 void PagePrescaler::invalidate()
 {
-    ++generation;
-    pool.clear();
-    for (const Job &job : std::as_const(jobs)) {
-        job.state->cancelled = true;
+    for (View &view : views) {
+        cancel(view);
     }
-    jobs.clear();
-    entries.clear();
+    pool.clear();
+    views.clear();
     requests.clear();
 }
 
@@ -125,78 +185,99 @@ bool PagePrescaler::isRequested(const PrescaleKey &key) const
     return std::any_of(requests.cbegin(), requests.cend(), [&key](const PrescaleRequest &request) { return request.key == key; });
 }
 
-// A result replaces the view's image when it comes from a later stage. A stage that fails leaves the image of the
-// one before.
-bool PagePrescaler::keep(const PrescaleKey &key, const QImage &image, int stage)
+// The first stage after `after` that does not decline the view, or the number of stages when none is left
+int PagePrescaler::nextStage(const PrescaleRequest &request, int after) const
 {
-    const auto entry = entries.find(key.view.firstPage);
-    if (entry == entries.end() || entry->key != key) {
-        entries.insert(key.view.firstPage, { key, image, stage });
-        return !image.isNull();
+    const QSize imageSize = request.images.size();
+    int stage = after + 1;
+    while (stage < stages.size() && !stages.at(stage)->isActive(imageSize, request.key.pixelSize)) {
+        ++stage;
     }
-
-    if (stage <= entry->stage) {
-        return false;
-    }
-    entry->stage = stage;
-    if (image.isNull()) {
-        return false;
-    }
-    entry->image = image;
-    return true;
+    return stage;
 }
 
 void PagePrescaler::startMissingStages()
 {
     for (int order = 0; order < requests.size(); ++order) {
         const PrescaleRequest &request = requests.at(order);
-        if (jobs.contains(request.key.view.firstPage)) {
+        View &view = views[request.key];
+        if (view.job) {
             continue;
         }
 
-        const auto entry = entries.constFind(request.key.view.firstPage);
-        const int stage = entry != entries.cend() && entry->key == request.key ? entry->stage + 1 : 0;
-        if (stage < stages.size()) {
-            start(request, stage, order);
+        const int stage = nextStage(request, view.stage);
+        if (stage == stages.size()) {
+            view.source.reset();
+        } else if (busy.at(stage) < stages.at(stage)->maxConcurrent()) {
+            if (!view.source) {
+                view.source = std::make_shared<Source>(request.images);
+            }
+            start(request.key, view, stage, order);
         }
     }
 }
 
-void PagePrescaler::start(const PrescaleRequest &request, int stage, int order)
+void PagePrescaler::start(const PrescaleKey &key, View &view, int stage, int order)
 {
-    auto state = std::make_shared<JobState>();
-    jobs.insert(request.key.view.firstPage, { request.key, stage, state });
+    auto job = std::make_shared<Job>();
+    job->stage = stage;
+    view.job = job;
+    ++busy[stage];
 
-    const quint64 jobGeneration = generation;
-    const auto run = [this, request, stage, jobGeneration, state, step = stages.at(stage)] {
-        state->started = true;
-        if (state->cancelled) {
+    const auto run = [this, key, job, source = view.source, step = stages.at(stage)] {
+        if (job->claimed.exchange(true)) {
             return;
         }
 
-        const QImage image = displayReady(step->process(request.images.image(), request.key.pixelSize, request.key.scaleMethod),
-                                          request.key.devicePixelRatio);
-        if (state->cancelled) {
-            return;
+        QImage image;
+        if (!job->cancelled) {
+            image = step->process(source->image(), key.pixelSize, key.scaleMethod, job->cancelled);
         }
-
-        QMetaObject::invokeMethod(
-                this, [this, key = request.key, stage, jobGeneration, image] { deliver(key, stage, jobGeneration, image); },
-                Qt::QueuedConnection);
+        if (!job->cancelled) {
+            image = displayReady(std::move(image), key.devicePixelRatio);
+        }
+        QMetaObject::invokeMethod(this, [this, key, job, image] { finish(key, job, image); }, Qt::QueuedConnection);
     };
     pool.start(run, -(stage * kStagePriorityStep + order));
 }
 
-void PagePrescaler::deliver(const PrescaleKey &key, int stage, quint64 jobGeneration, const QImage &image)
+// Makes sure a job that has not started never will
+bool PagePrescaler::takeBack(View &view)
 {
-    const auto job = jobs.constFind(key.view.firstPage);
-    if (jobGeneration != generation || job == jobs.cend() || job->key != key || job->stage != stage) {
-        return;
+    if (!view.job || view.job->claimed.exchange(true)) {
+        return false;
     }
-    jobs.erase(job);
+    view.job->cancelled = true;
+    --busy[view.job->stage];
+    view.job.reset();
+    return true;
+}
 
-    if (keep(key, image, stage)) {
+// A job that is running finishes on its own, and its result is dropped
+void PagePrescaler::cancel(View &view)
+{
+    if (!takeBack(view) && view.job) {
+        view.job->cancelled = true;
+        view.job.reset();
+    }
+}
+
+// Every job that ran ends here. A stage that fails keeps the image of the one before.
+void PagePrescaler::finish(const PrescaleKey &key, const std::shared_ptr<Job> &job, const QImage &image)
+{
+    --busy[job->stage];
+    const bool improved = !job->cancelled && !image.isNull();
+    if (!job->cancelled) {
+        View &view = views[key];
+        view.job.reset();
+        view.stage = job->stage;
+        if (improved) {
+            view.image = image;
+        }
+    }
+
+    startMissingStages();
+    if (improved) {
         emit imageImproved(key);
     }
-    startMissingStages();
 }

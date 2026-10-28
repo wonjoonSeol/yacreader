@@ -22,13 +22,13 @@ struct PageFitOptions {
     qreal devicePixelRatio = 1.0;
 };
 
-struct PageFit {
+struct FittedPage {
     // of the widget that shows the page
     QSize size;
     // of the scaled image, in device pixels
     QSize pixelSize;
 };
 
-PageFit fitPage(QSize pageSize, const PageFitOptions &options);
+FittedPage fitPage(QSize pageSize, const PageFitOptions &options);
 
 #endif // PAGE_FIT_H

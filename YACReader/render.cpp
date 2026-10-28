@@ -9,8 +9,6 @@
 #include <QColor>
 #include <QImage>
 #include <QList>
-#include <QPainter>
-#include <QPixmap>
 
 #include <algorithm>
 #include <cmath>
@@ -370,10 +368,8 @@ void PageRender::run()
 //-----------------------------------------------------------------------------
 
 Render::Render()
-    : comic(nullptr), doublePage(false), doubleMangaPage(false), currentIndex(0), doublePageViewHistoryPosition(0), numLeftPages(4), numRightPages(4), loadedComic(false), imageRotation(0)
+    : comic(nullptr), doublePage(false), doubleMangaPage(false), currentIndex(0), numLeftPages(4), numRightPages(4), loadedComic(false), imageRotation(0)
 {
-    doublePageViewHistory.append(currentIndex);
-
     int size = numLeftPages + numRightPages + 1;
     currentPageBufferedIndex = numLeftPages;
     for (int i = 0; i < size; i++) {
@@ -469,30 +465,19 @@ PageView Render::currentView()
 
 QList<PageView> Render::viewsAroundCurrent()
 {
-    const PageView current = currentView();
-    const int pages = comic != nullptr ? static_cast<int>(comic->numPages()) : 0;
-    const PageViewHistory history { doublePageViewHistory, doublePageViewHistoryPosition };
-    return QList<PageView> { current } + nearbyPageViews(current, pages, doublePage, history, [this](int page) { return pagePairingAt(page); });
+    const PagePairingFunction pairingAt = pagePairing();
+    const PageView current { currentIndex, doublePage && doublePageNavigation.showsTwoPages(currentIndex, pageCount(), pairingAt) };
+    return QList<PageView> { current } + nearbyPageViews(currentIndex, pageCount(), doublePage, doublePageNavigation, pairingAt);
 }
 
 std::optional<PageViewImages> Render::viewImages(PageView view) const
 {
     const QImage *page = bufferedImage(view.firstPage);
-    if (page == nullptr) {
+    const QImage *nextPage = view.doublePage ? bufferedImage(view.firstPage + 1) : nullptr;
+    if (page == nullptr || (view.doublePage && nextPage == nullptr)) {
         return std::nullopt;
     }
-    if (!view.doublePage) {
-        return PageViewImages { view.firstPage, *page, QImage(), imageRotation };
-    }
-
-    const QImage *nextPage = bufferedImage(view.firstPage + 1);
-    if (nextPage == nullptr) {
-        return std::nullopt;
-    }
-    if (doubleMangaPage) {
-        return PageViewImages { view.firstPage, *nextPage, *page, imageRotation };
-    }
-    return PageViewImages { view.firstPage, *page, *nextPage, imageRotation };
+    return PageViewImages::of(view.firstPage, *page, nextPage != nullptr ? *nextPage : QImage(), doubleMangaPage, imageRotation);
 }
 
 const QImage *Render::bufferedImage(int absolutePageIndex) const
@@ -513,46 +498,27 @@ const QImage *Render::bufferedImage(int absolutePageIndex) const
 
 bool Render::currentPageIsDoublePage()
 {
-    if (doublePageHistoryTracksCurrentIndex() && doublePageViewHistoryPosition + 1 < doublePageViewHistory.size() &&
-        currentIndex + 1 >= doublePageViewHistory.at(doublePageViewHistoryPosition + 1)) {
-        // Keep the second page out of the next view already recorded in history.
-        return false;
-    }
-    return pagePairingAt(currentIndex) == PagePairing::Double;
+    return doublePageNavigation.showsTwoPages(currentIndex, pageCount(), pagePairing());
 }
 
-bool Render::nextPageIsDoublePage()
+int Render::pageCount() const
 {
-    // this function is not used right now
-    if (buffer[currentPageBufferedIndex + 2]->isNull() || buffer[currentPageBufferedIndex + 3]->isNull()) {
-        return false;
-    }
-    if (imageRotation == 0 || imageRotation == 180) {
-        if (buffer[currentPageBufferedIndex + 2]->height() > buffer[currentPageBufferedIndex + 2]->width() &&
-            buffer[currentPageBufferedIndex + 3]->height() > buffer[currentPageBufferedIndex + 3]->width()) {
-            return true;
-        }
-    } else if (imageRotation == 90 || imageRotation == 270) {
-        if (buffer[currentPageBufferedIndex]->width() > buffer[currentPageBufferedIndex]->height() &&
-            buffer[currentPageBufferedIndex + 1]->width() > buffer[currentPageBufferedIndex + 1]->height()) {
-            return true;
-        }
-    }
-    return false;
+    return comic != nullptr ? static_cast<int>(comic->numPages()) : 0;
 }
 
-bool Render::previousPageIsDoublePage()
+// Reads the cover option once for all the pages a page turn or a prediction looks at
+PagePairingFunction Render::pagePairing() const
 {
-    return pagePairingAt(currentIndex - 2) == PagePairing::Double;
+    const bool coverAlone = Configuration::getConfiguration().getSettings()->value(COVER_IS_SP, true).toBool();
+    return [this, coverAlone](int page) { return pagePairingAt(page, coverAlone); };
 }
 
-PagePairing Render::pagePairingAt(int page) const
+PagePairing Render::pagePairingAt(int page, bool coverAlone) const
 {
-    const int pages = comic != nullptr ? static_cast<int>(comic->numPages()) : 0;
-    if (page < 0 || page + 1 >= pages) {
+    if (page < 0 || page + 1 >= pageCount()) {
         return PagePairing::Single;
     }
-    if (page == 0 && Configuration::getConfiguration().getSettings()->value(COVER_IS_SP, true).toBool()) {
+    if (page == 0 && coverAlone) {
         return PagePairing::Single;
     }
 
@@ -744,7 +710,7 @@ void Render::reset()
 // la página sólo se renderiza, si realmente ha cambiado.
 void Render::nextPage()
 {
-    const int nextPage = doublePage ? nextDoublePageViewIndex() : comic->nextPage();
+    const int nextPage = doublePage ? doublePageNavigation.next(currentIndex, pageCount(), pagePairing()) : comic->nextPage();
     // se fuerza renderizado si la página ha cambiado
     if (currentIndex != nextPage) {
         if (doublePage) {
@@ -764,7 +730,7 @@ void Render::nextPage()
 // la página sólo se renderiza, si realmente ha cambiado.
 void Render::previousPage()
 {
-    const int previousPage = doublePage ? previousDoublePageViewIndex() : comic->previousPage();
+    const int previousPage = doublePage ? doublePageNavigation.previous(currentIndex, pagePairing()) : comic->previousPage();
 
     // se fuerza renderizado si la página ha cambiado
     if (currentIndex != previousPage) {
@@ -885,52 +851,7 @@ void Render::rotateLeft()
 
 void Render::resetDoublePageNavigation()
 {
-    doublePageViewHistory.clear();
-    doublePageViewHistory.append(currentIndex);
-    doublePageViewHistoryPosition = 0;
-}
-
-bool Render::doublePageHistoryTracksCurrentIndex() const
-{
-    return doublePageViewHistoryPosition < doublePageViewHistory.size() && doublePageViewHistory.at(doublePageViewHistoryPosition) == currentIndex;
-}
-
-// the views already visited are replayed so going back and forth keeps the same page groupings
-int Render::nextDoublePageViewIndex()
-{
-    if (!doublePageHistoryTracksCurrentIndex()) {
-        resetDoublePageNavigation();
-    }
-
-    if (doublePageViewHistoryPosition + 1 < doublePageViewHistory.size()) {
-        return doublePageViewHistory.at(++doublePageViewHistoryPosition);
-    }
-
-    const int pageStep = currentPageIsDoublePage() ? 2 : 1;
-    if (currentIndex + pageStep >= static_cast<int>(comic->numPages())) {
-        return currentIndex;
-    }
-
-    doublePageViewHistory.append(currentIndex + pageStep);
-    return doublePageViewHistory.at(++doublePageViewHistoryPosition);
-}
-
-int Render::previousDoublePageViewIndex()
-{
-    if (!doublePageHistoryTracksCurrentIndex()) {
-        resetDoublePageNavigation();
-    }
-
-    if (doublePageViewHistoryPosition > 0) {
-        return doublePageViewHistory.at(--doublePageViewHistoryPosition);
-    }
-
-    const int pageStep = previousPageIsDoublePage() ? 2 : 1;
-    const int previousPage = qMax(currentIndex - pageStep, 0);
-    if (previousPage != currentIndex) {
-        doublePageViewHistory.prepend(previousPage);
-    }
-    return previousPage;
+    doublePageNavigation.reset(currentIndex);
 }
 
 // Actualiza el buffer, añadiendo las imágenes (vacías) necesarias para su posterior renderizado y

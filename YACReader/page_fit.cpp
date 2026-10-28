@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-PageFit fitPage(QSize pageSize, const PageFitOptions &options)
+FittedPage fitPage(QSize pageSize, const PageFitOptions &options)
 {
     QSize size = pageSize;
     switch (options.fitMode) {

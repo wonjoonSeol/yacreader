@@ -6,8 +6,6 @@
 
 #include <QByteArray>
 #include <QImage>
-#include <QPainter>
-#include <QPixmap>
 #include <QThread>
 #include <QVector>
 
@@ -151,8 +149,6 @@ public:
 public slots:
     void render();
     bool currentPageIsDoublePage();
-    bool nextPageIsDoublePage();
-    bool previousPageIsDoublePage();
     // Null until the page is decoded
     const QImage *bufferedImage(int absolutePageIndex) const;
     void goTo(int index);
@@ -219,8 +215,7 @@ private:
     bool doubleMangaPage;
     int previousIndex;
     int currentIndex;
-    QVector<int> doublePageViewHistory;
-    int doublePageViewHistoryPosition;
+    DoublePageNavigation doublePageNavigation;
     // QPixmap * currentPage;
     int currentPageBufferedIndex;
     int numLeftPages;
@@ -236,10 +231,9 @@ private:
     int imageRotation;
     QVector<ImageFilter *> filters;
     void resetDoublePageNavigation();
-    PagePairing pagePairingAt(int page) const;
-    int nextDoublePageViewIndex();
-    int previousDoublePageViewIndex();
-    bool doublePageHistoryTracksCurrentIndex() const;
+    int pageCount() const;
+    PagePairingFunction pagePairing() const;
+    PagePairing pagePairingAt(int page, bool coverAlone) const;
     QMutex mutex;
 
     friend class PageRender;
