@@ -1371,6 +1371,11 @@ If none is active, Escape does nothing.</translation>
         <translation>Open recent</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="734"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="801"/>
         <source>File</source>
         <translation>File</translation>

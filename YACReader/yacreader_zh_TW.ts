@@ -1371,6 +1371,11 @@ If none is active, Escape does nothing.</source>
         <translation>最近打開的檔</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="734"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="801"/>
         <source>File</source>
         <translation>檔</translation>

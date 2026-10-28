@@ -9,6 +9,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) that chan
 | [Image adjustment menu](#image-adjustment-menu) | Feature | [#12](https://github.com/wonjoonSeol/yacreader/pull/12) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
 | [Page number when the page changes](#page-number-when-the-page-changes) | Display | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) |
+| [Toolbar in full screen](#toolbar-in-full-screen) | Feature | [#8](https://github.com/wonjoonSeol/yacreader/pull/8) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
@@ -100,6 +101,21 @@ Options > General > Display > **Briefly show the page number when the page chang
 - **Double page mode:** a spread shows both pages, such as 12-13/100. In manga mode they read right to left, 13-12/100, as in the page information label.
 - **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
 - **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides after the second without fading.
+
+### Toolbar in full screen
+
+Full screen (F) has no title bar and hides the toolbar. Move the mouse to the top of the screen to show the toolbar over the page, where it covers the page number in the top right corner. It hides again when the mouse moves back down to the page or leaves the screen, and when another window comes to the front (Alt+Tab).
+
+| Full screen | Mouse at the top of the screen |
+|---|---|
+| <img src="docs/fork/fullscreen-toolbar-hidden.png" width="400" alt="A page in full screen with no toolbar"> | <img src="docs/fork/fullscreen-toolbar-shown.png" width="400" alt="The toolbar over the top of the same page"> |
+
+<img src="docs/fork/fullscreen-toolbar-buttons.png" width="480" alt="Exit fullscreen mode and Close at the right end of the toolbar">
+
+- **Exit fullscreen and close:** two buttons at the right end of the toolbar, shown only in full screen.
+- **The page stays still:** the toolbar covers the top of the page instead of pushing it down.
+- **Not while** the magnifying glass is on or a mouse button is held, so dragging a page up to the top does not open it.
+- **macOS:** unchanged. In full screen macOS shows its own menu bar and window buttons at the top of the screen.
 
 ### Next file after an unreadable one
 

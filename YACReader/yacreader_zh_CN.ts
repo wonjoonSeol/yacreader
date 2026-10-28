@@ -1473,6 +1473,11 @@ If none is active, Escape does nothing.</source>
         <translation>显示字典</translation>
     </message>
     <message>
+        <location filename="main_window_viewer.cpp" line="734"/>
+        <source>Exit fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="main_window_viewer.cpp" line="1134"/>
         <source>The current page is not ready. Please try again later.</source>
         <translation>当前页面尚未准备就绪。请稍后重试。</translation>
