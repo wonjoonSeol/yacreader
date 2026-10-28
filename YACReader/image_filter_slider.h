@@ -2,32 +2,31 @@
 #define IMAGE_FILTER_SLIDER_H
 
 #include "configuration.h"
+#include "yacreader_spin_slider_widget.h"
 
 #include <QList>
 #include <QTimer>
-#include <QWidget>
 
 #include <chrono>
-
-class QLabel;
-class YACReaderSpinSliderWidget;
 
 // A brightness, contrast or gamma slider with its label. It shows the stored level, and stores a new
 // one once it has stopped changing for storeDelay, so a run of spin box steps or wheel notches filters
 // the pages and writes the settings once.
-class ImageFilterSlider : public QWidget
+class ImageFilterSlider : public YACReaderSpinSliderWidget
 {
     Q_OBJECT
 public:
-    ImageFilterSlider(QLabel *label, const ImageFilterSpec &filter, QWidget *parent = nullptr);
+    ImageFilterSlider(const QString &text, const ImageFilterSpec &filter, QWidget *parent = nullptr);
 
     static constexpr std::chrono::milliseconds storeDelay { 150 };
+
+    // Sliders in layouts of their own line up only when their labels are as wide
+    static void alignLabels(const QList<ImageFilterSlider *> &sliders);
 
 private:
     void showStoredLevel();
 
     const ImageFilterSpec filter;
-    YACReaderSpinSliderWidget *slider;
     QTimer storeTimer;
 };
 

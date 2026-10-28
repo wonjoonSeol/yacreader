@@ -57,49 +57,46 @@ void Configuration::updateOpenRecentList(QString path)
     settings->setValue("recentFiles", list);
 }
 
+bool Configuration::storeIfChanged(const char *key, const QVariant &current, const QVariant &value)
+{
+    if (value == current)
+        return false;
+    settings->setValue(key, value);
+    return true;
+}
+
 void Configuration::setContinuousScrollFitToHeight(bool b)
 {
-    if (b == getContinuousScrollFitToHeight())
-        return;
-    settings->setValue(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, b);
-    emit imageOptionsChanged();
+    if (storeIfChanged(CONTINUOUS_SCROLL_FIT_TO_HEIGHT, getContinuousScrollFitToHeight(), b))
+        emit imageOptionsChanged();
 }
 
 void Configuration::setEnlargeImages(bool b)
 {
-    if (b == getEnlargeImages())
-        return;
-    settings->setValue(ENLARGE_IMAGES, b);
-    emit imageOptionsChanged();
+    if (storeIfChanged(ENLARGE_IMAGES, getEnlargeImages(), b))
+        emit imageOptionsChanged();
 }
 
 void Configuration::setScalingMethod(ScaleMethod method)
 {
-    if (method == getScalingMethod())
-        return;
-    settings->setValue(SCALING_METHOD, static_cast<int>(method));
-    emit imageOptionsChanged();
-}
-
-bool Configuration::storeFilterLevel(const ImageFilterSpec &filter, int level)
-{
-    if (level == getFilterLevel(filter))
-        return false;
-    settings->setValue(filter.settingsKey, level);
-    return true;
+    if (storeIfChanged(SCALING_METHOD, static_cast<int>(getScalingMethod()), static_cast<int>(method)))
+        emit imageOptionsChanged();
 }
 
 void Configuration::setFilterLevel(const ImageFilterSpec &filter, int level)
 {
-    if (storeFilterLevel(filter, level))
+    if (storeIfChanged(filter.settingsKey, getFilterLevel(filter), level))
         emit filtersChanged(getFilterLevel(brightnessSpec), getFilterLevel(contrastSpec), getFilterLevel(gammaSpec));
 }
 
 void Configuration::setFilterLevels(int brightness, int contrast, int gamma)
 {
-    bool changed = storeFilterLevel(brightnessSpec, brightness);
-    changed = storeFilterLevel(contrastSpec, contrast) || changed;
-    changed = storeFilterLevel(gammaSpec, gamma) || changed;
+    const auto store = [this](const ImageFilterSpec &filter, int level) {
+        return storeIfChanged(filter.settingsKey, getFilterLevel(filter), level);
+    };
+    bool changed = store(brightnessSpec, brightness);
+    changed = store(contrastSpec, contrast) || changed;
+    changed = store(gammaSpec, gamma) || changed;
     if (changed)
         emit filtersChanged(brightness, contrast, gamma);
 }

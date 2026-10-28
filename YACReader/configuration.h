@@ -46,6 +46,8 @@ struct ImageFilterSpec {
 
     // A comic stores -1 when it has no level of its own
     constexpr int levelOrDefault(int comicLevel) const { return comicLevel == -1 ? defaultValue : comicLevel; }
+    // What a comic stores for level: still -1 if it had none and level is the default
+    constexpr int toComicLevel(int level, int comicLevel) const { return comicLevel == -1 && level == defaultValue ? -1 : level; }
 };
 
 inline constexpr ImageFilterSpec brightnessSpec { BRIGHTNESS, 0, 100, 0 };
@@ -61,7 +63,8 @@ private:
 
     Configuration();
 
-    bool storeFilterLevel(const ImageFilterSpec &filter, int level);
+    // Stores value unless it equals current, what the getter reads, and returns whether it stored it
+    bool storeIfChanged(const char *key, const QVariant &current, const QVariant &value);
 
 public:
     static Configuration &getConfiguration()

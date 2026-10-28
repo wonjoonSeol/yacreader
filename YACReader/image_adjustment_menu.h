@@ -21,9 +21,8 @@ private:
     void showStoredOptions();
 
     QAction *enlargeImagesAction;
-    QAction *continuousScrollFitToWidthAction;
-    QAction *continuousScrollFitToHeightAction;
-    QActionGroup *scalingMethods;
+    QActionGroup *continuousScrollFit; // data: fit to height
+    QActionGroup *scalingMethods; // data: the stored value of the method
 };
 
 #endif // IMAGE_ADJUSTMENT_MENU_H

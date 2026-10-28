@@ -2296,15 +2296,8 @@ void Viewer::updateComic(ComicDB &comic)
             comic.info.bookmark3 = boomarksList[2];
         // set filters
         auto &configuration = Configuration::getConfiguration();
-        int brightness = configuration.getFilterLevel(brightnessSpec);
-        int contrast = configuration.getFilterLevel(contrastSpec);
-        int gamma = configuration.getFilterLevel(gammaSpec);
-
-        if (brightness != brightnessSpec.defaultValue || comic.info.brightness != -1)
-            comic.info.brightness = brightness;
-        if (contrast != contrastSpec.defaultValue || comic.info.contrast != -1)
-            comic.info.contrast = contrast;
-        if (gamma != gammaSpec.defaultValue || comic.info.gamma != -1)
-            comic.info.gamma = gamma;
+        comic.info.brightness = brightnessSpec.toComicLevel(configuration.getFilterLevel(brightnessSpec), comic.info.brightness);
+        comic.info.contrast = contrastSpec.toComicLevel(configuration.getFilterLevel(contrastSpec), comic.info.contrast);
+        comic.info.gamma = gammaSpec.toComicLevel(configuration.getFilterLevel(gammaSpec), comic.info.gamma);
     }
 }
