@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with the changes to the comic reader listed below. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -60,7 +60,7 @@ Options > Image adjustment > **Continuous scroll**
 
 ### Toolbar in full screen
 
-Full screen (F) has no title bar and hides the toolbar. Move the mouse to the top of the screen to show the toolbar over the page, where it covers the page number in the top right corner. It hides again when the mouse moves back down to the page or leaves the screen.
+Full screen (F) has no title bar and hides the toolbar. Move the mouse to the top of the screen to show the toolbar over the page, where it covers the page number in the top right corner. It hides again when the mouse moves back down to the page or leaves the screen, and when another window comes to the front (Alt+Tab).
 
 | Full screen | Mouse at the top of the screen |
 |---|---|
