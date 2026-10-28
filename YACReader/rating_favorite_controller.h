@@ -52,10 +52,12 @@ signals:
     void changeNotSaved(const QString &title);
 
 private:
-    struct Change {
+    // a change of the rating or the favorite state of a comic, or a question about what the library has for it
+    struct Request {
         enum Kind {
             Rating,
-            Favorite
+            Favorite,
+            Query
         } kind;
         qulonglong comicId;
         int value;
@@ -63,13 +65,13 @@ private:
 
     void rate(int selectedRating);
     void setFavorite(bool favorite);
-    void queueChange(const Change &change);
-    void sendNextRequest();
-    void startRequest(const QByteArray &message);
+    void queueChange(const Request &change);
+    void sendNextChange();
+    void startRequest(const Request &request, const QByteArray &message);
     void readReply();
     void requestFailed();
     void endRequest();
-    void applyAnswer(const YACReader::ComicInfoAnswer &answer);
+    void applyAnswer(qulonglong queriedComicId, const YACReader::ComicInfoAnswer &answer);
     void updateActions();
 
     QAction *toggleFavoriteAction;
@@ -89,13 +91,10 @@ private:
     std::optional<qulonglong> shownComicId;
     int shownRating = 0;
 
-    // not sent yet, only the latest of each kind for each comic
-    QList<Change> queuedChanges;
-    // the request in flight is this change, or when unset, a question about queriedComicId
-    std::optional<Change> sentChange;
-    qulonglong queriedComicId = 0;
-    // a question that waits for the request in flight
-    std::optional<qulonglong> comicToQuery;
+    // changes not sent yet, only the latest of each kind for each comic
+    QList<Request> queuedChanges;
+    // set while socket carries it
+    std::optional<Request> inFlight;
     bool quitting = false;
     QLocalSocket *socket = nullptr;
     QByteArray received;

@@ -99,10 +99,9 @@ void RatingFavoriteController::sendQueuedChanges()
 {
     // nothing is shown any more, so a failed change is not asked about again
     quitting = true;
-    comicToQuery.reset();
-    if (socket != nullptr && !sentChange.has_value())
+    if (inFlight.has_value() && inFlight->kind == Request::Query)
         endRequest();
-    sendNextRequest();
+    sendNextChange();
 
     // the event loop no longer runs, so wait here; the handlers run inside the waits and start the next change
     const QDeadlineTimer deadline(requestTimeoutMs);
@@ -130,7 +129,7 @@ void RatingFavoriteController::rate(int selectedRating)
     shownRating = selectedRating == shownRating ? 0 : selectedRating;
     updateActions();
     emit ratingChanged(*shownComicId, shownRating);
-    queueChange({ Change::Rating, *shownComicId, shownRating });
+    queueChange({ Request::Rating, *shownComicId, shownRating });
 }
 
 void RatingFavoriteController::setFavorite(bool favorite)
@@ -143,12 +142,12 @@ void RatingFavoriteController::setFavorite(bool favorite)
     else
         favoriteComicIds.remove(*shownComicId);
     updateActions();
-    queueChange({ Change::Favorite, *shownComicId, favorite });
+    queueChange({ Request::Favorite, *shownComicId, favorite });
 }
 
-void RatingFavoriteController::queueChange(const Change &change)
+void RatingFavoriteController::queueChange(const Request &change)
 {
-    auto queued = std::find_if(queuedChanges.begin(), queuedChanges.end(), [&change](const Change &other) {
+    auto queued = std::find_if(queuedChanges.begin(), queuedChanges.end(), [&change](const Request &other) {
         return other.kind == change.kind && other.comicId == change.comicId;
     });
     if (queued != queuedChanges.end())
@@ -156,49 +155,33 @@ void RatingFavoriteController::queueChange(const Change &change)
     else
         queuedChanges.append(change);
 
-    sendNextRequest();
+    sendNextChange();
 }
 
-void RatingFavoriteController::sendNextRequest()
+void RatingFavoriteController::sendNextChange()
 {
-    if (socket != nullptr)
+    if (inFlight.has_value() || queuedChanges.isEmpty())
         return;
 
-    QByteArray message;
-    if (comicToQuery.has_value()) {
-        queriedComicId = *std::exchange(comicToQuery, std::nullopt);
-        sentChange.reset();
-        ComicDB comic;
-        comic.id = queriedComicId;
-        message = comicInfoRequest(libraryId, source, comic);
-    } else if (!queuedChanges.isEmpty()) {
-        const auto change = queuedChanges.takeFirst();
-        sentChange = change;
-        if (change.kind == Change::Rating)
-            message = framed(quint8(SendComicRating), ComicRatingUpdate { libraryId, change.comicId, change.value });
-        else
-            message = framed(quint8(SendComicFavorite), ComicFavoriteUpdate { libraryId, change.comicId, change.value != 0 });
-    } else {
-        return;
-    }
-
-    startRequest(message);
+    const auto change = queuedChanges.takeFirst();
+    if (change.kind == Request::Rating)
+        startRequest(change, framed(quint8(SendComicRating), ComicRatingUpdate { libraryId, change.comicId, change.value }));
+    else
+        startRequest(change, framed(quint8(SendComicFavorite), ComicFavoriteUpdate { libraryId, change.comicId, change.value != 0 }));
 }
 
-void RatingFavoriteController::startRequest(const QByteArray &message)
+void RatingFavoriteController::startRequest(const Request &request, const QByteArray &message)
 {
+    inFlight = request;
     received.clear();
     socket = new QLocalSocket(this);
     auto *const requestSocket = socket;
+    // endRequest disconnects these, so they only run for the request in flight
     connect(requestSocket, &QLocalSocket::connected, this, [requestSocket, message] { requestSocket->write(message); });
-    connect(requestSocket, &QLocalSocket::readyRead, this, [this, requestSocket] {
-        if (requestSocket == socket)
-            readReply();
-    });
+    connect(requestSocket, &QLocalSocket::readyRead, this, &RatingFavoriteController::readReply);
     // the answer can come with the end of the connection, so read it first
     const auto failUnlessAnswered = [this, requestSocket] {
-        if (requestSocket == socket)
-            readReply();
+        readReply();
         if (requestSocket == socket)
             requestFailed();
     };
@@ -214,16 +197,15 @@ void RatingFavoriteController::readReply()
 {
     received += socket->readAll();
 
-    if (sentChange.has_value()) {
+    if (inFlight->kind != Request::Query) {
         if (received.isEmpty())
             return;
         if (received.at(0) != ChangeSaved) {
             requestFailed();
             return;
         }
-        sentChange.reset();
         endRequest();
-        sendNextRequest();
+        sendNextChange();
         return;
     }
 
@@ -234,20 +216,21 @@ void RatingFavoriteController::readReply()
     stream.setVersion(QDataStream::Qt_4_8);
     ComicInfoAnswer answer;
     stream >> answer;
+    const qulonglong queriedComicId = inFlight->comicId;
     endRequest();
-    applyAnswer(answer);
-    sendNextRequest();
+    applyAnswer(queriedComicId, answer);
+    sendNextChange();
 }
 
 // a change the library refused or did not answer in time, or a question it did not answer
 void RatingFavoriteController::requestFailed()
 {
-    const auto failedChange = std::exchange(sentChange, std::nullopt);
+    const Request failed = *inFlight;
     endRequest();
     // they were made on top of a state the library may not have
     queuedChanges.clear();
 
-    if (!failedChange.has_value()) {
+    if (failed.kind == Request::Query) {
         // the library cannot say what it has, so show nothing rather than a guess
         libraryAcceptsChanges = false;
         updateActions();
@@ -257,14 +240,16 @@ void RatingFavoriteController::requestFailed()
         return;
 
     // the library's state replaces the change on screen once it answers
-    comicToQuery = shownComicId.value_or(failedChange->comicId);
-    sendNextRequest();
-    emit changeNotSaved(failedChange->kind == Change::Favorite ? toggleFavoriteAction->text() : rateMenu->title());
+    ComicDB comic;
+    comic.id = shownComicId.value_or(failed.comicId);
+    startRequest({ Request::Query, comic.id, 0 }, comicInfoRequest(libraryId, source, comic));
+    emit changeNotSaved(failed.kind == Request::Favorite ? toggleFavoriteAction->text() : rateMenu->title());
 }
 
 void RatingFavoriteController::endRequest()
 {
     requestTimer.stop();
+    inFlight.reset();
     if (socket == nullptr)
         return;
 
@@ -274,7 +259,7 @@ void RatingFavoriteController::endRequest()
     socket = nullptr;
 }
 
-void RatingFavoriteController::applyAnswer(const ComicInfoAnswer &answer)
+void RatingFavoriteController::applyAnswer(qulonglong queriedComicId, const ComicInfoAnswer &answer)
 {
     libraryAcceptsChanges = answer.acceptsRatingAndFavorites;
     if (!libraryAcceptsChanges)
@@ -284,7 +269,7 @@ void RatingFavoriteController::applyAnswer(const ComicInfoAnswer &answer)
     favoriteComicIds = answer.favoriteComicIds;
     bool ratingQueued = false;
     for (const auto &change : std::as_const(queuedChanges)) {
-        if (change.kind == Change::Rating) {
+        if (change.kind == Request::Rating) {
             ratingQueued = ratingQueued || change.comicId == queriedComicId;
         } else if (change.value != 0) {
             favoriteComicIds.insert(change.comicId);

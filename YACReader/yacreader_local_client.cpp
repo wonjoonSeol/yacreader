@@ -3,7 +3,6 @@
 #include "QsLog.h"
 #include "comic_db.h"
 #include "yacreader_global.h"
-#include "yacreader_ipc.h"
 
 #include <QLocalSocket>
 

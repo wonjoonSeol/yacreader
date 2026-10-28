@@ -1660,36 +1660,47 @@ qulonglong DBHelper::insertReadingSubList(const QString &name, qulonglong parent
 }
 
 namespace {
-// Adds the comic after the last favorite, so it never shares a place with one, as counting the favorites
-// would after a removal. A comic that is already a favorite keeps its place.
-bool insertComicInFavorites(qulonglong comicId, QSqlDatabase &db)
+// Adds the comics, in order, after the last favorite, so none shares a place with one, as counting the favorites
+// would after a removal. A comic that is already a favorite keeps its place. False if any of them failed.
+bool appendToFavorites(const QList<qulonglong> &comicIds, QSqlDatabase &db)
 {
+    QSqlQuery lastOrdering("SELECT COALESCE(MAX(ordering) + 1, 0) FROM comic_default_reading_list WHERE default_reading_list_id = 1", db);
+    int ordering = lastOrdering.next() ? lastOrdering.value(0).toInt() : 0;
+
     QSqlQuery query(db);
     query.prepare("INSERT OR IGNORE INTO comic_default_reading_list (default_reading_list_id, comic_id, ordering) "
-                  "SELECT 1, :comic_id, COALESCE(MAX(ordering) + 1, 0) FROM comic_default_reading_list WHERE default_reading_list_id = 1");
-    query.bindValue(":comic_id", comicId);
-    if (!query.exec()) {
-        QLOG_ERROR() << "insertComicInFavorites failed for comic" << comicId << ":" << query.lastError().text();
-        return false;
+                  "VALUES (1, :comic_id, :ordering)");
+    bool appended = true;
+    for (const auto comicId : comicIds) {
+        query.bindValue(":comic_id", comicId);
+        query.bindValue(":ordering", ordering);
+        if (!query.exec()) {
+            QLOG_ERROR() << "appendToFavorites failed for comic" << comicId << ":" << query.lastError().text();
+            appended = false;
+        } else if (query.numRowsAffected() > 0) {
+            ordering++;
+        }
     }
-    return true;
+    return appended;
 }
 }
 
 void DBHelper::insertComicsInFavorites(const QList<ComicDB> &comicsList, QSqlDatabase &db)
 {
-    db.transaction();
-
+    QList<qulonglong> comicIds;
+    comicIds.reserve(comicsList.size());
     for (const auto &comic : comicsList)
-        insertComicInFavorites(comic.id, db);
+        comicIds << comic.id;
 
+    db.transaction();
+    appendToFavorites(comicIds, db);
     db.commit();
 }
 
 bool DBHelper::setComicFavorite(qulonglong comicId, bool favorite, QSqlDatabase &db)
 {
     if (favorite)
-        return insertComicInFavorites(comicId, db);
+        return appendToFavorites({ comicId }, db);
 
     QSqlQuery query(db);
     query.prepare("DELETE FROM comic_default_reading_list WHERE default_reading_list_id = 1 AND comic_id = :comic_id");

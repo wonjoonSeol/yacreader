@@ -170,12 +170,18 @@ struct Reader {
         QPixmap empty(18, 18);
         empty.fill(Qt::gray);
         filledStar = QIcon(filled);
-        emptyStar = QIcon(empty);
 
         toolbarActions.emplace_back(wrappedToolbarAction(controller->favoriteAction()));
         for (auto *rateAction : controller->ratingActions())
             toolbarActions.emplace_back(wrappedToolbarAction(rateAction));
-        controller->setStarIcons(filledStar, filledStar, emptyStar);
+        controller->setStarIcons(filledStar, filledStar, QIcon(empty));
+    }
+
+    // a comic of library 4, opened from a folder
+    void showLibraryComic(qulonglong comicId, int rating, const ComicInfoAnswer &answer = libraryAnswer(true, { }))
+    {
+        controller->setLibrary(4, { OpenComicSource::Folder, 1 }, answer);
+        controller->showComic(comicWithRating(comicId, rating));
     }
 
     QAction *heart() const { return toolbarActions.front().get(); }
@@ -189,20 +195,14 @@ struct Reader {
         return stars;
     }
 
-    bool buttonsEnabled() const
+    // the toolbar heart and stars, and the rating menu
+    static constexpr int Buttons = 1 + MaxComicRating + 1;
+    int enabledButtons() const
     {
-        bool enabled = controller->ratingMenu()->menuAction()->isEnabled();
+        int enabled = controller->ratingMenu()->menuAction()->isEnabled() ? 1 : 0;
         for (const auto &toolbarAction : toolbarActions)
-            enabled = enabled && toolbarAction->isEnabled();
+            enabled += toolbarAction->isEnabled() ? 1 : 0;
         return enabled;
-    }
-
-    bool buttonsDisabled() const
-    {
-        bool disabled = !controller->ratingMenu()->menuAction()->isEnabled();
-        for (const auto &toolbarAction : toolbarActions)
-            disabled = disabled && !toolbarAction->isEnabled();
-        return disabled;
     }
 
     void rate(int rating) { controller->ratingActions().at(rating - 1)->trigger(); }
@@ -210,7 +210,6 @@ struct Reader {
     // destroyed after the window, whose actions update them while they live
     std::vector<std::unique_ptr<QAction>> toolbarActions;
     QIcon filledStar;
-    QIcon emptyStar;
     QWidget window;
     RatingFavoriteController *controller;
 };
@@ -252,9 +251,8 @@ void RatingFavoriteControllerTest::cleanup()
 void RatingFavoriteControllerTest::aChangeShowsAtOnceAndReachesTheLibrary()
 {
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 2));
-    QVERIFY(reader.buttonsEnabled());
+    reader.showLibraryComic(7, 2);
+    QCOMPARE(reader.enabledButtons(), Reader::Buttons);
     QCOMPARE(reader.filledStars(), 2);
     QVERIFY(!reader.heart()->isChecked());
     QSignalSpy ratingChanged(reader.controller, &RatingFavoriteController::ratingChanged);
@@ -279,8 +277,7 @@ void RatingFavoriteControllerTest::aChangeShowsAtOnceAndReachesTheLibrary()
 void RatingFavoriteControllerTest::selectingTheCurrentRatingClearsIt()
 {
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 3));
+    reader.showLibraryComic(7, 3);
 
     reader.rate(3);
 
@@ -293,8 +290,7 @@ void RatingFavoriteControllerTest::oneRequestAtATimeSendsTheLatestChange()
 {
     library->changeAnswer = FakeLibrary::ChangeAnswer::Held;
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 0));
+    reader.showLibraryComic(7, 0);
 
     reader.rate(1);
     reader.rate(2);
@@ -328,8 +324,7 @@ void RatingFavoriteControllerTest::aRefusedChangeShowsWhatTheLibraryHas()
     library->changeAnswer = FakeLibrary::ChangeAnswer::NotSaved;
     library->questionAnswer = libraryAnswer(true, { 7 }, comicWithRating(7, 1));
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::ReadingList, 9 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 2));
+    reader.showLibraryComic(7, 2);
     QSignalSpy ratingChanged(reader.controller, &RatingFavoriteController::ratingChanged);
     QSignalSpy changeNotSaved(reader.controller, &RatingFavoriteController::changeNotSaved);
 
@@ -338,7 +333,7 @@ void RatingFavoriteControllerTest::aRefusedChangeShowsWhatTheLibraryHas()
 
     QTRY_COMPARE(reader.filledStars(), 1);
     QVERIFY(reader.heart()->isChecked());
-    QVERIFY(reader.buttonsEnabled());
+    QCOMPARE(reader.enabledButtons(), Reader::Buttons);
     QCOMPARE(library->messages(), (QList<Message> { { SendComicRating, 4, 7, 5 }, { RequestComicInfo, 4, 7, 0 } }));
     QCOMPARE(changeNotSaved.count(), 1);
     QCOMPARE(changeNotSaved.at(0).at(0).toString(), reader.controller->ratingMenu()->title());
@@ -350,8 +345,7 @@ void RatingFavoriteControllerTest::aChangeThatTimesOutShowsWhatTheLibraryHas()
     library->changeAnswer = FakeLibrary::ChangeAnswer::Never;
     library->questionAnswer = libraryAnswer(true, { }, comicWithRating(7, 2));
     Reader reader(300);
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 2));
+    reader.showLibraryComic(7, 2);
     QSignalSpy changeNotSaved(reader.controller, &RatingFavoriteController::changeNotSaved);
 
     reader.controller->favoriteAction()->trigger();
@@ -361,7 +355,7 @@ void RatingFavoriteControllerTest::aChangeThatTimesOutShowsWhatTheLibraryHas()
     QCOMPARE(library->messages(), (QList<Message> { { SendComicFavorite, 4, 7, 1 }, { RequestComicInfo, 4, 7, 0 } }));
     QCOMPARE(changeNotSaved.count(), 1);
     QCOMPARE(changeNotSaved.at(0).at(0).toString(), reader.controller->favoriteAction()->text());
-    QVERIFY(reader.buttonsEnabled());
+    QCOMPARE(reader.enabledButtons(), Reader::Buttons);
 }
 
 void RatingFavoriteControllerTest::aFailedChangeAsksAboutTheComicOnScreen()
@@ -369,8 +363,7 @@ void RatingFavoriteControllerTest::aFailedChangeAsksAboutTheComicOnScreen()
     library->changeAnswer = FakeLibrary::ChangeAnswer::Held;
     library->questionAnswer = libraryAnswer(true, { }, comicWithRating(8, 3));
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 0));
+    reader.showLibraryComic(7, 0);
     reader.rate(4);
     QTRY_COMPARE(library->messages().size(), 1);
 
@@ -388,12 +381,11 @@ void RatingFavoriteControllerTest::whenTheLibraryCannotSayWhatItHasTheButtonsAre
     library->changeAnswer = FakeLibrary::ChangeAnswer::NotSaved;
     library->answerQuestions = false;
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 2));
+    reader.showLibraryComic(7, 2);
 
     reader.controller->favoriteAction()->trigger();
 
-    QTRY_VERIFY(reader.buttonsDisabled());
+    QTRY_COMPARE(reader.enabledButtons(), 0);
     QVERIFY(!reader.heart()->isChecked());
     QCOMPARE(reader.filledStars(), 0);
     QCOMPARE(library->messages().size(), 2);
@@ -402,10 +394,9 @@ void RatingFavoriteControllerTest::whenTheLibraryCannotSayWhatItHasTheButtonsAre
 void RatingFavoriteControllerTest::anOlderLibraryLeavesTheButtonsDisabled()
 {
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(false, { }));
-    reader.controller->showComic(comicWithRating(7, 2));
+    reader.showLibraryComic(7, 2, libraryAnswer(false, { }));
 
-    QVERIFY(reader.buttonsDisabled());
+    QCOMPARE(reader.enabledButtons(), 0);
     QCOMPARE(reader.filledStars(), 0);
     reader.rate(4);
     reader.controller->favoriteAction()->trigger();
@@ -416,13 +407,12 @@ void RatingFavoriteControllerTest::anOlderLibraryLeavesTheButtonsDisabled()
 void RatingFavoriteControllerTest::filesOpenedDirectlyDisableTheButtons()
 {
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { 7 }));
-    reader.controller->showComic(comicWithRating(7, 2));
+    reader.showLibraryComic(7, 2, libraryAnswer(true, { 7 }));
     QVERIFY(reader.heart()->isChecked());
 
     reader.controller->showNoComic();
 
-    QVERIFY(reader.buttonsDisabled());
+    QCOMPARE(reader.enabledButtons(), 0);
     QVERIFY(!reader.heart()->isChecked());
     QCOMPARE(reader.filledStars(), 0);
 }
@@ -443,8 +433,7 @@ void RatingFavoriteControllerTest::changesOnTheirWayAreSentBeforeQuitting()
     QMetaObject::invokeMethod(threadLibrary, &FakeLibrary::listen, Qt::BlockingQueuedConnection);
 
     Reader reader;
-    reader.controller->setLibrary(4, { OpenComicSource::Folder, 1 }, libraryAnswer(true, { }));
-    reader.controller->showComic(comicWithRating(7, 0));
+    reader.showLibraryComic(7, 0);
     reader.controller->favoriteAction()->trigger();
     reader.rate(4);
 

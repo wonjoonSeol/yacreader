@@ -180,6 +180,16 @@ QByteArray serialized(const auto &...fields)
     return bytes;
 }
 
+// value read from bytes over what it held before, or nothing when the stream fails
+template<typename T>
+std::optional<T> deserialized(const QByteArray &bytes, T value = T())
+{
+    QDataStream in(bytes);
+    in.setVersion(QDataStream::Qt_4_8);
+    in >> value;
+    return in.status() == QDataStream::Ok ? std::optional<T>(value) : std::nullopt;
+}
+
 // Sends the message to the library and returns what it answered. The library accepts connections in this
 // thread's event loop, so the wait keeps that running.
 QByteArray exchange(const QByteArray &message, const std::function<bool(const QByteArray &)> &isComplete)
@@ -338,14 +348,11 @@ void ComicRatingFavoriteTest::ratingMessageWireFormat()
                         "0000000000000029"
                         "00000004"));
 
-    QDataStream server(serialized(quint64(7), qulonglong(52), qint32(1)));
-    server.setVersion(QDataStream::Qt_4_8);
-    ComicRatingUpdate update;
-    server >> update;
-    QCOMPARE(server.status(), QDataStream::Ok);
-    QCOMPARE(update.libraryId, 7ULL);
-    QCOMPARE(update.comicId, 52ULL);
-    QCOMPARE(update.rating, 1);
+    const auto update = deserialized<ComicRatingUpdate>(serialized(quint64(7), qulonglong(52), qint32(1)));
+    QVERIFY(update.has_value());
+    QCOMPARE(update->libraryId, 7ULL);
+    QCOMPARE(update->comicId, 52ULL);
+    QCOMPARE(update->rating, 1);
 }
 
 void ComicRatingFavoriteTest::favoriteMessageWireFormat()
@@ -358,14 +365,11 @@ void ComicRatingFavoriteTest::favoriteMessageWireFormat()
                         "0000000000000029"
                         "01"));
 
-    QDataStream server(serialized(quint64(7), qulonglong(52), false));
-    server.setVersion(QDataStream::Qt_4_8);
-    ComicFavoriteUpdate update { 0, 0, true };
-    server >> update;
-    QCOMPARE(server.status(), QDataStream::Ok);
-    QCOMPARE(update.libraryId, 7ULL);
-    QCOMPARE(update.comicId, 52ULL);
-    QCOMPARE(update.favorite, false);
+    const auto update = deserialized(serialized(quint64(7), qulonglong(52), false), ComicFavoriteUpdate { 0, 0, true });
+    QVERIFY(update.has_value());
+    QCOMPARE(update->libraryId, 7ULL);
+    QCOMPARE(update->comicId, 52ULL);
+    QCOMPARE(update->favorite, false);
 }
 
 void ComicRatingFavoriteTest::replyBytes()
@@ -398,28 +402,24 @@ void ComicRatingFavoriteTest::comicInfoRequestKeepsTheUpstreamFormat()
 
 void ComicRatingFavoriteTest::comicInfoAnswerOfAnUpstreamLibraryAcceptsNoChanges()
 {
-    QDataStream reader(serialized(comicWithId(5), QList<ComicDB> { comicWithId(5), comicWithId(6) }));
-    reader.setVersion(QDataStream::Qt_4_8);
-    ComicInfoAnswer answer { ComicDB(), { }, true, { 5 } };
-    reader >> answer;
+    const auto answer = deserialized(serialized(comicWithId(5), QList<ComicDB> { comicWithId(5), comicWithId(6) }), ComicInfoAnswer { ComicDB(), { }, true, { 5 } });
+    QVERIFY(answer.has_value());
 
-    QCOMPARE(answer.comic.id, 5ULL);
-    QCOMPARE(answer.siblings.size(), 2);
-    QVERIFY(!answer.acceptsRatingAndFavorites);
-    QVERIFY(answer.favoriteComicIds.isEmpty());
+    QCOMPARE(answer->comic.id, 5ULL);
+    QCOMPARE(answer->siblings.size(), 2);
+    QVERIFY(!answer->acceptsRatingAndFavorites);
+    QVERIFY(answer->favoriteComicIds.isEmpty());
 }
 
 void ComicRatingFavoriteTest::comicInfoAnswerWithAnUnknownFieldAcceptsNoChanges()
 {
     // a field that a future upstream library could add after the siblings, followed by what looks like favorites
-    QDataStream reader(serialized(comicWithId(5), QList<ComicDB> { comicWithId(5) }, quint32(0x12345678), QSet<qulonglong> { 5 }));
-    reader.setVersion(QDataStream::Qt_4_8);
-    ComicInfoAnswer answer;
-    reader >> answer;
+    const auto answer = deserialized<ComicInfoAnswer>(serialized(comicWithId(5), QList<ComicDB> { comicWithId(5) }, quint32(0x12345678), QSet<qulonglong> { 5 }));
+    QVERIFY(answer.has_value());
 
-    QCOMPARE(answer.comic.id, 5ULL);
-    QVERIFY(!answer.acceptsRatingAndFavorites);
-    QVERIFY(answer.favoriteComicIds.isEmpty());
+    QCOMPARE(answer->comic.id, 5ULL);
+    QVERIFY(!answer->acceptsRatingAndFavorites);
+    QVERIFY(answer->favoriteComicIds.isEmpty());
 }
 
 void ComicRatingFavoriteTest::comicInfoAnswerCarriesTheFavoritesAfterTheMagic()
@@ -432,14 +432,12 @@ void ComicRatingFavoriteTest::comicInfoAnswerCarriesTheFavoritesAfterTheMagic()
     QCOMPARE(written.mid(upstreamPart.size(), 4).toHex(), QByteArray("59524631"));
     QCOMPARE(written.mid(upstreamPart.size() + 4), serialized(sent.favoriteComicIds));
 
-    QDataStream reader(written);
-    reader.setVersion(QDataStream::Qt_4_8);
-    ComicInfoAnswer answer;
-    reader >> answer;
-    QCOMPARE(answer.comic.id, 5ULL);
-    QCOMPARE(answer.siblings.at(1).id, 6ULL);
-    QVERIFY(answer.acceptsRatingAndFavorites);
-    QCOMPARE(answer.favoriteComicIds, (QSet<qulonglong> { 6, 9 }));
+    const auto answer = deserialized<ComicInfoAnswer>(written);
+    QVERIFY(answer.has_value());
+    QCOMPARE(answer->comic.id, 5ULL);
+    QCOMPARE(answer->siblings.at(1).id, 6ULL);
+    QVERIFY(answer->acceptsRatingAndFavorites);
+    QCOMPARE(answer->favoriteComicIds, (QSet<qulonglong> { 6, 9 }));
 }
 
 void ComicRatingFavoriteTest::theLibrarySavesARating()
@@ -534,14 +532,12 @@ void ComicRatingFavoriteTest::theAnswerToRequestComicInfoCarriesTheFavorites()
     const auto fields = framedFields(received);
     QVERIFY(fields.has_value());
 
-    QDataStream reader(*fields);
-    reader.setVersion(QDataStream::Qt_4_8);
-    ComicInfoAnswer answer;
-    reader >> answer;
-    QCOMPARE(answer.comic.id, 10ULL);
-    QCOMPARE(answer.comic.info.rating, 5);
-    QVERIFY(answer.acceptsRatingAndFavorites);
-    QCOMPARE(answer.favoriteComicIds, (QSet<qulonglong> { 21 }));
+    const auto answer = deserialized<ComicInfoAnswer>(*fields);
+    QVERIFY(answer.has_value());
+    QCOMPARE(answer->comic.id, 10ULL);
+    QCOMPARE(answer->comic.info.rating, 5);
+    QVERIFY(answer->acceptsRatingAndFavorites);
+    QCOMPARE(answer->favoriteComicIds, (QSet<qulonglong> { 21 }));
 }
 
 QTEST_GUILESS_MAIN(ComicRatingFavoriteTest)
