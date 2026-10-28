@@ -57,7 +57,8 @@ QList<ComicEntry> buildEntries(const QList<ComicDB> &comics, const QString &libr
         const QFileInfo info(entry.sourceAbsolute);
         entry.missing = !info.exists();
         // a folder comic has no extension, every dot in its name is part of the name
-        const bool hasExtension = !info.isDir() && !info.suffix().isEmpty();
+        entry.folderComic = info.isDir();
+        const bool hasExtension = !entry.folderComic && !info.suffix().isEmpty();
         entry.baseName = hasExtension ? info.completeBaseName() : info.fileName();
         entry.extension = hasExtension ? QLatin1Char('.') + info.suffix() : QString();
 

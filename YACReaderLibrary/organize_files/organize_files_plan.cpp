@@ -1,5 +1,7 @@
 #include "organize_files_plan.h"
 
+#include "comic.h"
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -421,6 +423,42 @@ QString PlanBuilder::canonicalDirectory(const QString &absoluteDirectory)
     return canonicalDirectories.insert(folded, result).value();
 }
 
+// A folder comic on disk counts even when the plan moves it away, because the worker might move the
+// other comic into it before it moves.
+bool PlanBuilder::isFolderComic(const QString &absoluteDirectory, const QSet<QString> &plannedFolderComics)
+{
+    const QString key = pathKey(absoluteDirectory);
+    if (plannedFolderComics.contains(key))
+        return true;
+
+    auto it = folderComicsOnDisk.find(key);
+    if (it == folderComicsOnDisk.end())
+        it = folderComicsOnDisk.insert(key, Comic::folderIsComic(absoluteDirectory));
+    return it.value();
+}
+
+// A comic placed in a folder comic would make it a plain folder and leave its images out of the
+// library, so a folder comic on the way is taken like a name in use and gets a number.
+QString PlanBuilder::outsideFolderComics(const QString &absoluteDirectory, const QSet<QString> &plannedFolderComics, QString *takenName)
+{
+    const QString relative = QDir(base).relativeFilePath(absoluteDirectory);
+    if (relative == QLatin1String(".") || relative.startsWith(QLatin1String("..")))
+        return absoluteDirectory;
+
+    QString directory = base;
+    for (const QString &segment : relative.split(QLatin1Char('/'))) {
+        QString next = directory + QLatin1Char('/') + segment;
+        int counter = 1;
+        while (isFolderComic(next, plannedFolderComics)) {
+            if (takenName->isEmpty())
+                *takenName = segment;
+            next = directory + QLatin1Char('/') + segment + QStringLiteral(" (") + QString::number(counter++) + QLatin1Char(')');
+        }
+        directory = canonicalDirectory(next);
+    }
+    return directory;
+}
+
 QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &overrides)
 {
     const QDir baseDir(base);
@@ -435,6 +473,7 @@ QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &o
         QString destination;
         QStringList fallbackFields;
         bool needsPlacement = false;
+        bool folderComic = false;
     };
 
     QList<Draft> drafts;
@@ -500,11 +539,15 @@ QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &o
             continue;
         }
 
-        drafts.append({ move, destination, fallbackFields, true });
+        drafts.append({ move, destination, fallbackFields, true, entry.folderComic });
     }
 
     QList<PlannedMove> moves;
     moves.reserve(drafts.size());
+
+    // where the plan puts folder comics, and the directories it puts any comic in
+    QSet<QString> plannedFolderComics;
+    QSet<QString> plannedDirectories;
 
     for (auto &draft : drafts) {
         if (!draft.needsPlacement) {
@@ -517,29 +560,38 @@ QList<PlannedMove> PlanBuilder::build(const QString &pattern, const Overrides &o
         const QStringList &fallbackFields = draft.fallbackFields;
 
         const QFileInfo destinationInfo(destination);
-        const QString directory = destinationInfo.absolutePath();
-        // never cut the name at a dot that is not the comic's extension
-        const QString suffix = destinationInfo.fileName().endsWith(move.extension) ? move.extension : QString();
-        const QString stem = destinationInfo.fileName().chopped(suffix.size());
+        QString takenName;
+        const QString directory = outsideFolderComics(destinationInfo.absolutePath(), plannedFolderComics, &takenName);
+        // never cut the name at a dot that is not the comic's extension, in whatever case the name has it
+        const QString fileName = destinationInfo.fileName();
+        const QString suffix = fileName.endsWith(move.extension, Qt::CaseInsensitive) ? fileName.right(move.extension.size()) : QString();
+        const QString stem = fileName.chopped(suffix.size());
 
-        QString candidate = destination;
+        QString candidate = directory + QLatin1Char('/') + fileName;
         int counter = 1;
         while (true) {
-            const bool takenInPlan = claimed.contains(pathKey(candidate));
+            // a folder comic is taken where the plan puts other comics inside it
+            const bool takenInPlan = claimed.contains(pathKey(candidate)) || (draft.folderComic && plannedDirectories.contains(pathKey(candidate)));
             const bool takenOnDisk = namesIn(directory).contains(pathKey(QFileInfo(candidate).fileName())) && !sourcePaths.contains(pathKey(candidate));
 
             if (!takenInPlan && !takenOnDisk)
                 break;
 
+            if (takenName.isEmpty())
+                takenName = fileName;
             candidate = QDir::cleanPath(directory + QLatin1Char('/') + stem + QStringLiteral(" (") + QString::number(counter++) + QLatin1Char(')') + suffix);
         }
 
         claimed.insert(pathKey(candidate));
+        if (draft.folderComic)
+            plannedFolderComics.insert(pathKey(candidate));
+        for (QString parent = directory; pathKey(parent).startsWith(pathKey(base) + QLatin1Char('/')); parent = QFileInfo(parent).absolutePath())
+            plannedDirectories.insert(pathKey(parent));
         move.destinationRelative = baseDir.relativeFilePath(candidate);
 
         if (candidate != destination) {
             move.status = PlannedMove::Status::Renamed;
-            move.note = QCoreApplication::translate("OrganizeFiles", "Renamed, %1 is already in use").arg(destinationInfo.fileName());
+            move.note = QCoreApplication::translate("OrganizeFiles", "Renamed, %1 is already in use").arg(takenName);
         } else if (!fallbackFields.isEmpty()) {
             move.status = PlannedMove::Status::Incomplete;
             move.note = QCoreApplication::translate("OrganizeFiles", "Missing metadata: %1").arg(fallbackFields.join(QStringLiteral(", ")));

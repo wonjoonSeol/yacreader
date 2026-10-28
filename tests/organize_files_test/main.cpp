@@ -10,6 +10,7 @@
 #include <QTest>
 
 #include <algorithm>
+#include <utility>
 
 using namespace OrganizeFiles;
 
@@ -26,6 +27,8 @@ private slots:
     void sanitizesSegments();
     void resolvesCollisionsAgainstDiskAndPlan();
     void numbersCollidingFolderComicsAfterTheWholeName();
+    void numbersAfterTheExtensionInAnyCase();
+    void keepsComicsOutOfFolderComics();
     void movesAFolderComicWithItsPages();
     void freesTheNameOfAFileThatMovesAway();
     void keepsOverridesAndExclusions();
@@ -299,6 +302,82 @@ void OrganizeFilesTest::numbersCollidingFolderComicsAfterTheWholeName()
     QCOMPARE(moves.at(0).destinationRelative, QStringLiteral("Series/Vol. 2"));
     QCOMPARE(moves.at(1).destinationRelative, QStringLiteral("Series/Vol. 2 (1)"));
     QCOMPARE(moves.at(1).extension, QString());
+}
+
+void OrganizeFilesTest::numbersAfterTheExtensionInAnyCase()
+{
+    QTemporaryDir temporary;
+    const QString base = temporary.path();
+    writeFile(base + QStringLiteral("/Series/001.cbz"));
+
+    ComicEntry entry;
+    entry.comicId = 1;
+    entry.sourceAbsolute = base + QStringLiteral("/in/a.CBZ");
+    entry.baseName = QStringLiteral("a");
+    entry.extension = QStringLiteral(".CBZ");
+    writeFile(entry.sourceAbsolute);
+
+    Overrides overrides;
+    overrides[entry.sourceAbsolute].destinationRelative = QStringLiteral("Series/001.cbz");
+
+    PlanBuilder builder({ entry }, base, Mode::Organize);
+    const auto moves = builder.build(QStringLiteral("{series}"), overrides);
+
+    QCOMPARE(moves.at(0).destinationRelative, QStringLiteral("Series/001 (1).cbz"));
+}
+
+void OrganizeFilesTest::keepsComicsOutOfFolderComics()
+{
+    QTemporaryDir temporary;
+    const QString base = temporary.path();
+    writeFile(base + QStringLiteral("/Series/Vol 1/1.png"));
+
+    ComicEntry archive;
+    archive.comicId = 1;
+    archive.sourceAbsolute = base + QStringLiteral("/in/a.cbz");
+    archive.baseName = QStringLiteral("a");
+    archive.extension = QStringLiteral(".cbz");
+    writeFile(archive.sourceAbsolute);
+
+    ComicEntry folder;
+    folder.comicId = 2;
+    folder.sourceAbsolute = base + QStringLiteral("/in/chapter");
+    folder.baseName = QStringLiteral("chapter");
+    folder.folderComic = true;
+    writeFile(folder.sourceAbsolute + QStringLiteral("/1.png"));
+
+    // into a folder comic that is on disk, and into one that the plan puts there, in both orders
+    const QList<std::pair<QString, QString>> destinations {
+        { QStringLiteral("Series/Vol 1/Book.cbz"), QStringLiteral("Series/Vol 1/Extra") },
+        { QStringLiteral("Series/Vol 2/Book.cbz"), QStringLiteral("Series/Vol 2") },
+    };
+    const QList<std::pair<QString, QString>> expected {
+        { QStringLiteral("Series/Vol 1 (1)/Book.cbz"), QStringLiteral("Series/Vol 1 (1)/Extra") },
+        { QStringLiteral("Series/Vol 2/Book.cbz"), QStringLiteral("Series/Vol 2 (1)") },
+    };
+    for (int i = 0; i < destinations.size(); ++i) {
+        Overrides overrides;
+        overrides[archive.sourceAbsolute].destinationRelative = destinations.at(i).first;
+        overrides[folder.sourceAbsolute].destinationRelative = destinations.at(i).second;
+
+        PlanBuilder builder({ archive, folder }, base, Mode::Organize);
+        const auto moves = builder.build(QStringLiteral("{series}"), overrides);
+        PlanBuilder reversedBuilder({ folder, archive }, base, Mode::Organize);
+        const auto reversedMoves = reversedBuilder.build(QStringLiteral("{series}"), overrides);
+
+        QCOMPARE(moves.at(0).destinationRelative, expected.at(i).first);
+        QCOMPARE(moves.at(1).destinationRelative, expected.at(i).second);
+        QCOMPARE(moves.at(1).status, PlannedMove::Status::Renamed);
+        if (i == 1) {
+            // the folder comic placed first keeps its place, and the archive is what moves aside
+            QCOMPARE(reversedMoves.at(0).destinationRelative, QStringLiteral("Series/Vol 2"));
+            QCOMPARE(reversedMoves.at(1).destinationRelative, QStringLiteral("Series/Vol 2 (1)/Book.cbz"));
+            QCOMPARE(reversedMoves.at(1).note, QStringLiteral("Renamed, Vol 2 is already in use"));
+        } else {
+            QCOMPARE(reversedMoves.at(0).destinationRelative, expected.at(i).second);
+            QCOMPARE(reversedMoves.at(1).destinationRelative, expected.at(i).first);
+        }
+    }
 }
 
 void OrganizeFilesTest::movesAFolderComicWithItsPages()
