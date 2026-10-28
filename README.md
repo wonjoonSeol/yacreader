@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with changes to the comic reader, listed below. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -109,7 +109,8 @@ Measured on a grey edge (64 to 192) and on fine stripes, both enlarged 4x:
 
 - **Edges** are equally steep with all three. The difference is in the halos and the finest detail.
 - **Shrinking** 4x, the overshoot is at most 2 grey levels with any of them.
-- **Settings:** Lanczos3 and Lanczos2 are stored as 4 and 5. Nothing uses 3, so it stays free for the Bicubic method that the open upstream PR [#620](https://github.com/YACReader/yacreader/pull/620) stores as 3. A stored value the fork does not know, 3 included, falls back to Lanczos4.
+- **Switching back:** older builds of this fork and upstream YACReader don't have Lanczos3 and Lanczos2. With one of them chosen they skip their own scaling, so pages are scaled at a lower quality, and on HiDPI screens single pages show at their own size instead of fitting the window. Pick Lanczos4 before switching back.
+- **The other way round,** a method this build doesn't know shows as Lanczos4 and stays stored until you pick another one.
 - **Requested upstream:** [Algorithms for image scaling](https://github.com/YACReader/yacreader/issues/529) asks for Lanczos3.
 
 ---
