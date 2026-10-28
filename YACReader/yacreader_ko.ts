@@ -631,6 +631,29 @@ If none is active, Escape does nothing.</source>
     </message>
 </context>
 <context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation>즐겨찾기</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation>만화를 라이브러리 즐겨찾기에 추가하거나 제거</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation>평점 %1점 주기 (%2점 만점)</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation>평점</translation>
+    </message>
+</context>
+<context>
     <name>ThemeEditorDialog</name>
     <message>
         <location filename="../common/themes/theme_editor_dialog.cpp" line="59"/>
@@ -997,605 +1020,584 @@ If none is active, Escape does nothing.</source>
 <context>
     <name>YACReader::MainWindowViewer</name>
     <message>
-        <location filename="main_window_viewer.cpp" line="383"/>
+        <location filename="main_window_viewer.cpp" line="202"/>
+        <source>The library did not save this change.</source>
+        <translation>라이브러리에 이 변경 사항이 저장되지 않았습니다.</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="346"/>
         <source>&amp;Open</source>
         <translation>열기(&amp;O)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="384"/>
+        <location filename="main_window_viewer.cpp" line="347"/>
         <source>Open a comic</source>
         <translation>만화 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="390"/>
+        <location filename="main_window_viewer.cpp" line="353"/>
         <source>New instance</source>
         <translation>새 창</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="409"/>
+        <location filename="main_window_viewer.cpp" line="372"/>
         <source>Open Folder</source>
         <translation>폴더 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="410"/>
+        <location filename="main_window_viewer.cpp" line="373"/>
         <source>Open image folder</source>
         <translation>이미지 폴더 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="415"/>
+        <location filename="main_window_viewer.cpp" line="378"/>
         <source>Open latest comic</source>
         <translation>마지막 만화 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="416"/>
+        <location filename="main_window_viewer.cpp" line="379"/>
         <source>Open the latest comic opened in the previous reading session</source>
         <translation>이전 작업에서 마지막으로 열었던 만화 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="428"/>
+        <location filename="main_window_viewer.cpp" line="391"/>
         <source>Clear</source>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="429"/>
+        <location filename="main_window_viewer.cpp" line="392"/>
         <source>Clear open recent list</source>
         <translation>최근 목록 지우기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="432"/>
+        <location filename="main_window_viewer.cpp" line="395"/>
         <source>Save</source>
         <translation>저장</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="433"/>
-        <location filename="main_window_viewer.cpp" line="1187"/>
-        <location filename="main_window_viewer.cpp" line="1198"/>
-        <location filename="main_window_viewer.cpp" line="1209"/>
+        <location filename="main_window_viewer.cpp" line="396"/>
+        <location filename="main_window_viewer.cpp" line="1139"/>
+        <location filename="main_window_viewer.cpp" line="1150"/>
+        <location filename="main_window_viewer.cpp" line="1161"/>
         <source>Save current page</source>
         <translation>현재 페이지 저장</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="438"/>
-        <location filename="main_window_viewer.cpp" line="1214"/>
-        <location filename="main_window_viewer.cpp" line="1228"/>
-        <location filename="main_window_viewer.cpp" line="1239"/>
-        <location filename="main_window_viewer.cpp" line="1257"/>
+        <location filename="main_window_viewer.cpp" line="401"/>
+        <location filename="main_window_viewer.cpp" line="1166"/>
+        <location filename="main_window_viewer.cpp" line="1180"/>
+        <location filename="main_window_viewer.cpp" line="1191"/>
+        <location filename="main_window_viewer.cpp" line="1209"/>
         <source>Extract page(s)</source>
         <translation>페이지 추출</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="439"/>
+        <location filename="main_window_viewer.cpp" line="402"/>
         <source>Extract page(s) from the original source</source>
         <translation>원본 소스에서 페이지 추출</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="444"/>
+        <location filename="main_window_viewer.cpp" line="407"/>
         <source>Previous Comic</source>
         <translation>이전 만화</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="445"/>
-        <location filename="main_window_viewer.cpp" line="2037"/>
-        <location filename="main_window_viewer.cpp" line="2041"/>
+        <location filename="main_window_viewer.cpp" line="408"/>
+        <location filename="main_window_viewer.cpp" line="1988"/>
+        <location filename="main_window_viewer.cpp" line="1992"/>
         <source>Open previous comic</source>
         <translation>이전 만화 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="450"/>
+        <location filename="main_window_viewer.cpp" line="413"/>
         <source>Next Comic</source>
         <translation>다음 만화</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="451"/>
-        <location filename="main_window_viewer.cpp" line="2036"/>
-        <location filename="main_window_viewer.cpp" line="2042"/>
+        <location filename="main_window_viewer.cpp" line="414"/>
+        <location filename="main_window_viewer.cpp" line="1987"/>
+        <location filename="main_window_viewer.cpp" line="1993"/>
         <source>Open next comic</source>
         <translation>다음 만화 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="456"/>
+        <location filename="main_window_viewer.cpp" line="419"/>
         <source>&amp;Previous</source>
         <translation>이전(&amp;P)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="458"/>
-        <location filename="main_window_viewer.cpp" line="2039"/>
-        <location filename="main_window_viewer.cpp" line="2043"/>
+        <location filename="main_window_viewer.cpp" line="421"/>
+        <location filename="main_window_viewer.cpp" line="1990"/>
+        <location filename="main_window_viewer.cpp" line="1994"/>
         <source>Go to previous page</source>
         <translation>이전 페이지로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="463"/>
+        <location filename="main_window_viewer.cpp" line="426"/>
         <source>&amp;Next</source>
         <translation>다음(&amp;N)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="465"/>
-        <location filename="main_window_viewer.cpp" line="2038"/>
-        <location filename="main_window_viewer.cpp" line="2044"/>
+        <location filename="main_window_viewer.cpp" line="428"/>
+        <location filename="main_window_viewer.cpp" line="1989"/>
+        <location filename="main_window_viewer.cpp" line="1995"/>
         <source>Go to next page</source>
         <translation>다음 페이지로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="470"/>
+        <location filename="main_window_viewer.cpp" line="433"/>
         <source>Fit Height</source>
         <translation>꽉차게 보기 (높이 맞춤)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="471"/>
+        <location filename="main_window_viewer.cpp" line="434"/>
         <source>Fit image to height</source>
         <translation>이미지를 높이에 맞춤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="477"/>
+        <location filename="main_window_viewer.cpp" line="440"/>
         <source>Fit Width</source>
         <translation>꽉차게 보기 (폭 맞춤)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="478"/>
+        <location filename="main_window_viewer.cpp" line="441"/>
         <source>Fit image to width</source>
         <translation>이미지를 폭에 맞춤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="484"/>
+        <location filename="main_window_viewer.cpp" line="447"/>
         <source>Show full size</source>
         <translation>원본 크기 (100%)로 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="491"/>
+        <location filename="main_window_viewer.cpp" line="454"/>
         <source>Fit to page</source>
         <translation>꽉차게 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="497"/>
+        <location filename="main_window_viewer.cpp" line="460"/>
         <source>Continuous scroll</source>
         <translation>연속 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="498"/>
+        <location filename="main_window_viewer.cpp" line="461"/>
         <source>Switch to continuous scroll mode</source>
         <translation>연속 스크롤 모드로 전환</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="532"/>
+        <location filename="main_window_viewer.cpp" line="495"/>
         <source>Reset zoom</source>
         <translation>확대/축소 초기화</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="537"/>
+        <location filename="main_window_viewer.cpp" line="500"/>
         <source>Show zoom slider</source>
         <translation>확대/축소 슬라이더 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="539"/>
+        <location filename="main_window_viewer.cpp" line="502"/>
         <source>Zoom+</source>
         <translation>확대+</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="544"/>
+        <location filename="main_window_viewer.cpp" line="507"/>
         <source>Zoom-</source>
         <translation>축소-</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="549"/>
+        <location filename="main_window_viewer.cpp" line="512"/>
         <source>Rotate image to the left</source>
         <translation>이미지 왼쪽으로 회전</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="554"/>
+        <location filename="main_window_viewer.cpp" line="517"/>
         <source>Rotate image to the right</source>
         <translation>이미지 오른쪽으로 회전</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="559"/>
+        <location filename="main_window_viewer.cpp" line="522"/>
         <source>Double page mode</source>
         <translation>두 페이지씩 보기 (왼쪽 → 오른쪽)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="560"/>
+        <location filename="main_window_viewer.cpp" line="523"/>
         <source>Switch to double page mode</source>
         <translation>두 페이지씩 보기로 전환</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="568"/>
+        <location filename="main_window_viewer.cpp" line="531"/>
         <source>Double page manga mode</source>
         <translation>두 페이지씩 보기 (왼쪽 ← 오른쪽)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="569"/>
+        <location filename="main_window_viewer.cpp" line="532"/>
         <source>Reverse reading order in double page mode</source>
         <translation>두 페이지씩 보기에서 읽기 순서 뒤집기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="577"/>
+        <location filename="main_window_viewer.cpp" line="540"/>
         <source>Go To</source>
         <translation>이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="578"/>
+        <location filename="main_window_viewer.cpp" line="541"/>
         <source>Go to page ...</source>
         <translation>페이지로 이동...</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="583"/>
+        <location filename="main_window_viewer.cpp" line="546"/>
         <source>Options</source>
         <translation>환경설정</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="584"/>
+        <location filename="main_window_viewer.cpp" line="547"/>
         <source>YACReader options</source>
         <translation>YACReader 환경설정</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="590"/>
-        <location filename="main_window_viewer.cpp" line="926"/>
+        <location filename="main_window_viewer.cpp" line="553"/>
+        <location filename="main_window_viewer.cpp" line="875"/>
         <source>Help</source>
         <translation>도움말</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="591"/>
+        <location filename="main_window_viewer.cpp" line="554"/>
         <source>Help, About YACReader</source>
         <translation>도움말, YACReader 정보</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="596"/>
+        <location filename="main_window_viewer.cpp" line="559"/>
         <source>Magnifying glass</source>
         <translation>돋보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="597"/>
+        <location filename="main_window_viewer.cpp" line="560"/>
         <source>Switch Magnifying glass</source>
         <translation>돋보기 전환</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="603"/>
+        <location filename="main_window_viewer.cpp" line="566"/>
         <source>Set bookmark</source>
         <translation>책갈피 설정</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="604"/>
+        <location filename="main_window_viewer.cpp" line="567"/>
         <source>Set a bookmark on the current page</source>
         <translation>현재 페이지에 책갈피 설정</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="612"/>
+        <location filename="main_window_viewer.cpp" line="575"/>
         <source>Show bookmarks</source>
         <translation>책갈피 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="613"/>
+        <location filename="main_window_viewer.cpp" line="576"/>
         <source>Show the bookmarks of the current comic</source>
         <translation>현재 만화의 책갈피 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="618"/>
-        <source>Favorite</source>
-        <translation>즐겨찾기</translation>
-    </message>
-    <message>
-        <location filename="main_window_viewer.cpp" line="619"/>
-        <source>Add the comic to the library favorites or remove it</source>
-        <translation>만화를 라이브러리 즐겨찾기에 추가하거나 제거</translation>
-    </message>
-    <message>
-        <location filename="main_window_viewer.cpp" line="626"/>
-        <source>Rate %1 out of 5</source>
-        <translation>평점 %1점 주기</translation>
-    </message>
-    <message>
-        <location filename="main_window_viewer.cpp" line="634"/>
+        <location filename="main_window_viewer.cpp" line="586"/>
         <source>Show keyboard shortcuts</source>
         <translation>키보드 단축키 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="639"/>
+        <location filename="main_window_viewer.cpp" line="591"/>
         <source>Show Info</source>
         <translation>정보 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="647"/>
+        <location filename="main_window_viewer.cpp" line="599"/>
         <source>Escape</source>
         <translation>Esc</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="650"/>
+        <location filename="main_window_viewer.cpp" line="602"/>
         <source>Escape key: quit, or cancel the active mode</source>
         <translation>Esc 키: 종료 또는 활성 모드 취소</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="655"/>
+        <location filename="main_window_viewer.cpp" line="607"/>
         <source>Close</source>
         <translation>닫기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="658"/>
+        <location filename="main_window_viewer.cpp" line="610"/>
         <source>Show Dictionary</source>
         <translation>사전 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="664"/>
+        <location filename="main_window_viewer.cpp" line="616"/>
         <source>Show go to flow</source>
         <translation>페이지 흐름 보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="669"/>
+        <location filename="main_window_viewer.cpp" line="621"/>
         <source>Edit shortcuts</source>
         <translation>단축키 편집</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="690"/>
+        <location filename="main_window_viewer.cpp" line="642"/>
         <source>&amp;File</source>
         <translation>파일(&amp;F)</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="705"/>
-        <location filename="main_window_viewer.cpp" line="880"/>
+        <location filename="main_window_viewer.cpp" line="657"/>
+        <location filename="main_window_viewer.cpp" line="829"/>
         <source>Open recent</source>
         <translation>최근 항목 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="868"/>
+        <location filename="main_window_viewer.cpp" line="817"/>
         <source>File</source>
         <translation>파일</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="890"/>
+        <location filename="main_window_viewer.cpp" line="839"/>
         <source>Edit</source>
         <translation>편집</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="894"/>
+        <location filename="main_window_viewer.cpp" line="843"/>
         <source>View</source>
         <translation>보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="911"/>
+        <location filename="main_window_viewer.cpp" line="860"/>
         <source>Go</source>
         <translation>이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="919"/>
+        <location filename="main_window_viewer.cpp" line="868"/>
         <source>Window</source>
         <translation>창</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1037"/>
+        <location filename="main_window_viewer.cpp" line="985"/>
         <source>Open Comic</source>
         <translation>만화 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1590"/>
+        <location filename="main_window_viewer.cpp" line="1543"/>
         <source>Go %1 pages to the right</source>
         <translation>오른쪽으로 %1페이지 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1036"/>
+        <location filename="main_window_viewer.cpp" line="984"/>
         <source>Comic files</source>
         <translation>만화 파일</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="212"/>
-        <location filename="main_window_viewer.cpp" line="631"/>
-        <source>Rating</source>
-        <translation>평점</translation>
-    </message>
-    <message>
-        <location filename="main_window_viewer.cpp" line="238"/>
-        <source>The library could not be updated. Check that YACReaderLibrary is still open.</source>
-        <translation>라이브러리를 업데이트하지 못했습니다. YACReaderLibrary가 열려 있는지 확인하세요.</translation>
-    </message>
-    <message>
-        <location filename="main_window_viewer.cpp" line="1126"/>
+        <location filename="main_window_viewer.cpp" line="1078"/>
         <source>Open folder</source>
         <translation>폴더 열기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1198"/>
+        <location filename="main_window_viewer.cpp" line="1150"/>
         <source>The current page is not ready. Please try again later.</source>
         <translation>현재 페이지가 아직 준비되지 않았습니다. 나중에 다시 시도해 주세요.</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1203"/>
+        <location filename="main_window_viewer.cpp" line="1155"/>
         <source>Overwrite file?</source>
         <translation>파일을 덮어쓰시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1203"/>
+        <location filename="main_window_viewer.cpp" line="1155"/>
         <source>The file already exists. Do you want to overwrite it?</source>
         <translation>파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1209"/>
+        <location filename="main_window_viewer.cpp" line="1161"/>
         <source>The current page could not be saved.</source>
         <translation>현재 페이지를 저장할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1228"/>
+        <location filename="main_window_viewer.cpp" line="1180"/>
         <source>The selected pages are not ready. Please try again later.</source>
         <translation>선택한 페이지가 아직 준비되지 않았습니다. 나중에 다시 시도해 주세요.</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1239"/>
+        <location filename="main_window_viewer.cpp" line="1191"/>
         <source>The current page could not be extracted.</source>
         <translation>현재 페이지를 추출할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1244"/>
+        <location filename="main_window_viewer.cpp" line="1196"/>
         <source>Overwrite files?</source>
         <translation>파일을 덮어쓰시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1244"/>
+        <location filename="main_window_viewer.cpp" line="1196"/>
         <source>Some files already exist. Do you want to overwrite them?</source>
         <translation>일부 파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1257"/>
+        <location filename="main_window_viewer.cpp" line="1209"/>
         <source>Some pages could not be extracted.</source>
         <translation>일부 페이지를 추출할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1440"/>
-        <location filename="main_window_viewer.cpp" line="1453"/>
+        <location filename="main_window_viewer.cpp" line="1393"/>
+        <location filename="main_window_viewer.cpp" line="1406"/>
         <source>Comics</source>
         <translation>만화</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1441"/>
-        <location filename="main_window_viewer.cpp" line="1472"/>
+        <location filename="main_window_viewer.cpp" line="1394"/>
+        <location filename="main_window_viewer.cpp" line="1425"/>
         <source>General</source>
         <translation>일반</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1442"/>
-        <location filename="main_window_viewer.cpp" line="1510"/>
+        <location filename="main_window_viewer.cpp" line="1395"/>
+        <location filename="main_window_viewer.cpp" line="1463"/>
         <source>Magnifiying glass</source>
         <translation>돋보기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1443"/>
-        <location filename="main_window_viewer.cpp" line="1521"/>
+        <location filename="main_window_viewer.cpp" line="1396"/>
+        <location filename="main_window_viewer.cpp" line="1474"/>
         <source>Page adjustement</source>
         <translation>페이지 조정</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1444"/>
-        <location filename="main_window_viewer.cpp" line="1618"/>
+        <location filename="main_window_viewer.cpp" line="1397"/>
+        <location filename="main_window_viewer.cpp" line="1571"/>
         <source>Reading</source>
         <translation>읽기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1466"/>
+        <location filename="main_window_viewer.cpp" line="1419"/>
         <source>Toggle fullscreen mode</source>
         <translation>전체화면 전환</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1469"/>
+        <location filename="main_window_viewer.cpp" line="1422"/>
         <source>Hide/show toolbar</source>
         <translation>도구 모음 표시/숨김</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1491"/>
+        <location filename="main_window_viewer.cpp" line="1444"/>
         <source>Size up magnifying glass</source>
         <translation>돋보기 크게</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1494"/>
+        <location filename="main_window_viewer.cpp" line="1447"/>
         <source>Size down magnifying glass</source>
         <translation>돋보기 작게</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1497"/>
+        <location filename="main_window_viewer.cpp" line="1450"/>
         <source>Zoom in magnifying glass</source>
         <translation>돋보기 확대</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1500"/>
+        <location filename="main_window_viewer.cpp" line="1453"/>
         <source>Zoom out magnifying glass</source>
         <translation>돋보기 축소</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1503"/>
+        <location filename="main_window_viewer.cpp" line="1456"/>
         <source>Reset magnifying glass</source>
         <translation>돋보기 초기화</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1517"/>
+        <location filename="main_window_viewer.cpp" line="1470"/>
         <source>Toggle between fit to width and fit to height</source>
         <translation>폭 맞춤 / 높이 맞춤 전환</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1539"/>
+        <location filename="main_window_viewer.cpp" line="1492"/>
         <source>Autoscroll down</source>
         <translation>아래로 자동 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1542"/>
+        <location filename="main_window_viewer.cpp" line="1495"/>
         <source>Autoscroll up</source>
         <translation>위로 자동 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1545"/>
+        <location filename="main_window_viewer.cpp" line="1498"/>
         <source>Autoscroll forward, horizontal first</source>
         <translation>세로 우선으로 정방향 자동 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1549"/>
+        <location filename="main_window_viewer.cpp" line="1502"/>
         <source>Autoscroll backward, horizontal first</source>
         <translation>가로 우선으로 정방향 자동 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1553"/>
+        <location filename="main_window_viewer.cpp" line="1506"/>
         <source>Autoscroll forward, vertical first</source>
         <translation>세로 우선으로 역방향 자동 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1557"/>
+        <location filename="main_window_viewer.cpp" line="1510"/>
         <source>Autoscroll backward, vertical first</source>
         <translation>가로 우선으로 역방향 자동 스크롤</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1561"/>
+        <location filename="main_window_viewer.cpp" line="1514"/>
         <source>Move down</source>
         <translation>아래로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1564"/>
+        <location filename="main_window_viewer.cpp" line="1517"/>
         <source>Move up</source>
         <translation>위로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1567"/>
+        <location filename="main_window_viewer.cpp" line="1520"/>
         <source>Move left</source>
         <translation>왼쪽으로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1570"/>
+        <location filename="main_window_viewer.cpp" line="1523"/>
         <source>Move right</source>
         <translation>오른쪽으로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1573"/>
+        <location filename="main_window_viewer.cpp" line="1526"/>
         <source>Go to the first page</source>
         <translation>첫 페이지로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1576"/>
+        <location filename="main_window_viewer.cpp" line="1529"/>
         <source>Go to the last page</source>
         <translation>마지막 페이지로 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1579"/>
+        <location filename="main_window_viewer.cpp" line="1532"/>
         <source>Offset double page to the left</source>
         <translation>두 페이지 보기를 왼쪽으로 한 페이지 밀기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1581"/>
+        <location filename="main_window_viewer.cpp" line="1534"/>
         <source>Offset double page to the right</source>
         <translation>두 페이지 보기를 오른쪽으로 한 페이지 밀기</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1585"/>
+        <location filename="main_window_viewer.cpp" line="1538"/>
         <source>Go %1 pages to the left</source>
         <translation>왼쪽으로 %1페이지 이동</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1674"/>
+        <location filename="main_window_viewer.cpp" line="1627"/>
         <source>There is a new version available</source>
         <translation>새 버전을 내려받으시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1675"/>
+        <location filename="main_window_viewer.cpp" line="1628"/>
         <source>Do you want to download the new version?</source>
         <translation>새 버전을 내려받으시겠습니까?</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1678"/>
+        <location filename="main_window_viewer.cpp" line="1631"/>
         <source>Remind me in 14 days</source>
         <translation>14일 후에 다시 알림</translation>
     </message>
     <message>
-        <location filename="main_window_viewer.cpp" line="1679"/>
+        <location filename="main_window_viewer.cpp" line="1632"/>
         <source>Not now</source>
         <translation>나중에</translation>
     </message>
