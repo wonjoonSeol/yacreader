@@ -24,10 +24,9 @@ public:
         return changed;
     }
 
-    QImage process(const QImage &image, QSize pixelSize, ScaleMethod scaleMethod) const override
+    QImage process(const QImage &image, QSize pixelSize, ScaleMethod scaleMethod, const std::atomic_bool &cancelled) const override
     {
-        const std::atomic_bool notCancelled = false;
-        return enabled ? scaleImageWithAcnet(image, pixelSize, scaleMethod, acnetModel, notCancelled) : QImage();
+        return enabled ? scaleImageWithAcnet(image, pixelSize, scaleMethod, acnetModel, cancelled) : QImage();
     }
 
 private:

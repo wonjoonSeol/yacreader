@@ -178,12 +178,12 @@ Viewer::Viewer(QWidget *parent)
     continuousPageProvider->setRender(render);
 
     acnetStage = std::make_shared<AcnetStage>();
-    prescaler = new PagePrescaler({ std::make_shared<ScaleStage>(), acnetStage }, PagePrescaler::defaultThreadCount(), this);
+    prescaler = new PagePrescaler({ std::make_shared<ScaleStage>(), acnetStage }, PagePrescaler::defaultThreadCount(), PagePrescaler::defaultMaxBytes, this);
     applyAcnetOptions();
-    // a zero interval lets the page being shown take its image first, so it is not scaled twice
+    // started with a zero interval, which lets the page being shown take its image first so the background does not
+    // scale it again, or with a longer one while the window is being resized
     prescaleTimer = new QTimer(this);
     prescaleTimer->setSingleShot(true);
-    prescaleTimer->setInterval(0);
     connect(prescaleTimer, &QTimer::timeout, this, &Viewer::schedulePrescale);
 
     hideCursorTimer = new QTimer();
@@ -303,7 +303,7 @@ void Viewer::createConnections()
     connect(render, qOverload<unsigned int>(&Render::numPages), this, &Viewer::comicLoaded);
     connect(render, QOverload<int, const QByteArray &>::of(&Render::imageLoaded), goToFlow, &GoToFlowWidget::setImageReady);
     connect(render, &Render::currentPageReady, this, &Viewer::updatePage);
-    connect(render, &Render::pageRendered, prescaleTimer, qOverload<>(&QTimer::start));
+    connect(render, &Render::pageRendered, this, [this] { requestPrescale(0); });
     connect(prescaler, &PagePrescaler::imageImproved, this, &Viewer::showImprovedPage);
     // Continuous mode is driven by the off-thread page provider, not by Render's
     // (blocking) page buffer. The provider emits pageReady when a full-resolution
@@ -557,6 +557,7 @@ void Viewer::updatePage()
 
     currentImages = render->viewImages(render->currentView());
     currentFullPage = QPixmap();
+    shownPrescaleKey = { };
     currentPageHasDoublePageSeam = currentImages && currentImages->isDoublePage();
     if (currentPageHasDoublePageSeam) {
         const DoublePageLayout layout = currentImages->layout();
@@ -587,31 +588,54 @@ void Viewer::updatePage()
     }
 }
 
+namespace {
+
+// The page shown and the views scheduled get the same key, so the schedule after a page turn finds the image the
+// turn scaled
+PrescaleKey prescaleKey(const PageViewImages &images, const FittedPage &fit, const PageFitOptions &options)
+{
+    return { images.key(), fit.pixelSize, options.devicePixelRatio, Configuration::getConfiguration().getScalingMethod() };
+}
+
+}
+
 void Viewer::updateContentSize()
 {
     cancelZoomPreview();
+    // continuous scroll scales its own pages
+    if (continuousScroll) {
+        return;
+    }
 
     // there is an image to resize
     if (currentImages) {
         const PageFitOptions fitOptions = pageFitOptions();
-        const PageFit fit = fitPage(currentImages->size(), fitOptions);
+        const FittedPage fit = fitPage(currentImages->size(), fitOptions);
         // apply size to the container
         content->resize(fit.size);
 
-        // scale the pixmap to physical pixels for crisp rendering on all displays
-        shownPrescaleKey = { currentImages->key(), fit.pixelSize, fitOptions.devicePixelRatio, Configuration::getConfiguration().getScalingMethod() };
-        content->setPixmap(scaledCurrentPage(shownPrescaleKey));
+        // the page in physical pixels for crisp rendering on all displays, prescaled in the background or else
+        // scaled here
+        shownPrescaleKey = prescaleKey(*currentImages, fit, fitOptions);
+        content->setPixmap(QPixmap::fromImage(prescaler->scaleNow({ shownPrescaleKey, *currentImages })));
         content->setBookFoldShadow(currentPageHasDoublePageSeam && Configuration::getConfiguration().getDoublePageShadow(),
                                    doublePageSeamRatio, doublePageSeamOrientation);
 
         emit backgroundChanges();
     }
     content->update(); // TODO, it shouldn't be neccesary
-    prescaleTimer->start();
+    requestPrescale(0);
 }
 
-// Drawing a double page at full resolution takes a while, so it waits for the magnifier, saving the page or a page
-// turn that has to scale
+// A longer delay that is pending, after a resize, is not cut short
+void Viewer::requestPrescale(int delayMs)
+{
+    if (!prescaleTimer->isActive() || prescaleTimer->remainingTime() < delayMs) {
+        prescaleTimer->start(delayMs);
+    }
+}
+
+// Drawing a double page at full resolution takes a while, so it waits for the magnifier or Save current page
 const QPixmap &Viewer::fullPage() const
 {
     if (currentFullPage.isNull() && currentImages) {
@@ -626,20 +650,6 @@ PageFitOptions Viewer::pageFitOptions() const
     return { size(), configuration.getFitMode(), configuration.getEnlargeImages(), zoom, devicePixelRatioF() };
 }
 
-// The page turn shows the prescaled image when it is ready, and scales the page here otherwise
-QPixmap Viewer::scaledCurrentPage(const PrescaleKey &key)
-{
-    const QImage prescaled = prescaler->image(key);
-    if (!prescaled.isNull()) {
-        return QPixmap::fromImage(prescaled);
-    }
-
-    QPixmap page = scalePixmap(fullPage(), key.pixelSize.width(), key.pixelSize.height(), key.scaleMethod);
-    page.setDevicePixelRatio(key.devicePixelRatio);
-    prescaler->store(key, page.toImage());
-    return page;
-}
-
 void Viewer::schedulePrescale()
 {
     if (continuousScroll || !render->hasLoadedComic()) {
@@ -647,18 +657,17 @@ void Viewer::schedulePrescale()
     }
 
     const PageFitOptions fitOptions = pageFitOptions();
-    const ScaleMethod scaleMethod = Configuration::getConfiguration().getScalingMethod();
     QList<PrescaleRequest> requests;
     for (const PageView &view : render->viewsAroundCurrent()) {
         std::optional<PageViewImages> images = render->viewImages(view);
         if (!images) {
             continue;
         }
-        const PageFit fit = fitPage(images->size(), fitOptions);
+        const FittedPage fit = fitPage(images->size(), fitOptions);
         if (fit.pixelSize.isEmpty()) {
             continue;
         }
-        const PrescaleKey key { images->key(), fit.pixelSize, fitOptions.devicePixelRatio, scaleMethod };
+        const PrescaleKey key = prescaleKey(*images, fit, fitOptions);
         requests.append({ key, std::move(*images) });
     }
     prescaler->schedule(requests);
@@ -1096,6 +1105,10 @@ void Viewer::resizeEvent(QResizeEvent *event)
     }
 
     updateContentSize();
+    // a window being resized sends resize events in quick succession, and every schedule cancels the work of the one
+    // before
+    static constexpr int prescaleDelayAfterResizeMs = 100;
+    requestPrescale(prescaleDelayAfterResizeMs);
     goToFlow->updateSize();
     goToFlow->move((width() - goToFlow->width()) / 2, height() - goToFlow->height());
     informationLabel->updatePosition();
@@ -1619,16 +1632,20 @@ void Viewer::rotateLeft()
     // at the same angle; continuousRotation stays in lockstep with Render.
     continuousRotation = (continuousRotation == 0) ? 270 : continuousRotation - 90;
     continuousPageProvider->setRotation(continuousRotation);
-    prescaler->invalidate();
-    if (continuousScroll) {
-        continuousWidget->invalidateScaledImageCache();
-    }
+    invalidateScaledPages();
 }
 void Viewer::rotateRight()
 {
     render->rotateRight();
     continuousRotation = (continuousRotation + 90) % 360;
     continuousPageProvider->setRotation(continuousRotation);
+    invalidateScaledPages();
+}
+
+// Render decodes the pages again after these changes, so the prescaled ones and the work on them are dropped at
+// once instead of at the next schedule
+void Viewer::invalidateScaledPages()
+{
     prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
@@ -1679,6 +1696,10 @@ void Viewer::setContinuousScrollImpl(bool enabled, bool persistSettings)
 
     if (continuousScroll) {
         prescaler->invalidate();
+        // continuous scroll shows its own pages, so the last single page view is let go
+        currentImages.reset();
+        currentFullPage = QPixmap();
+        shownPrescaleKey = { };
         continuousViewModel->setZoomFactor(zoom);
         if (render->hasLoadedComic()) {
             continuousViewModel->setViewportSize(viewport()->width(), viewport()->height());
@@ -2237,7 +2258,6 @@ void Viewer::updateImageOptions()
     // Settings-driven image options may have changed; force the provider to
     // re-decode with the current settings.
     continuousPageProvider->invalidate();
-    prescaler->invalidate();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();
     }
@@ -2247,10 +2267,7 @@ void Viewer::updateFilters(int brightness, int contrast, int gamma)
 {
     render->updateFilters(brightness, contrast, gamma);
     continuousPageProvider->setFilters(brightness, contrast, gamma);
-    prescaler->invalidate();
-    if (continuousScroll) {
-        continuousWidget->invalidateScaledImageCache();
-    }
+    invalidateScaledPages();
 }
 
 void Viewer::setBookmarks()

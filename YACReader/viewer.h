@@ -162,14 +162,14 @@ private:
     //!  Comic
     // Comic * comic;
     int index;
-    // the decoded pages content shows, and the scaled image of them it shows
+    // the decoded pages content shows, and the key of the scaled image of them it shows
     std::optional<PageViewImages> currentImages;
     PrescaleKey shownPrescaleKey;
     // drawn from currentImages the first time it is needed, see fullPage()
     mutable QPixmap currentFullPage;
-    PagePrescaler *prescaler;
+    PagePrescaler *prescaler = nullptr;
     std::shared_ptr<AcnetStage> acnetStage;
-    QTimer *prescaleTimer;
+    QTimer *prescaleTimer = nullptr;
     BookmarksDialog *bd;
     bool wheelStop;
     Render *render;
@@ -277,10 +277,11 @@ private:
     void applyContinuousPageFit();
     const QPixmap &fullPage() const;
     PageFitOptions pageFitOptions() const;
-    QPixmap scaledCurrentPage(const PrescaleKey &key);
+    void requestPrescale(int delayMs);
     void schedulePrescale();
     void applyAcnetOptions();
     void showImprovedPage(const PrescaleKey &key);
+    void invalidateScaledPages();
     // 0-based. A double page spread that ends the comic counts as read up to its last page.
     int lastReadPage();
 

@@ -4,34 +4,74 @@
 
 #include <optional>
 
-namespace {
-
-// A view replayed from the history ends where the next recorded view starts
-std::optional<PageView> viewAt(int page, int numPages, int nextRecordedPage, const std::function<PagePairing(int)> &pairingAt)
+void DoublePageNavigation::reset(int page)
 {
-    if (page + 1 >= numPages || (nextRecordedPage >= 0 && page + 1 >= nextRecordedPage)) {
-        return PageView { page, false };
-    }
-
-    switch (pairingAt(page)) {
-    case PagePairing::Single:
-        return PageView { page, false };
-    case PagePairing::Double:
-        return PageView { page, true };
-    case PagePairing::Unknown:
-        break;
-    }
-    return std::nullopt;
+    firstPages = { page };
+    position = 0;
 }
 
+bool DoublePageNavigation::tracks(int page) const
+{
+    return position < firstPages.size() && firstPages.at(position) == page;
 }
 
-QList<PageView> nearbyPageViews(PageView current, int numPages, bool doublePageMode, const PageViewHistory &history,
-                                const std::function<PagePairing(int)> &pairingAt)
+void DoublePageNavigation::follow(int page)
+{
+    if (!tracks(page)) {
+        reset(page);
+    }
+}
+
+bool DoublePageNavigation::showsTwoPages(int page, int numPages, const PagePairingFunction &pairingAt) const
+{
+    if (page + 1 >= numPages) {
+        return false;
+    }
+    if (tracks(page) && position + 1 < firstPages.size() && page + 1 >= firstPages.at(position + 1)) {
+        // Keep the second page out of the next view already recorded in history.
+        return false;
+    }
+    return pairingAt(page) == PagePairing::Double;
+}
+
+int DoublePageNavigation::next(int page, int numPages, const PagePairingFunction &pairingAt)
+{
+    follow(page);
+    if (position + 1 < firstPages.size()) {
+        return firstPages.at(++position);
+    }
+
+    const int nextPage = page + (showsTwoPages(page, numPages, pairingAt) ? 2 : 1);
+    if (nextPage >= numPages) {
+        return page;
+    }
+    firstPages.append(nextPage);
+    ++position;
+    return nextPage;
+}
+
+int DoublePageNavigation::previous(int page, const PagePairingFunction &pairingAt)
+{
+    follow(page);
+    if (position > 0) {
+        return firstPages.at(--position);
+    }
+
+    // going back shows the two pages before the view when they make a double page
+    const int pageStep = page >= 2 && pairingAt(page - 2) == PagePairing::Double ? 2 : 1;
+    const int previousPage = qMax(page - pageStep, 0);
+    if (previousPage != page) {
+        firstPages.prepend(previousPage);
+    }
+    return previousPage;
+}
+
+QList<PageView> nearbyPageViews(int currentPage, int numPages, bool doublePageMode, const DoublePageNavigation &navigation,
+                                const PagePairingFunction &pairingAt)
 {
     QList<PageView> views;
     if (!doublePageMode) {
-        for (const int page : { current.firstPage + 1, current.firstPage + 2, current.firstPage - 1 }) {
+        for (const int page : { currentPage + 1, currentPage + 2, currentPage - 1 }) {
             if (page >= 0 && page < numPages) {
                 views.append({ page, false });
             }
@@ -39,50 +79,40 @@ QList<PageView> nearbyPageViews(PageView current, int numPages, bool doublePageM
         return views;
     }
 
-    // Render starts a new history when the current view is not the one it recorded last
-    const bool historyTracksCurrent = history.position < history.firstPages.size() && history.firstPages.at(history.position) == current.firstPage;
-    const QList<int> recorded = historyTracksCurrent ? history.firstPages : QList<int> { current.firstPage };
-    const int position = historyTracksCurrent ? history.position : 0;
-    const auto recordedAt = [&recorded](int index) {
-        return index >= 0 && index < recorded.size() ? recorded.at(index) : -1;
+    bool unknown = false;
+    const PagePairingFunction checkedPairingAt = [&](int page) {
+        const PagePairing pairing = pairingAt(page);
+        unknown = unknown || pairing == PagePairing::Unknown;
+        return pairing;
+    };
+    // the view a page turn shows, or nothing when the turn or the view depends on a page that is not decoded yet
+    const auto turn = [&](DoublePageNavigation &turned, int page, bool forward) -> std::optional<PageView> {
+        unknown = false;
+        const int nextPage = forward ? turned.next(page, numPages, checkedPairingAt) : turned.previous(page, checkedPairingAt);
+        if (nextPage == page) {
+            return std::nullopt;
+        }
+        const PageView view { nextPage, turned.showsTwoPages(nextPage, numPages, checkedPairingAt) };
+        if (unknown) {
+            return std::nullopt;
+        }
+        return view;
     };
 
-    PageView view = current;
-    for (int turn = 1; turn <= 2; ++turn) {
-        int nextPage = recordedAt(position + turn);
-        if (nextPage < 0) {
-            nextPage = view.firstPage + (view.doublePage ? 2 : 1);
-        }
-        if (nextPage >= numPages) {
-            break;
-        }
-
-        const std::optional<PageView> next = viewAt(nextPage, numPages, recordedAt(position + turn + 1), pairingAt);
+    DoublePageNavigation ahead = navigation;
+    int page = currentPage;
+    for (int turns = 0; turns < 2; ++turns) {
+        const std::optional<PageView> next = turn(ahead, page, true);
         if (!next) {
             break;
         }
         views.append(*next);
-        view = *next;
+        page = next->firstPage;
     }
 
-    int previousPage = recordedAt(position - 1);
-    if (previousPage < 0) {
-        // going back shows the two pages before the current view when they make a double page
-        switch (current.firstPage >= 2 ? pairingAt(current.firstPage - 2) : PagePairing::Single) {
-        case PagePairing::Single:
-            previousPage = current.firstPage - 1;
-            break;
-        case PagePairing::Double:
-            previousPage = current.firstPage - 2;
-            break;
-        case PagePairing::Unknown:
-            break;
-        }
-    }
-    if (previousPage >= 0) {
-        if (const std::optional<PageView> previous = viewAt(previousPage, numPages, current.firstPage, pairingAt)) {
-            views.append(*previous);
-        }
+    DoublePageNavigation behind = navigation;
+    if (const std::optional<PageView> previous = turn(behind, currentPage, false)) {
+        views.append(*previous);
     }
 
     return views;
@@ -115,9 +145,17 @@ DoublePageLayout doublePageLayout(QSize firstSize, QSize secondSize, int rotatio
     return layout;
 }
 
+PageViewImages PageViewImages::of(int firstPage, const QImage &page, const QImage &nextPage, bool manga, int rotation)
+{
+    if (manga && !nextPage.isNull()) {
+        return { firstPage, nextPage, page, rotation };
+    }
+    return { firstPage, page, nextPage, rotation };
+}
+
 PageViewKey PageViewImages::key() const
 {
-    return { firstPage, first.cacheKey(), second.cacheKey() };
+    return { firstPage, first.cacheKey(), second.cacheKey(), rotation };
 }
 
 DoublePageLayout PageViewImages::layout() const
