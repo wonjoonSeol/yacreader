@@ -287,32 +287,32 @@
         <translation>시스템 기본값</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="65"/>
+        <location filename="options_dialog.cpp" line="68"/>
         <source>Open comics at</source>
         <translation>만화를 열 때</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="67"/>
+        <location filename="options_dialog.cpp" line="70"/>
         <source>The last page read</source>
         <translation>마지막으로 읽은 페이지</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="112"/>
+        <location filename="options_dialog.cpp" line="115"/>
         <source>Clear</source>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>General</source>
         <translation>일반</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="306"/>
+        <location filename="options_dialog.cpp" line="309"/>
         <source>Appearance</source>
         <translation>외관</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="322"/>
+        <location filename="options_dialog.cpp" line="325"/>
         <source>Options</source>
         <translation>환경설정</translation>
     </message>
@@ -332,117 +332,127 @@
         <translation>현재 페이지 정보 라벨에 시간 표시</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="68"/>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation>페이지가 바뀌면 페이지 번호를 잠깐 표시</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation>현재 페이지와 전체 페이지 수를 10/100처럼 왼쪽 위에 표시합니다. 정보 보기가 켜져 있으면 표시하지 않습니다.</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="71"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation>다 읽은 만화는 첫 페이지, 그 외에는 마지막으로 읽은 페이지</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="69"/>
+        <location filename="options_dialog.cpp" line="72"/>
         <source>A comic counts as finished when its reading progress is on the last page.</source>
         <translation>읽기 진행 상황이 마지막 페이지인 만화를 다 읽은 것으로 봅니다.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="70"/>
+        <location filename="options_dialog.cpp" line="73"/>
         <source>The first page</source>
         <translation>첫 페이지</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="76"/>
+        <location filename="options_dialog.cpp" line="79"/>
         <source>Magnifying glass</source>
         <translation>돋보기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="78"/>
+        <location filename="options_dialog.cpp" line="81"/>
         <source>Circular magnifying glass</source>
         <translation>원형 돋보기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="79"/>
+        <location filename="options_dialog.cpp" line="82"/>
         <source>Draw a ring around the circular magnifying glass</source>
         <translation>원형 돋보기 주위에 테두리 표시</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="82"/>
+        <location filename="options_dialog.cpp" line="85"/>
         <source>Ease cursor movement toward the edges</source>
         <translation>가장자리 쪽으로 커서 이동 완화</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="90"/>
+        <location filename="options_dialog.cpp" line="93"/>
         <source>&quot;Go to flow&quot; size</source>
         <translation>페이지 흐름 크기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="108"/>
+        <location filename="options_dialog.cpp" line="111"/>
         <source>Background color</source>
         <translation>배경색</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="111"/>
+        <location filename="options_dialog.cpp" line="114"/>
         <source>Choose</source>
         <translation>선택</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="120"/>
+        <location filename="options_dialog.cpp" line="123"/>
         <source>Scroll behaviour</source>
         <translation>스크롤 동작</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="123"/>
+        <location filename="options_dialog.cpp" line="126"/>
         <source>Disable scroll animations and smooth scrolling</source>
         <translation>스크롤 애니메이션과 부드러운 스크롤 끄기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="124"/>
+        <location filename="options_dialog.cpp" line="127"/>
         <source>Do not turn page using scroll</source>
         <translation>스크롤로 페이지 넘기지 않기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="125"/>
+        <location filename="options_dialog.cpp" line="128"/>
         <source>Use single scroll step to turn page</source>
         <translation>한 단계 스크롤로 페이지 넘기기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="133"/>
+        <location filename="options_dialog.cpp" line="136"/>
         <source>Mouse mode</source>
         <translation>마우스 모드</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="136"/>
+        <location filename="options_dialog.cpp" line="139"/>
         <source>Only Back/Forward buttons can turn pages</source>
         <translation>뒤로/앞으로 버튼만 페이지 넘김</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="137"/>
+        <location filename="options_dialog.cpp" line="140"/>
         <source>Use the Left/Right buttons to turn pages.</source>
         <translation>왼쪽/오른쪽 버튼으로 페이지 넘김.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="138"/>
+        <location filename="options_dialog.cpp" line="141"/>
         <source>Click left or right half of the screen to turn pages.</source>
         <translation>화면 왼쪽 또는 오른쪽 절반을 클릭하여 페이지 넘김.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="146"/>
+        <location filename="options_dialog.cpp" line="149"/>
         <source>Escape key</source>
         <translation>Esc 키</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="149"/>
+        <location filename="options_dialog.cpp" line="152"/>
         <source>Quit the reader</source>
         <translation>리더 종료</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="150"/>
+        <location filename="options_dialog.cpp" line="153"/>
         <source>Cancel the active mode</source>
         <translation>활성 모드 취소</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="152"/>
+        <location filename="options_dialog.cpp" line="155"/>
         <source>Escape closes the reader, even while a mode is active.</source>
         <translation>모드가 활성화되어 있어도 Esc 키를 누르면 리더가 종료됩니다.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="157"/>
+        <location filename="options_dialog.cpp" line="160"/>
         <source>Escape cancels the first of these that is active:
 
 1. Magnifying glass
@@ -462,22 +472,22 @@ If none is active, Escape does nothing.</source>
 활성화된 모드가 없으면 Esc 키를 눌러도 아무 동작도 하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="189"/>
+        <location filename="options_dialog.cpp" line="192"/>
         <source>Use software-rendered &quot;go to flow&quot; (requires restart)</source>
         <translation>소프트웨어로 렌더링되는 페이지 흐름 사용(다시 시작해야 함)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="190"/>
+        <location filename="options_dialog.cpp" line="193"/>
         <source>Use a simple horizontal list of page thumbnails instead of the GPU-rendered 3D flow. Enable this if reading is not smooth on your system.</source>
         <translation>GPU로 렌더링되는 3D 흐름 대신 간단한 가로 페이지 미리보기 목록을 사용합니다. 시스템에서 읽기가 원활하지 않으면 이 옵션을 활성화하세요.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="193"/>
+        <location filename="options_dialog.cpp" line="196"/>
         <source>Quick Navigation Mode</source>
         <translation>빠른 탐색 모드</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="194"/>
+        <location filename="options_dialog.cpp" line="197"/>
         <source>Disable mouse over activation</source>
         <translation>마우스 오버 활성화 끄기</translation>
     </message>
@@ -502,66 +512,66 @@ If none is active, Escape does nothing.</source>
         <translation>초기화</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="216"/>
+        <location filename="options_dialog.cpp" line="219"/>
         <source>Image options</source>
         <translation>이미지 옵션</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="224"/>
+        <location filename="options_dialog.cpp" line="227"/>
         <source>Fit options</source>
         <translation>맞춤 옵션</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="226"/>
+        <location filename="options_dialog.cpp" line="229"/>
         <location filename="image_adjustment_menu.cpp" line="65"/>
         <source>Enlarge images to fit width/height</source>
         <translation>작은 그림도 꽉차게 보기</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="235"/>
+        <location filename="options_dialog.cpp" line="238"/>
         <location filename="image_adjustment_menu.cpp" line="71"/>
         <source>Continuous scroll</source>
         <translation>연속 스크롤</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="237"/>
+        <location filename="options_dialog.cpp" line="240"/>
         <location filename="image_adjustment_menu.cpp" line="73"/>
         <source>Fit pages to width</source>
         <translation>페이지를 폭에 맞춤</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="238"/>
+        <location filename="options_dialog.cpp" line="241"/>
         <location filename="image_adjustment_menu.cpp" line="74"/>
         <source>Fit pages to height</source>
         <translation>페이지를 높이에 맞춤</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="239"/>
+        <location filename="options_dialog.cpp" line="242"/>
         <source>Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width.</source>
         <translation>높이에 맞추면 창보다 넓어지는 페이지는 폭에 맞춥니다. 라이브러리에서 웹툰으로 지정한 만화는 항상 폭에 맞춥니다.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="248"/>
+        <location filename="options_dialog.cpp" line="251"/>
         <source>Double Page options</source>
         <translation>두 페이지 옵션</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="250"/>
+        <location filename="options_dialog.cpp" line="253"/>
         <source>Show covers as single page</source>
         <translation>표지를 한 장으로 표시</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="256"/>
+        <location filename="options_dialog.cpp" line="259"/>
         <source>Show book fold shadow</source>
         <translation>책 접힘 부분의 그림자 표시</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="268"/>
+        <location filename="options_dialog.cpp" line="271"/>
         <source>Scaling</source>
         <translation>스케일링</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="270"/>
+        <location filename="options_dialog.cpp" line="273"/>
         <location filename="image_adjustment_menu.cpp" line="82"/>
         <source>Scaling method</source>
         <translation>스케일링 방법</translation>
@@ -592,23 +602,23 @@ If none is active, Escape does nothing.</source>
         <translation>Lanczos2 (헤일로 적음, 디테일 적음)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
+        <location filename="options_dialog.cpp" line="307"/>
         <source>Page Flow</source>
         <translation>페이지 플로우</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="305"/>
+        <location filename="options_dialog.cpp" line="308"/>
         <location filename="image_adjustment_menu.cpp" line="36"/>
         <source>Image adjustment</source>
         <translation>이미지 조정</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="313"/>
+        <location filename="options_dialog.cpp" line="316"/>
         <source>Restart is needed</source>
         <translation>재시작이 필요합니다</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="341"/>
         <source>Comics directory</source>
         <translation>만화 폴더</translation>
     </message>
@@ -846,48 +856,48 @@ If none is active, Escape does nothing.</source>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1865"/>
+        <location filename="viewer.cpp" line="126"/>
+        <location filename="viewer.cpp" line="1976"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>&apos;O&apos;를 눌러 만화를 열어보세요.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="373"/>
+        <location filename="viewer.cpp" line="387"/>
         <source>Not found</source>
         <translation>찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="373"/>
+        <location filename="viewer.cpp" line="387"/>
         <source>Comic not found</source>
         <translation>만화를 찾을 수 없습니다</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="379"/>
+        <location filename="viewer.cpp" line="393"/>
         <source>Error opening comic</source>
         <translation>만화를 여는 중 오류가 발생했습니다</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="385"/>
+        <location filename="viewer.cpp" line="399"/>
         <source>CRC Error</source>
         <translation>CRC 오류</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1882"/>
+        <location filename="viewer.cpp" line="1995"/>
         <source>Loading...please wait!</source>
         <translation>불러오는 중... 잠시 기다려주세요!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1893"/>
+        <location filename="viewer.cpp" line="2006"/>
         <source>Page not available!</source>
         <translation>페이지를 불러올 수 없습니다!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2231"/>
+        <location filename="viewer.cpp" line="2345"/>
         <source>Cover!</source>
         <translation>표지!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2245"/>
+        <location filename="viewer.cpp" line="2359"/>
         <source>Last page!</source>
         <translation>마지막 페이지!</translation>
     </message>

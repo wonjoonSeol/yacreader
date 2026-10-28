@@ -57,9 +57,12 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     languageBox->setLayout(languageLayout);
 
     QGroupBox *displayBox = new QGroupBox(tr("Display"));
-    auto displayLayout = new QHBoxLayout();
+    auto displayLayout = new QVBoxLayout();
     showTimeInInformationLabel = new QCheckBox(tr("Show time in current page information label"));
+    showPageCounter = new QCheckBox(tr("Briefly show the page number when the page changes"));
+    showPageCounter->setToolTip(tr("Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on."));
     displayLayout->addWidget(showTimeInInformationLabel);
+    displayLayout->addWidget(showPageCounter);
     displayBox->setLayout(displayLayout);
 
     auto openComicsAtBox = new QGroupBox(tr("Open comics at"));
@@ -359,6 +362,7 @@ void OptionsDialog::saveOptions()
     settings->setValue(PATH, pathEdit->text());
 
     Configuration::getConfiguration().setShowTimeInInformation(showTimeInInformationLabel->isChecked());
+    Configuration::getConfiguration().setShowPageCounter(showPageCounter->isChecked());
     auto openComicsAt = OpenComicsAt::LastReadPage;
     if (openAtFirstPageIfFinishedRadioButton->isChecked()) {
         openComicsAt = OpenComicsAt::FirstPageIfFinished;
@@ -424,6 +428,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
     languageCombo->setCurrentIndex(languageIndex);
 
     showTimeInInformationLabel->setChecked(Configuration::getConfiguration().getShowTimeInInformation());
+    showPageCounter->setChecked(Configuration::getConfiguration().getShowPageCounter());
     switch (Configuration::getConfiguration().getOpenComicsAt()) {
     case OpenComicsAt::FirstPageIfFinished:
         openAtFirstPageIfFinishedRadioButton->setChecked(true);

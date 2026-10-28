@@ -3,6 +3,7 @@
 add_subdirectory(concurrent_queue_test)
 add_subdirectory(compressed_archive_test)
 add_subdirectory(continuous_view_model_test)
+add_subdirectory(page_counter_test)
 add_subdirectory(page_prescale_test)
 add_subdirectory(pdf_render_size_test)
 add_subdirectory(folder_rename_test)

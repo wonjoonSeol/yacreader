@@ -8,6 +8,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) that chan
 | [Fit pages to height in continuous scroll](#fit-pages-to-height-in-continuous-scroll) | Option | [#5](https://github.com/wonjoonSeol/yacreader/pull/5) |
 | [Image adjustment menu](#image-adjustment-menu) | Feature | [#12](https://github.com/wonjoonSeol/yacreader/pull/12) |
 | [Go 5 or 10 pages](#go-5-or-10-pages) | Shortcuts | [#4](https://github.com/wonjoonSeol/yacreader/pull/4) |
+| [Page number when the page changes](#page-number-when-the-page-changes) | Display | [#11](https://github.com/wonjoonSeol/yacreader/pull/11) |
 | [Next file after an unreadable one](#next-file-after-an-unreadable-one) | Bug fix | [#1](https://github.com/wonjoonSeol/yacreader/pull/1) |
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
@@ -83,6 +84,21 @@ Right-click the page > **Image adjustment**, or click the arrow next to the Opti
 - **Manga mode:** the directions flip, as they do for ← and →.
 - **Double page mode:** the 5 page jump moves 4 pages, so spreads stay paired.
 - **Changing the keys:** Options > Shortcuts > Edit shortcuts > Reading. If one of these keys is already bound to another action, that jump starts unassigned.
+
+### Page number when the page changes
+
+Options > General > Display > **Briefly show the page number when the page changes**, off by default. With it on, turning a page shows the page number in the top left corner for a moment, then it fades out.
+
+<img src="docs/fork/page-counter-option.png" width="600" alt="The Display group in Options, General, with the option turned on">
+
+| Single page | Double page |
+|---|---|
+| <img src="docs/fork/page-counter-single-page.png" width="400" alt="10/100 in the top left corner after turning to page 10"> | <img src="docs/fork/page-counter-double-page.png" width="400" alt="12-13/100 in the top left corner after turning to pages 12 and 13"> |
+
+- **When:** next and previous page, Go 5 or 10 pages, Go to page, the page flow, bookmarks, first and last page, opening a comic, and scrolling onto another page in continuous scroll. It stays hidden when the page doesn't change, such as Next on the last page.
+- **Double page mode:** a spread shows both pages, such as 12-13/100. In manga mode they read right to left, 13-12/100, as in the page information label.
+- **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
+- **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides after the second without fading.
 
 ### Next file after an unreadable one
 

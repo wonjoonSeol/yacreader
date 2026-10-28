@@ -287,27 +287,27 @@
         <translation>Çizgi Romanlarım</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="65"/>
+        <location filename="options_dialog.cpp" line="68"/>
         <source>Open comics at</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="67"/>
+        <location filename="options_dialog.cpp" line="70"/>
         <source>The last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="256"/>
+        <location filename="options_dialog.cpp" line="259"/>
         <source>Show book fold shadow</source>
         <translation>Kitap kıvrımı gölgesini göster</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="268"/>
+        <location filename="options_dialog.cpp" line="271"/>
         <source>Scaling</source>
         <translation>Ölçeklendirme</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="270"/>
+        <location filename="options_dialog.cpp" line="273"/>
         <location filename="image_adjustment_menu.cpp" line="82"/>
         <source>Scaling method</source>
         <translation>Ölçeklendirme yöntemi</translation>
@@ -338,23 +338,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="305"/>
+        <location filename="options_dialog.cpp" line="308"/>
         <location filename="image_adjustment_menu.cpp" line="36"/>
         <source>Image adjustment</source>
         <translation>Resim ayarları</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="90"/>
+        <location filename="options_dialog.cpp" line="93"/>
         <source>&quot;Go to flow&quot; size</source>
         <translation>&quot;Comic Flow&apos;a git&quot; boyutu</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="111"/>
+        <location filename="options_dialog.cpp" line="114"/>
         <source>Choose</source>
         <translation>Seç</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="216"/>
+        <location filename="options_dialog.cpp" line="219"/>
         <source>Image options</source>
         <translation>Sayfa ayarları</translation>
     </message>
@@ -364,12 +364,12 @@
         <translation>Kontrast</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="306"/>
+        <location filename="options_dialog.cpp" line="309"/>
         <source>Appearance</source>
         <translation>Dış görünüş</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="322"/>
+        <location filename="options_dialog.cpp" line="325"/>
         <source>Options</source>
         <translation>Ayarlar</translation>
     </message>
@@ -389,27 +389,27 @@
         <translation>Sistem varsayılanı</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="112"/>
+        <location filename="options_dialog.cpp" line="115"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="338"/>
+        <location filename="options_dialog.cpp" line="341"/>
         <source>Comics directory</source>
         <translation>Çizgi roman konumu</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="108"/>
+        <location filename="options_dialog.cpp" line="111"/>
         <source>Background color</source>
         <translation>Arka plan rengi</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="304"/>
+        <location filename="options_dialog.cpp" line="307"/>
         <source>Page Flow</source>
         <translation>Sayfa akışı</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="303"/>
+        <location filename="options_dialog.cpp" line="306"/>
         <source>General</source>
         <translation>Genel</translation>
     </message>
@@ -419,12 +419,12 @@
         <translation>Parlaklık</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="313"/>
+        <location filename="options_dialog.cpp" line="316"/>
         <source>Restart is needed</source>
         <translation>Yeniden başlatılmalı</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="193"/>
+        <location filename="options_dialog.cpp" line="196"/>
         <source>Quick Navigation Mode</source>
         <translation>Hızlı Gezinti Kipi</translation>
     </message>
@@ -439,102 +439,112 @@
         <translation>Geçerli sayfa bilgisi etiketinde zamanı göster</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="68"/>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="63"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="71"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="69"/>
+        <location filename="options_dialog.cpp" line="72"/>
         <source>A comic counts as finished when its reading progress is on the last page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="70"/>
+        <location filename="options_dialog.cpp" line="73"/>
         <source>The first page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="76"/>
+        <location filename="options_dialog.cpp" line="79"/>
         <source>Magnifying glass</source>
         <translation>Büyüteç</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="78"/>
+        <location filename="options_dialog.cpp" line="81"/>
         <source>Circular magnifying glass</source>
         <translation>Dairesel büyüteç</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="79"/>
+        <location filename="options_dialog.cpp" line="82"/>
         <source>Draw a ring around the circular magnifying glass</source>
         <translation>Dairesel büyütecin etrafına halka çiz</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="82"/>
+        <location filename="options_dialog.cpp" line="85"/>
         <source>Ease cursor movement toward the edges</source>
         <translation>İmlecin kenarlara doğru hareketini yumuşat</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="120"/>
+        <location filename="options_dialog.cpp" line="123"/>
         <source>Scroll behaviour</source>
         <translation>Kaydırma davranışı</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="123"/>
+        <location filename="options_dialog.cpp" line="126"/>
         <source>Disable scroll animations and smooth scrolling</source>
         <translation>Kaydırma animasyonlarını ve düzgün kaydırmayı devre dışı bırakın</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="124"/>
+        <location filename="options_dialog.cpp" line="127"/>
         <source>Do not turn page using scroll</source>
         <translation>Kaydırmayı kullanarak sayfayı çevirmeyin</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="125"/>
+        <location filename="options_dialog.cpp" line="128"/>
         <source>Use single scroll step to turn page</source>
         <translation>Sayfayı çevirmek için tek kaydırma adımını kullanın</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="133"/>
+        <location filename="options_dialog.cpp" line="136"/>
         <source>Mouse mode</source>
         <translation>Fare modu</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="136"/>
+        <location filename="options_dialog.cpp" line="139"/>
         <source>Only Back/Forward buttons can turn pages</source>
         <translation>Yalnızca Geri/İleri düğmeleri sayfaları çevirebilir</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="137"/>
+        <location filename="options_dialog.cpp" line="140"/>
         <source>Use the Left/Right buttons to turn pages.</source>
         <translation>Sayfaları çevirmek için Sol/Sağ tuşlarını kullanın.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="138"/>
+        <location filename="options_dialog.cpp" line="141"/>
         <source>Click left or right half of the screen to turn pages.</source>
         <translation>Sayfaları çevirmek için ekranın sol veya sağ yarısına tıklayın.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="146"/>
+        <location filename="options_dialog.cpp" line="149"/>
         <source>Escape key</source>
         <translation>Escape tuşu</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="149"/>
+        <location filename="options_dialog.cpp" line="152"/>
         <source>Quit the reader</source>
         <translation>Okuyucudan çık</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="150"/>
+        <location filename="options_dialog.cpp" line="153"/>
         <source>Cancel the active mode</source>
         <translation>Etkin modu iptal et</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="152"/>
+        <location filename="options_dialog.cpp" line="155"/>
         <source>Escape closes the reader, even while a mode is active.</source>
         <translation>Bir mod etkinken bile Escape tuşu okuyucuyu kapatır.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="157"/>
+        <location filename="options_dialog.cpp" line="160"/>
         <source>Escape cancels the first of these that is active:
 
 1. Magnifying glass
@@ -554,61 +564,61 @@ If none is active, Escape does nothing.</source>
 Hiçbiri etkin değilse Escape tuşu hiçbir şey yapmaz.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="189"/>
+        <location filename="options_dialog.cpp" line="192"/>
         <source>Use software-rendered &quot;go to flow&quot; (requires restart)</source>
         <translation>Yazılımla işlenen &quot;Comic Flow&apos;a git&quot; özelliğini kullan (yeniden başlatma gerekir)</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="190"/>
+        <location filename="options_dialog.cpp" line="193"/>
         <source>Use a simple horizontal list of page thumbnails instead of the GPU-rendered 3D flow. Enable this if reading is not smooth on your system.</source>
         <translation>GPU tarafından işlenen 3B akış yerine sayfa küçük resimlerinden oluşan basit bir yatay liste kullanın. Sisteminizde okuma akıcı değilse bu seçeneği etkinleştirin.</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="194"/>
+        <location filename="options_dialog.cpp" line="197"/>
         <source>Disable mouse over activation</source>
         <translation>Etkinleştirme üzerinde fareyi devre dışı bırak</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="224"/>
+        <location filename="options_dialog.cpp" line="227"/>
         <source>Fit options</source>
         <translation>Sığdırma seçenekleri</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="226"/>
+        <location filename="options_dialog.cpp" line="229"/>
         <location filename="image_adjustment_menu.cpp" line="65"/>
         <source>Enlarge images to fit width/height</source>
         <translation>Genişliğe/yüksekliği sığmaları için resimleri genişlet</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="235"/>
+        <location filename="options_dialog.cpp" line="238"/>
         <location filename="image_adjustment_menu.cpp" line="71"/>
         <source>Continuous scroll</source>
         <translation type="unfinished">Sürekli kaydırma</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="237"/>
+        <location filename="options_dialog.cpp" line="240"/>
         <location filename="image_adjustment_menu.cpp" line="73"/>
         <source>Fit pages to width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="238"/>
+        <location filename="options_dialog.cpp" line="241"/>
         <location filename="image_adjustment_menu.cpp" line="74"/>
         <source>Fit pages to height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="239"/>
+        <location filename="options_dialog.cpp" line="242"/>
         <source>Pages that would be wider than the window are fitted to its width instead. Comics marked as web comics in the library always fit the width.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="248"/>
+        <location filename="options_dialog.cpp" line="251"/>
         <source>Double Page options</source>
         <translation>Çift Sayfa seçenekleri</translation>
     </message>
     <message>
-        <location filename="options_dialog.cpp" line="250"/>
+        <location filename="options_dialog.cpp" line="253"/>
         <source>Show covers as single page</source>
         <translation>Kapakları tek sayfa olarak göster</translation>
     </message>
@@ -846,48 +856,48 @@ Hiçbiri etkin değilse Escape tuşu hiçbir şey yapmaz.</translation>
 <context>
     <name>Viewer</name>
     <message>
-        <location filename="viewer.cpp" line="125"/>
-        <location filename="viewer.cpp" line="1865"/>
+        <location filename="viewer.cpp" line="126"/>
+        <location filename="viewer.cpp" line="1976"/>
         <source>Press &apos;O&apos; to open comic.</source>
         <translation>&apos;O&apos;ya basarak aç.</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2231"/>
+        <location filename="viewer.cpp" line="2345"/>
         <source>Cover!</source>
         <translation>Kapak!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="373"/>
+        <location filename="viewer.cpp" line="387"/>
         <source>Comic not found</source>
         <translation>Çizgi roman bulunamadı</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="373"/>
+        <location filename="viewer.cpp" line="387"/>
         <source>Not found</source>
         <translation>Bulunamadı</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="2245"/>
+        <location filename="viewer.cpp" line="2359"/>
         <source>Last page!</source>
         <translation>Son sayfa!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1882"/>
+        <location filename="viewer.cpp" line="1995"/>
         <source>Loading...please wait!</source>
         <translation>Yükleniyor... lütfen bekleyin!</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="379"/>
+        <location filename="viewer.cpp" line="393"/>
         <source>Error opening comic</source>
         <translation>Çizgi roman açılırken hata</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="385"/>
+        <location filename="viewer.cpp" line="399"/>
         <source>CRC Error</source>
         <translation>CRC Hatası</translation>
     </message>
     <message>
-        <location filename="viewer.cpp" line="1893"/>
+        <location filename="viewer.cpp" line="2006"/>
         <source>Page not available!</source>
         <translation>Sayfa bulunamadı!</translation>
     </message>
