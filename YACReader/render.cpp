@@ -9,8 +9,6 @@
 #include <QColor>
 #include <QImage>
 #include <QList>
-#include <QPainter>
-#include <QPixmap>
 
 #include <algorithm>
 #include <cmath>
@@ -360,6 +358,7 @@ void PageRender::run()
     }
 
     *page = img;
+    decoded = true;
 
     emit pageReady(numPage);
 }
@@ -369,10 +368,8 @@ void PageRender::run()
 //-----------------------------------------------------------------------------
 
 Render::Render()
-    : comic(nullptr), doublePage(false), doubleMangaPage(false), currentIndex(0), doublePageViewHistoryPosition(0), numLeftPages(4), numRightPages(4), loadedComic(false), imageRotation(0)
+    : comic(nullptr), doublePage(false), doubleMangaPage(false), currentIndex(0), numLeftPages(4), numRightPages(4), loadedComic(false), imageRotation(0)
 {
-    doublePageViewHistory.append(currentIndex);
-
     int size = numLeftPages + numRightPages + 1;
     currentPageBufferedIndex = numLeftPages;
     for (int i = 0; i < size; i++) {
@@ -461,127 +458,24 @@ void Render::render()
     fillBuffer();
 }
 
-QPixmap *Render::getCurrentPage()
+PageView Render::currentView()
 {
-    auto page = new QPixmap();
-    *page = page->fromImage(*buffer[currentPageBufferedIndex]);
-    return page;
+    return { currentIndex, doublePage && currentPageIsDoublePage() };
 }
 
-QPixmap *Render::getCurrentDoublePage(qreal *seamRatio, Qt::Orientation *seamOrientation)
+QList<PageView> Render::viewsAroundCurrent()
 {
-    if (currentPageIsDoublePage()) {
-        QPoint leftpage(0, 0);
-        QPoint rightpage(0, 0);
-        QSize leftsize = buffer[currentPageBufferedIndex]->size();
-        QSize rightsize = buffer[currentPageBufferedIndex + 1]->size();
-        int totalWidth, totalHeight;
-        switch (imageRotation) {
-        case 0:
-            totalHeight = qMax(leftsize.rheight(), rightsize.rheight());
-            leftsize.scale(leftsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(rightsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            totalWidth = leftsize.rwidth() + rightsize.rwidth();
-            rightpage.setX(leftsize.rwidth());
-            break;
-        case 90:
-            totalWidth = qMax(leftsize.rwidth(), rightsize.rwidth());
-            leftsize.scale(totalWidth, leftsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(totalWidth, rightsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            totalHeight = leftsize.rheight() + rightsize.rheight();
-            rightpage.setY(leftsize.rheight());
-            break;
-        case 180:
-            totalHeight = qMax(leftsize.rheight(), rightsize.rheight());
-            leftsize.scale(leftsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(rightsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            totalWidth = leftsize.rwidth() + rightsize.rwidth();
-            leftpage.setX(rightsize.rwidth());
-            break;
-        case 270:
-            totalWidth = qMax(leftsize.rwidth(), rightsize.rwidth());
-            leftsize.scale(totalWidth, leftsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(totalWidth, rightsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            totalHeight = leftsize.rheight() + rightsize.rheight();
-            leftpage.setY(rightsize.rheight());
-            break;
-        default:
-            return nullptr;
-        }
-        auto page = new QPixmap(totalWidth, totalHeight);
-        QPainter painter(page);
-        painter.drawImage(QRect(leftpage, leftsize), *buffer[currentPageBufferedIndex]);
-        painter.drawImage(QRect(rightpage, rightsize), *buffer[currentPageBufferedIndex + 1]);
-        const bool verticalSeam = imageRotation == 0 || imageRotation == 180;
-        if (seamRatio != nullptr) {
-            const int seamPosition = verticalSeam ? qMax(leftpage.x(), rightpage.x()) : qMax(leftpage.y(), rightpage.y());
-            *seamRatio = static_cast<qreal>(seamPosition) / (verticalSeam ? totalWidth : totalHeight);
-        }
-        if (seamOrientation != nullptr) {
-            *seamOrientation = verticalSeam ? Qt::Vertical : Qt::Horizontal;
-        }
-        return page;
-    } else {
-        return nullptr;
-    }
+    return QList<PageView> { currentView() } + nearbyPageViews(currentIndex, pageCount(), doublePage, doublePageNavigation, pagePairing());
 }
 
-QPixmap *Render::getCurrentDoubleMangaPage(qreal *seamRatio, Qt::Orientation *seamOrientation)
+std::optional<PageViewImages> Render::viewImages(PageView view) const
 {
-    if (currentPageIsDoublePage()) {
-        QPoint leftpage(0, 0);
-        QPoint rightpage(0, 0);
-        QSize leftsize = buffer[currentPageBufferedIndex + 1]->size();
-        QSize rightsize = buffer[currentPageBufferedIndex]->size();
-        int totalWidth, totalHeight;
-        switch (imageRotation) {
-        case 0:
-            totalHeight = qMax(leftsize.rheight(), rightsize.rheight());
-            leftsize.scale(leftsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(rightsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            totalWidth = leftsize.rwidth() + rightsize.rwidth();
-            rightpage.setX(leftsize.rwidth());
-            break;
-        case 90:
-            totalWidth = qMax(leftsize.rwidth(), rightsize.rwidth());
-            leftsize.scale(totalWidth, leftsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(totalWidth, rightsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            totalHeight = leftsize.rheight() + rightsize.rheight();
-            rightpage.setY(leftsize.rheight());
-            break;
-        case 180:
-            totalHeight = qMax(leftsize.rheight(), rightsize.rheight());
-            leftsize.scale(leftsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(rightsize.rwidth(), totalHeight, Qt::KeepAspectRatioByExpanding);
-            totalWidth = leftsize.rwidth() + rightsize.rwidth();
-            leftpage.setX(rightsize.rwidth());
-            break;
-        case 270:
-            totalWidth = qMax(leftsize.rwidth(), rightsize.rwidth());
-            leftsize.scale(totalWidth, leftsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            rightsize.scale(totalWidth, rightsize.rheight(), Qt::KeepAspectRatioByExpanding);
-            totalHeight = leftsize.rheight() + rightsize.rheight();
-            leftpage.setY(rightsize.rheight());
-            break;
-        default:
-            return nullptr;
-        }
-        auto page = new QPixmap(totalWidth, totalHeight);
-        QPainter painter(page);
-        painter.drawImage(QRect(rightpage, rightsize), *buffer[currentPageBufferedIndex]);
-        painter.drawImage(QRect(leftpage, leftsize), *buffer[currentPageBufferedIndex + 1]);
-        const bool verticalSeam = imageRotation == 0 || imageRotation == 180;
-        if (seamRatio != nullptr) {
-            const int seamPosition = verticalSeam ? qMax(leftpage.x(), rightpage.x()) : qMax(leftpage.y(), rightpage.y());
-            *seamRatio = static_cast<qreal>(seamPosition) / (verticalSeam ? totalWidth : totalHeight);
-        }
-        if (seamOrientation != nullptr) {
-            *seamOrientation = verticalSeam ? Qt::Vertical : Qt::Horizontal;
-        }
-        return page;
-    } else {
-        return nullptr;
+    const QImage *page = bufferedImage(view.firstPage);
+    const QImage *nextPage = view.doublePage ? bufferedImage(view.firstPage + 1) : nullptr;
+    if (page == nullptr || (view.doublePage && nextPage == nullptr)) {
+        return std::nullopt;
     }
+    return PageViewImages::of(view.firstPage, *page, nextPage != nullptr ? *nextPage : QImage(), doubleMangaPage, imageRotation);
 }
 
 const QImage *Render::bufferedImage(int absolutePageIndex) const
@@ -591,77 +485,53 @@ const QImage *Render::bufferedImage(int absolutePageIndex) const
     if (pos < 0 || pos >= buffer.size()) {
         return nullptr;
     }
+    // only the page's render thread writes its image
+    const PageRender *pageRender = pageRenders[pos];
+    if (pageRender == nullptr || !pageRender->isDecoded()) {
+        return nullptr;
+    }
     const QImage *img = buffer[pos];
     return (img && !img->isNull()) ? img : nullptr;
 }
 
 bool Render::currentPageIsDoublePage()
 {
-    if (currentIndex == 0 && Configuration::getConfiguration().getSettings()->value(COVER_IS_SP, true).toBool()) {
-        return false;
-    }
-    if (doublePageHistoryTracksCurrentIndex() && doublePageViewHistoryPosition + 1 < doublePageViewHistory.size() &&
-        currentIndex + 1 >= doublePageViewHistory.at(doublePageViewHistoryPosition + 1)) {
-        // Keep the second page out of the next view already recorded in history.
-        return false;
-    }
-    if (buffer[currentPageBufferedIndex]->isNull() || buffer[currentPageBufferedIndex + 1]->isNull()) {
-        return false;
-    }
-    if (imageRotation == 0 || imageRotation == 180) {
-        if (buffer[currentPageBufferedIndex]->height() > buffer[currentPageBufferedIndex]->width() &&
-            buffer[currentPageBufferedIndex + 1]->height() > buffer[currentPageBufferedIndex + 1]->width()) {
-            return true;
-        }
-    } else if (imageRotation == 90 || imageRotation == 270) {
-        if (buffer[currentPageBufferedIndex]->width() > buffer[currentPageBufferedIndex]->height() &&
-            buffer[currentPageBufferedIndex + 1]->width() > buffer[currentPageBufferedIndex + 1]->height()) {
-            return true;
-        }
-    }
-    return false;
+    return doublePageNavigation.showsTwoPages(currentIndex, pageCount(), pagePairing());
 }
 
-bool Render::nextPageIsDoublePage()
+int Render::pageCount() const
 {
-    // this function is not used right now
-    if (buffer[currentPageBufferedIndex + 2]->isNull() || buffer[currentPageBufferedIndex + 3]->isNull()) {
-        return false;
-    }
-    if (imageRotation == 0 || imageRotation == 180) {
-        if (buffer[currentPageBufferedIndex + 2]->height() > buffer[currentPageBufferedIndex + 2]->width() &&
-            buffer[currentPageBufferedIndex + 3]->height() > buffer[currentPageBufferedIndex + 3]->width()) {
-            return true;
-        }
-    } else if (imageRotation == 90 || imageRotation == 270) {
-        if (buffer[currentPageBufferedIndex]->width() > buffer[currentPageBufferedIndex]->height() &&
-            buffer[currentPageBufferedIndex + 1]->width() > buffer[currentPageBufferedIndex + 1]->height()) {
-            return true;
-        }
-    }
-    return false;
+    return comic != nullptr ? static_cast<int>(comic->numPages()) : 0;
 }
 
-bool Render::previousPageIsDoublePage()
+// Reads the cover option once for all the pages a page turn or a prediction looks at
+PagePairingFunction Render::pagePairing() const
 {
-    if (currentIndex == 2 && Configuration::getConfiguration().getSettings()->value(COVER_IS_SP, true).toBool()) {
-        return false;
+    const bool coverAlone = Configuration::getConfiguration().getSettings()->value(COVER_IS_SP, true).toBool();
+    return [this, coverAlone](int page) { return pagePairingAt(page, coverAlone); };
+}
+
+PagePairing Render::pagePairingAt(int page, bool coverAlone) const
+{
+    if (page < 0 || page + 1 >= pageCount()) {
+        return PagePairing::Single;
     }
-    if (buffer[currentPageBufferedIndex - 1]->isNull() || buffer[currentPageBufferedIndex - 2]->isNull()) {
-        return false;
+    if (page == 0 && coverAlone) {
+        return PagePairing::Single;
     }
-    if (imageRotation == 0 || imageRotation == 180) {
-        if (buffer[currentPageBufferedIndex - 1]->height() > buffer[currentPageBufferedIndex - 1]->width() &&
-            buffer[currentPageBufferedIndex - 2]->height() > buffer[currentPageBufferedIndex - 2]->width()) {
-            return true;
-        }
-    } else if (imageRotation == 90 || imageRotation == 270) {
-        if (buffer[currentPageBufferedIndex - 1]->width() > buffer[currentPageBufferedIndex - 1]->height() &&
-            buffer[currentPageBufferedIndex - 2]->width() > buffer[currentPageBufferedIndex - 2]->height()) {
-            return true;
-        }
+
+    const QImage *first = bufferedImage(page);
+    const QImage *second = bufferedImage(page + 1);
+    if (first == nullptr || second == nullptr) {
+        return PagePairing::Unknown;
     }
-    return false;
+
+    // the images are decoded already rotated
+    const bool rotatedSideways = imageRotation == 90 || imageRotation == 270;
+    const auto isPortraitPage = [rotatedSideways](const QImage *image) {
+        return rotatedSideways ? image->width() > image->height() : image->height() > image->width();
+    };
+    return isPortraitPage(first) && isPortraitPage(second) ? PagePairing::Double : PagePairing::Single;
 }
 
 void Render::setRotation(int degrees)
@@ -838,7 +708,7 @@ void Render::reset()
 // la página sólo se renderiza, si realmente ha cambiado.
 void Render::nextPage()
 {
-    const int nextPage = doublePage ? nextDoublePageViewIndex() : comic->nextPage();
+    const int nextPage = doublePage ? doublePageNavigation.next(currentIndex, pageCount(), pagePairing()) : comic->nextPage();
     // se fuerza renderizado si la página ha cambiado
     if (currentIndex != nextPage) {
         if (doublePage) {
@@ -858,7 +728,7 @@ void Render::nextPage()
 // la página sólo se renderiza, si realmente ha cambiado.
 void Render::previousPage()
 {
-    const int previousPage = doublePage ? previousDoublePageViewIndex() : comic->previousPage();
+    const int previousPage = doublePage ? doublePageNavigation.previous(currentIndex, pagePairing()) : comic->previousPage();
 
     // se fuerza renderizado si la página ha cambiado
     if (currentIndex != previousPage) {
@@ -979,52 +849,7 @@ void Render::rotateLeft()
 
 void Render::resetDoublePageNavigation()
 {
-    doublePageViewHistory.clear();
-    doublePageViewHistory.append(currentIndex);
-    doublePageViewHistoryPosition = 0;
-}
-
-bool Render::doublePageHistoryTracksCurrentIndex() const
-{
-    return doublePageViewHistoryPosition < doublePageViewHistory.size() && doublePageViewHistory.at(doublePageViewHistoryPosition) == currentIndex;
-}
-
-// the views already visited are replayed so going back and forth keeps the same page groupings
-int Render::nextDoublePageViewIndex()
-{
-    if (!doublePageHistoryTracksCurrentIndex()) {
-        resetDoublePageNavigation();
-    }
-
-    if (doublePageViewHistoryPosition + 1 < doublePageViewHistory.size()) {
-        return doublePageViewHistory.at(++doublePageViewHistoryPosition);
-    }
-
-    const int pageStep = currentPageIsDoublePage() ? 2 : 1;
-    if (currentIndex + pageStep >= static_cast<int>(comic->numPages())) {
-        return currentIndex;
-    }
-
-    doublePageViewHistory.append(currentIndex + pageStep);
-    return doublePageViewHistory.at(++doublePageViewHistoryPosition);
-}
-
-int Render::previousDoublePageViewIndex()
-{
-    if (!doublePageHistoryTracksCurrentIndex()) {
-        resetDoublePageNavigation();
-    }
-
-    if (doublePageViewHistoryPosition > 0) {
-        return doublePageViewHistory.at(--doublePageViewHistoryPosition);
-    }
-
-    const int pageStep = previousPageIsDoublePage() ? 2 : 1;
-    const int previousPage = qMax(currentIndex - pageStep, 0);
-    if (previousPage != currentIndex) {
-        doublePageViewHistory.prepend(previousPage);
-    }
-    return previousPage;
+    doublePageNavigation.reset(currentIndex);
 }
 
 // Actualiza el buffer, añadiendo las imágenes (vacías) necesarias para su posterior renderizado y
