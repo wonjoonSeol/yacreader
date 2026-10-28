@@ -1295,7 +1295,7 @@ void LibraryWindow::updateViewsOnLibraryContentChanged(const QUuid &libraryId)
 
 void LibraryWindow::updateViewsOnComicUpdateWithId(quint64 libraryId, quint64 comicId)
 {
-    if (libraryId == (quint64)libraries.getId(selectedLibrary->currentText())) {
+    if (isCurrentLibrary(libraryId)) {
         auto path = libraries.getPath(libraryId);
         if (path.isEmpty()) {
             return;
@@ -1318,7 +1318,7 @@ void LibraryWindow::updateViewsOnComicUpdateWithId(quint64 libraryId, quint64 co
 
 void LibraryWindow::updateViewsOnComicUpdate(quint64 libraryId, const ComicDB &comic)
 {
-    if (libraryId == (quint64)libraries.getId(selectedLibrary->currentText())) {
+    if (isCurrentLibrary(libraryId)) {
         comicsModel->reload(comic);
         contentViewsManager->updateCurrentComicView();
         navigationController->reloadRootContinueReading();
@@ -1327,11 +1327,16 @@ void LibraryWindow::updateViewsOnComicUpdate(quint64 libraryId, const ComicDB &c
 
 void LibraryWindow::updateViewsOnComicFavoriteChange(quint64 libraryId, qulonglong comicId)
 {
-    if (libraryId != (quint64)libraries.getId(selectedLibrary->currentText()))
+    if (!isCurrentLibrary(libraryId))
         return;
 
     if (comicsModel->getMode() == ComicModel::Favorites)
         navigationController->refreshCurrentSource();
     else
         comicsModel->notifyFavoriteChange(comicId);
+}
+
+bool LibraryWindow::isCurrentLibrary(quint64 libraryId) const
+{
+    return libraryId == (quint64)libraries.getId(selectedLibrary->currentText());
 }

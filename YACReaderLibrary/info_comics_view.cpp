@@ -70,20 +70,7 @@ void InfoComicsView::setModel(ComicModel *model)
     comicInfoHelper->setModel(model);
 
     ComicsView::setModel(model);
-
-    // changes made outside this view, for example from YACReader, must reach the info panel
-    disconnect(modelDataChangedConnection);
-    disconnect(modelFavoritesChangedConnection);
-    modelDataChangedConnection = connect(model, &QAbstractItemModel::dataChanged, this, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight) {
-        const auto index = currentIndex();
-        if (index.isValid() && index.row() >= topLeft.row() && index.row() <= bottomRight.row())
-            updateInfoForIndex(index.row());
-    });
-    modelFavoritesChangedConnection = connect(model, &ComicModel::favoritesChanged, this, [this](const QList<qulonglong> &comicIds) {
-        const auto index = currentIndex();
-        if (index.isValid() && comicIds.contains(index.data(ComicModel::IdRole).toULongLong()))
-            updateInfoForIndex(index.row());
-    });
+    connectInfoPanelRefresh([] { return true; });
 
     QQmlContext *ctxt = view->rootContext();
 

@@ -238,6 +238,7 @@ public slots:
 
 private:
     bool startsHiddenInTray() const;
+    bool isCurrentLibrary(quint64 libraryId) const;
 
     void applyLoadedLibrary(const QString &libraryDataPath, bool readOnly);
     void showLibraryManagementOnly();

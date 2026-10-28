@@ -8,6 +8,8 @@
 #include <QSettings>
 #include <QWidget>
 
+#include <functional>
+
 class YACReaderTableView;
 class QSplitter;
 class ComicFlowWidget;
@@ -80,7 +82,13 @@ protected:
 
     ComicDB *comicDB;
 
+    // Updates the info panel when the model changes the comic it shows, also for changes made outside the view,
+    // for example from YACReader. infoPanelShowsCurrentComic says whether the panel shows the current comic now.
+    void connectInfoPanelRefresh(const std::function<bool()> &infoPanelShowsCurrentComic);
+
 private:
+    QMetaObject::Connection infoPanelDataChangedConnection;
+    QMetaObject::Connection infoPanelFavoritesChangedConnection;
 };
 
 #endif // COMICS_VIEW_H
