@@ -1,5 +1,6 @@
 #include "viewer.h"
 
+#include "acnet_stage.h"
 #include "book_fold_shadow.h"
 #include "bookmarks_dialog.h"
 #include "comic_db.h"
@@ -176,7 +177,9 @@ Viewer::Viewer(QWidget *parent)
     continuousWidget->setRender(render);
     continuousPageProvider->setRender(render);
 
-    prescaler = new PagePrescaler({ std::make_shared<ScaleStage>() }, PagePrescaler::defaultThreadCount(), PagePrescaler::defaultMaxBytes, this);
+    acnetStage = std::make_shared<AcnetStage>();
+    prescaler = new PagePrescaler({ std::make_shared<ScaleStage>(), acnetStage }, PagePrescaler::defaultThreadCount(), PagePrescaler::defaultMaxBytes, this);
+    applyAcnetOptions();
     // started with a zero interval, which lets the page being shown take its image first so the background does not
     // scale it again, or with a longer one while the window is being resized
     prescaleTimer = new QTimer(this);
@@ -521,8 +524,21 @@ void Viewer::applyContinuousPageFit()
     continuousViewModel->setPageFit(fitToHeight ? ContinuousViewModel::PageFit::Height : ContinuousViewModel::PageFit::Width);
 }
 
+// One reading of the settings for both modes. The prescaler's keys do not include it, so turning ACNet off or changing
+// its model drops the prepared pages.
+void Viewer::applyAcnetOptions()
+{
+    Configuration &configuration = Configuration::getConfiguration();
+    const std::optional<AcnetModel> model = configuration.getAcnetUpscaling() ? std::optional(configuration.getAcnetModel()) : std::nullopt;
+    continuousWidget->setAcnetModel(model);
+    if (acnetStage->setModel(model)) {
+        prescaler->invalidate();
+    }
+}
+
 void Viewer::onImageOptionsChanged()
 {
+    applyAcnetOptions();
     applyContinuousPageFit();
     if (continuousScroll) {
         continuousWidget->invalidateScaledImageCache();

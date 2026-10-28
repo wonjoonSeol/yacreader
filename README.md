@@ -11,6 +11,7 @@ A personal fork of [YACReader](https://github.com/YACReader/yacreader) that chan
 | [Comics removed from the Reading list](#comics-removed-from-the-reading-list) | Bug fix | [#2](https://github.com/wonjoonSeol/yacreader/pull/2) |
 | [Lanczos3 and Lanczos2 scaling](#lanczos3-and-lanczos2-scaling) | Option | [#6](https://github.com/wonjoonSeol/yacreader/pull/6) |
 | [Page turns without scaling](#page-turns-without-scaling) | Speed | [#13](https://github.com/wonjoonSeol/yacreader/pull/13) |
+| [Sharper enlarged pages with Anime4K](#sharper-enlarged-pages-with-anime4k) | Option | [#14](https://github.com/wonjoonSeol/yacreader/pull/14) |
 
 **Builds:** open a successful run of [Build](https://github.com/wonjoonSeol/yacreader/actions/workflows/build.yml) and download the `windows-x64-qt6-…` installer or the macOS `.dmg`. They are unsigned, need a GitHub sign-in, and expire after 90 days.
 
@@ -129,6 +130,48 @@ In single and double page mode the pages next to the one you read are scaled to 
 - **When a page is not ready yet,** for example right after jumping far or when flipping through double pages faster than they decode, it is scaled when it is shown, as before.
 - **Memory:** at most 256 MiB of scaled views, always including the one shown. Fitted to the window a 1440 x 2160 view takes about 12 MB, so all four fit; zoomed in far, or fitted to the width of a large screen, the views at the end of that order are left out.
 - **Continuous scroll** already scaled its pages in the background and is unchanged.
+
+### Sharper enlarged pages with Anime4K
+
+Options > Image adjustment > Scaling > **Upscale small pages with Anime4K (ACNet)**, off by default, with a **Model** choice: F8B4 (default) or F8B8-HDN.
+
+In single page, double page and continuous scroll mode, a page shown at 1.5 times its own size or more is first shown scaled as usual, then replaced by a sharper one: [Anime4KCPP](https://github.com/TianZerL/Anime4KCPP)'s ACNet, a small neural network for line art, doubles it on the CPU in the background, and Lanczos takes it to the window size. The network sharpens the luma; colour and transparency are scaled with Catmull-Rom. The code is vendored in `third_party/anime4kcpp` (MIT) with the revisions it came from and a patch of the changes made to it.
+
+<img src="docs/fork/anime4k-crop.png" width="700" alt="The same lettering doubled with Lanczos4 and with ACNet F8B4, shown at 4x">
+
+Quality: the page shrunk to half with a 2x2 box filter, doubled again, and compared with the original (whole page, PSNR / SSIM on luma).
+
+| Method | Krazy Kat page | Synthetic gray page | Synthetic colour page |
+|---|---|---|---|
+| Lanczos4 (the default scaling) | 25.8 dB / 0.931 | 22.5 / 0.946 | 27.7 / 0.969 |
+| **ACNet F8B4 (default model)** | **29.5 / 0.970** | **26.4 / 0.980** | **31.5 / 0.990** |
+| ACNet F8B8-HDN | 29.9 / 0.969 | 26.6 / 0.981 | 31.7 / 0.990 |
+| Anime4K 0.9, CPU port | 21.8 / 0.888 | 18.1 / 0.892 | 24.0 / 0.957 |
+| ArtCNN C4F16, CPU (not included) | 30.2 / 0.973 | 28.2 / 0.987 | 32.6 / 0.992 |
+| Anime4K v4 CNN M, GPU shader | 29.4 / 0.966 | 25.9 / 0.979 | 32.0 / 0.989 |
+| Anime4K v4 CNN UL, GPU shader | 30.5 / 0.970 | 28.4 / 0.987 | 33.0 / 0.992 |
+
+The Krazy Kat page is George Herriman's of 1922-04-02, public domain ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Krazy_Kat_1922-04-02_original.jpg)), in gray at 2482 x 3000. The synthetic pages are generated 2000 x 3000 manga-style pages.
+
+| Hatching | Lettering |
+|---|---|
+| <img src="docs/fork/anime4k-krazykat-hatching.png" width="400" alt="Hatching from the Krazy Kat page doubled by each method"> | <img src="docs/fork/anime4k-krazykat-lettering.png" width="400" alt="Lettering from the Krazy Kat page doubled by each method"> |
+
+Speed of one 2x upscale of a 1000 x 1500 page, in ms:
+
+| | Gray | Colour |
+|---|---|---|
+| Lanczos4, one thread (WSL) | 37 | 39 |
+| ACNet F8B4, 8 threads (Windows) | 46 | 66 |
+| ACNet F8B8-HDN, 8 threads (Windows) | 82 | 99 |
+| ACNet F8B4, 1 / 4 / 16 threads (WSL) | 229 / 71 / 43 | 253 / 87 / 61 |
+| ACNet F8B8-HDN, 1 / 4 / 16 threads (WSL) | 345 / 132 / 72 | not measured cleanly |
+
+Ryzen 7 5700X3D with the FMA backend, the one Windows x64 builds pick on this CPU. The Windows row is the MSVC build's test; the WSL rows are the best of 5 to 7 runs on a machine shared with other builds, so allow about ±40%. Linux x86_64 builds use the SSE backend, about 1.7 times slower.
+
+- **CPU:** the network runs on one pool of half the CPU's threads, shared by all upscales, with the fastest backend the CPU supports: FMA or AVX on Windows x64, AVX on Intel Macs, NEON on arm64, SSE on Linux x86_64.
+- **Memory:** the network works on strips of 256 rows, so its scratch memory stays near 28 MB for a 1600 pixel wide page. A 1600 x 2400 colour page peaks at about 157 MB more than before the upscale, Lanczos4 at 78 MB. That is about 41 bytes per page pixel, so the 4 megapixel limit below keeps an upscale near 165 MB, and each mode upscales one page at a time.
+- **When it runs:** only for pages shown at least 1.5 times their own size, on either side, and of at most 4 megapixels (both pages together for a double page), which also leaves out long webtoon strips; both limits are in `image_processing/acnet_upscale.h`. Up to 2x, Lanczos takes the doubled page to its size whatever the scaling method, since Nearest would alias the lines ACNet just sharpened; past 2x the scaling method does. In single and double page mode the page shown goes first, once the pages around it have their plain scale; continuous scroll starts with the visible pages.
 
 ---
 

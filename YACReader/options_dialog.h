@@ -77,6 +77,8 @@ private:
     bool backgroundColorFollowsTheme = true;
 
     QComboBox *scalingMethodCombo;
+    QCheckBox *acnetUpscalingCheckBox;
+    QComboBox *acnetModelCombo;
 
     QRadioButton *normalMouseModeRadioButton;
     QRadioButton *leftRightNavigationMouseModeRadioButton;

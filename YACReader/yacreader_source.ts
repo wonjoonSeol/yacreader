@@ -308,6 +308,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="314"/>
+        <source>Pages shown at 1.5 times their own size or more, up to 4 megapixels, are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
+        <oldsource>Pages shown larger than their own size are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</oldsource>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="316"/>
+        <source>F8B4 (faster)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="317"/>
+        <source>F8B8-HDN (slower, more denoising)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="321"/>
+        <source>Model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="342"/>
         <source>Restart is needed</source>
         <translation type="unfinished"></translation>
@@ -548,6 +569,11 @@ If none is active, Escape does nothing.</source>
     <message>
         <location filename="image_adjustment.cpp" line="15"/>
         <source>Bilinear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="313"/>
+        <source>Upscale small pages with Anime4K (ACNet)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

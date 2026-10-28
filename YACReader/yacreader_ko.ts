@@ -302,6 +302,26 @@
         <translation>지우기</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="314"/>
+        <source>Pages shown at 1.5 times their own size or more, up to 4 megapixels, are doubled by the ACNet neural network in the background, which keeps lines sharp. The page shows at once and the sharper one replaces it when it is ready. It takes more CPU time and memory.</source>
+        <translation>원본의 1.5배 이상으로 표시되는 400만 화소 이하의 페이지를 백그라운드에서 ACNet 신경망으로 두 배 확대해 선을 선명하게 유지합니다. 페이지는 바로 표시되고, 더 선명한 페이지가 준비되면 바뀝니다. CPU 시간과 메모리를 더 사용합니다.</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="316"/>
+        <source>F8B4 (faster)</source>
+        <translation>F8B4 (빠름)</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="317"/>
+        <source>F8B8-HDN (slower, more denoising)</source>
+        <translation>F8B8-HDN (느림, 노이즈 제거 강화)</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="321"/>
+        <source>Model</source>
+        <translation>모델</translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="332"/>
         <source>General</source>
         <translation>일반</translation>
@@ -570,6 +590,11 @@ If none is active, Escape does nothing.</source>
         <location filename="image_adjustment.cpp" line="15"/>
         <source>Bilinear</source>
         <translation>보통 모드 (중간 품질)</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="313"/>
+        <source>Upscale small pages with Anime4K (ACNet)</source>
+        <translation>작은 페이지를 Anime4K(ACNet)로 확대</translation>
     </message>
     <message>
         <location filename="image_adjustment.cpp" line="16"/>
