@@ -1,6 +1,6 @@
 ## About this fork
 
-A personal fork of [YACReader](https://github.com/YACReader/yacreader) with six changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
+A personal fork of [YACReader](https://github.com/YACReader/yacreader) with changes to the comic reader. Each one has a PR. The closed ones are previews that show the change as a diff against upstream `develop`, ready to send upstream if the maintainer wants it. The upstream README starts after the line.
 
 | Change | Kind | PR |
 |---|---|---|
@@ -63,8 +63,10 @@ Right-click the page > **Image adjustment**, or click the arrow next to the Opti
 | <img src="docs/fork/image-adjustment-brightness.png" width="400" alt="The page brighter with Brightness at 15 in the open menu"> | <img src="docs/fork/image-adjustment-toolbar-menu.png" width="400" alt="The same menu under the Options button with the scaling methods open"> |
 | The menu stays open and the page changes when you let go | Works in every mouse mode |
 
-- **Same settings as Options:** a change in the menu shows in Options, and a change in Options shows the next time the menu opens.
+- **Same settings as Options:** a change in either one shows in the other at once.
+- **Brightness, Contrast, Gamma:** the page changes when you let go of a slider, or 150 ms after the last spin box step, so holding an arrow key or turning the wheel filters the pages once. The same goes for the sliders in Options.
 - **Right-click** opens the menu unless Options > General > Mouse mode is "Use the Left/Right buttons to turn pages", where the right button turns the page. The arrow next to Options works in every mode.
+- **Full screen:** the toolbar is hidden. Right-click still opens the menu, except in the Left/Right buttons mouse mode; there, show the toolbar with Hide/show toolbar (H) to reach the arrow.
 - **macOS:** right-click only. The native toolbar has no arrow.
 
 ### Go 5 or 10 pages
