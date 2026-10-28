@@ -120,6 +120,7 @@ Options > General > Display > **Briefly show the page number when the page chang
 - **When:** next and previous page, Go 5 or 10 pages, Go to page, the page flow, bookmarks, first and last page, opening a comic, and scrolling onto another page in continuous scroll. It stays hidden when the page doesn't change, such as Next on the last page.
 - **Double page mode:** a spread shows both pages, such as 12-13/100. In manga mode they read right to left, 13-12/100, as in the page information label.
 - **Show Info (I):** while the page information label is on, the counter stays hidden because the label already shows the page.
+- **[Toolbar in full screen](#toolbar-in-full-screen):** while the toolbar shows over the top of the page, the counter shows just below it.
 - **Look:** the colors of the page information label in the current theme. It stays for 1 second and fades out in 0.4 seconds; on macOS it hides after the second without fading.
 
 ### Toolbar in full screen

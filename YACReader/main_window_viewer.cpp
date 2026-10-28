@@ -783,6 +783,8 @@ void MainWindowViewer::createToolBars()
 
     // the window manager can take the window out of full screen without toNormal
     toolBarOverlay = new ToolBarOverlay(this, comicToolBar, [this] { return isFullScreen() && !viewer->magnifyingGlassIsVisible(); });
+    // the page counter moves below the toolbar while the toolbar covers the top of the page
+    connect(toolBarOverlay, &ToolBarOverlay::coveredHeightChanged, viewer, &Viewer::setTopOverlayInset);
 
     comicToolBar->setMovable(false);
 #endif
