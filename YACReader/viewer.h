@@ -2,9 +2,9 @@
 #define __VIEWER_H
 
 #include "mouse_handler.h"
+#include "page_counter_trigger.h"
 #include "page_fit.h"
 #include "page_prescaler.h"
-#include "page_counter_trigger.h"
 #include "scroll_management.h"
 #include "themable.h"
 
