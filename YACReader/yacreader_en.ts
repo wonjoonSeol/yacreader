@@ -683,6 +683,29 @@ If none is active, Escape does nothing.</translation>
     </message>
 </context>
 <context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ThemeEditorDialog</name>
     <message>
         <location filename="../common/themes/theme_editor_dialog.cpp" line="59"/>
@@ -1441,6 +1464,11 @@ If none is active, Escape does nothing.</translation>
         <location filename="main_window_viewer.cpp" line="1406"/>
         <source>General</source>
         <translation>General</translation>
+    </message>
+    <message>
+        <location filename="main_window_viewer.cpp" line="202"/>
+        <source>The library did not save this change.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="main_window_viewer.cpp" line="1425"/>

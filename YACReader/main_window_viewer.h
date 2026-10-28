@@ -28,6 +28,7 @@ class YACReaderSliderAction;
 class YACReaderSlider;
 class EditShortcutsDialog;
 class ImageAdjustmentMenu;
+class RatingFavoriteController;
 
 namespace YACReader {
 
@@ -142,6 +143,7 @@ private:
     QAction *showMagnifyingGlassAction;
     QAction *setBookmarkAction;
     QAction *showBookmarksAction;
+    RatingFavoriteController *ratingFavoriteController;
     QAction *leftRotationAction;
     QAction *rightRotationAction;
     QAction *showInfoAction;
@@ -196,6 +198,8 @@ private:
     void applyLibraryReaderMode(YACReader::FileType type);
     // the current comic's own brightness, contrast and gamma, or the defaults where it has none
     void applyComicFilterLevels();
+    void keepComicRating(qulonglong comicId, int rating);
+    void showChangeNotSaved(const QString &title);
 
     //! Manejadores de evento:
     // void resizeEvent(QResizeEvent * event);

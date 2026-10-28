@@ -8,17 +8,18 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QPointer>
+#include <QSqlDatabase>
 
 using namespace YACReader;
 
 QMutex YACReaderClientConnectionWorker::dbMutex;
 // int YACReaderClientConnectionWorker::count = 0;
-YACReaderLocalServer::YACReaderLocalServer(QObject *parent)
+YACReaderLocalServer::YACReaderLocalServer(QObject *parent, const QString &serverName)
     : QObject(parent)
 {
     localServer = new QLocalServer(this);
-    QLocalServer::removeServer(YACREADERLIBRARY_GUID);
-    if (!localServer->listen(YACREADERLIBRARY_GUID)) {
+    QLocalServer::removeServer(serverName);
+    if (!localServer->listen(serverName)) {
         QLOG_ERROR() << "Unable to create local server";
     }
 
@@ -46,6 +47,7 @@ void YACReaderLocalServer::sendResponse()
     if (worker != 0) {
         clientConnection->moveToThread(worker);
         connect(worker, &YACReaderClientConnectionWorker::comicUpdated, this, &YACReaderLocalServer::comicUpdated);
+        connect(worker, &YACReaderClientConnectionWorker::comicFavoriteChanged, this, &YACReaderLocalServer::comicFavoriteChanged);
         connect(worker, &QThread::finished, worker, &QObject::deleteLater);
         worker->start();
     }
@@ -133,6 +135,7 @@ void YACReaderClientConnectionWorker::run()
         return;
     }
     QDataStream dataStream(data);
+    dataStream.setVersion(QDataStream::Qt_4_8);
     quint8 msgType;
     dataStream >> msgType;
 
@@ -150,14 +153,7 @@ void YACReaderClientConnectionWorker::run()
             getComicInfo(libraryId, comic, siblings);
         }
 
-        QByteArray block;
-        QDataStream out(&block, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_4_8);
-        out << (quint32)0;
-        out << comic;
-        out << siblings;
-        out.device()->seek(0);
-        out << (quint32)(block.size() - sizeof(quint32));
+        const QByteArray block = framed(ComicInfoAnswer { comic, siblings, true, getFavoriteComicIds(libraryId) });
 
         int written = 0;
         tries = 0;
@@ -195,6 +191,10 @@ void YACReaderClientConnectionWorker::run()
         }
         break;
     }
+    default:
+        // also answers the types this library does not know, so a newer reader does not wait for its timeout
+        acknowledge(saveChange(msgType, dataStream));
+        break;
     }
 
     clientConnection->waitForDisconnected();
@@ -224,6 +224,14 @@ void YACReaderClientConnectionWorker::getComicInfoFromReadingList(quint64 librar
     siblings = DBHelper::getReadingListFullContent(libraryId, readingListId, true);
 }
 
+QSet<qulonglong> YACReaderClientConnectionWorker::getFavoriteComicIds(quint64 libraryId)
+{
+    QMutexLocker locker(&dbMutex);
+    QSet<qulonglong> favoriteComicIds;
+    DBHelper::withLibraryDatabase(libraryId, [&](QSqlDatabase &db) { favoriteComicIds = DBHelper::getFavoriteComicIds(db); });
+    return favoriteComicIds;
+}
+
 void YACReaderClientConnectionWorker::updateComic(quint64 libraryId, ComicDB &comic)
 {
     QMutexLocker locker(&dbMutex);
@@ -240,4 +248,58 @@ void YACReaderClientConnectionWorker::updateComic(quint64 libraryId, ComicDB &co
     DBHelper::setComicAsReading(libraryId, nextcomicinfo);
 
     emit comicUpdated(libraryId, comic);
+}
+
+bool YACReaderClientConnectionWorker::saveChange(quint8 messageType, QDataStream &payload)
+{
+    switch (messageType) {
+    case SendComicRating: {
+        ComicRatingUpdate update;
+        payload >> update;
+        return payload.status() == QDataStream::Ok && setComicRating(update);
+    }
+    case SendComicFavorite: {
+        ComicFavoriteUpdate update;
+        payload >> update;
+        return payload.status() == QDataStream::Ok && setComicFavorite(update);
+    }
+    default:
+        QLOG_WARN() << "Local connection: unknown message type" << messageType;
+        return false;
+    }
+}
+
+bool YACReaderClientConnectionWorker::setComicRating(const ComicRatingUpdate &update)
+{
+    if (update.rating < 0 || update.rating > MaxComicRating)
+        return false;
+
+    QMutexLocker locker(&dbMutex);
+    bool saved = false;
+    ComicDB comic;
+    DBHelper::withLibraryDatabase(update.libraryId, [&](QSqlDatabase &db) {
+        if (DBHelper::setComicRating(update.comicId, update.rating, db))
+            comic = DBHelper::loadComic(update.comicId, db, saved);
+    });
+    if (saved)
+        emit comicUpdated(update.libraryId, comic);
+    return saved;
+}
+
+bool YACReaderClientConnectionWorker::setComicFavorite(const ComicFavoriteUpdate &update)
+{
+    QMutexLocker locker(&dbMutex);
+    bool saved = false;
+    DBHelper::withLibraryDatabase(update.libraryId, [&](QSqlDatabase &db) {
+        saved = DBHelper::setComicFavorite(update.comicId, update.favorite, db);
+    });
+    if (saved)
+        emit comicFavoriteChanged(update.libraryId, update.comicId);
+    return saved;
+}
+
+void YACReaderClientConnectionWorker::acknowledge(bool saved)
+{
+    clientConnection->putChar(saved ? ChangeSaved : ChangeNotSaved);
+    clientConnection->waitForBytesWritten(1000);
 }

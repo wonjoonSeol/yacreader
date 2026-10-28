@@ -134,6 +134,11 @@ struct ToolbarTheme {
     QIcon setBookmarkAction18x18;
     QIcon showBookmarksAction;
     QIcon showBookmarksAction18x18;
+    QIcon toggleFavoriteAction;
+    QIcon toggleFavoriteAction18x18;
+    QIcon ratingStar;
+    QIcon ratingStar18x18;
+    QIcon ratingStarEmpty18x18;
     QIcon showShorcutsAction;
     QIcon showShorcutsAction18x18;
     QIcon showInfoAction;

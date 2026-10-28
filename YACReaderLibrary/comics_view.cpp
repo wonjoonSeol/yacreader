@@ -75,6 +75,30 @@ void ComicsView::setModel(ComicModel *m)
     model = m;
 }
 
+void ComicsView::connectInfoPanelRefresh(const std::function<bool()> &infoPanelShowsCurrentComic)
+{
+    disconnect(infoPanelDataChangedConnection);
+    disconnect(infoPanelFavoritesChangedConnection);
+
+    infoPanelDataChangedConnection = connect(model, &QAbstractItemModel::dataChanged, this, [this, infoPanelShowsCurrentComic](const QModelIndex &topLeft, const QModelIndex &bottomRight) {
+        if (!infoPanelShowsCurrentComic())
+            return;
+
+        const auto index = currentIndex();
+        if (index.isValid() && index.row() >= topLeft.row() && index.row() <= bottomRight.row())
+            updateInfoForIndex(index.row());
+    });
+
+    infoPanelFavoritesChangedConnection = connect(model, &ComicModel::favoritesChanged, this, [this, infoPanelShowsCurrentComic](const QList<qulonglong> &comicIds) {
+        if (!infoPanelShowsCurrentComic())
+            return;
+
+        const auto index = currentIndex();
+        if (index.isValid() && comicIds.contains(index.data(ComicModel::IdRole).toULongLong()))
+            updateInfoForIndex(index.row());
+    });
+}
+
 void ComicsView::reloadContent()
 {
     if (model != nullptr) {

@@ -50,11 +50,6 @@ class QLibrary;
 
 namespace YACReader {
 
-enum YACReaderIPCMessages {
-    RequestComicInfo = 0,
-    SendComicInfo,
-};
-
 enum YACReaderComicReadStatus {
     Unread = 0,
     Read = 1,

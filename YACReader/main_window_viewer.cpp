@@ -10,6 +10,7 @@
 #include "image_adjustment_menu.h"
 #include "options_dialog.h"
 #include "qnaturalsorting.h"
+#include "rating_favorite_controller.h"
 #include "shortcuts_manager.h"
 #include "theme_manager.h"
 #include "toolbar_overlay.h"
@@ -185,6 +186,22 @@ void MainWindowViewer::syncModeActions(bool manga, bool continuousScroll)
     }
 
     doubleMangaPageSwitch();
+}
+
+// the progress sent to the library on close or on the next comic rewrites the rating, so it has to keep the one shown
+void MainWindowViewer::keepComicRating(qulonglong comicId, int rating)
+{
+    if (currentComicDB.id == comicId)
+        currentComicDB.info.rating = rating;
+    for (auto &sibling : siblingComics) {
+        if (sibling.id == comicId)
+            sibling.info.rating = rating;
+    }
+}
+
+void MainWindowViewer::showChangeNotSaved(const QString &title)
+{
+    QMessageBox::warning(this, title, tr("The library did not save this change."));
 }
 
 MainWindowViewer::~MainWindowViewer()
@@ -570,6 +587,11 @@ void MainWindowViewer::createActions()
     showBookmarksAction->setShortcut(ShortcutsManager::getShortcutsManager().getShortcut(SHOW_BOOKMARKS_ACTION_Y));
     connect(showBookmarksAction, &QAction::triggered, viewer->getBookmarksDialog(), &QWidget::show);
 
+    ratingFavoriteController = new RatingFavoriteController(this);
+    connect(ratingFavoriteController, &RatingFavoriteController::ratingChanged, this, &MainWindowViewer::keepComicRating);
+    // queued, so the message box does not run its event loop inside the controller's socket handling
+    connect(ratingFavoriteController, &RatingFavoriteController::changeNotSaved, this, &MainWindowViewer::showChangeNotSaved, Qt::QueuedConnection);
+
     showShorcutsAction = new QAction(tr("Show keyboard shortcuts"), this);
     showShorcutsAction->setData(SHOW_SHORCUTS_ACTION_Y);
     showShorcutsAction->setShortcut(ShortcutsManager::getShortcutsManager().getShortcut(SHOW_SHORCUTS_ACTION_Y));
@@ -724,6 +746,12 @@ void MainWindowViewer::createToolBars()
     comicToolBar->addAction(wrappedToolbarAction(showFlowAction));
     comicToolBar->addAction(wrappedToolbarAction(showInfoAction));
 
+    comicToolBar->addSeparator();
+
+    comicToolBar->addAction(wrappedToolbarAction(ratingFavoriteController->favoriteAction()));
+    for (auto *rateAction : ratingFavoriteController->ratingActions())
+        comicToolBar->addAction(wrappedToolbarAction(rateAction));
+
 #ifdef Y_MAC_UI
     comicToolBar->addStretch();
 #else
@@ -797,6 +825,10 @@ void MainWindowViewer::createToolBars()
     viewer->addAction(showDictionaryAction);
     viewer->addAction(showFlowAction);
     viewer->addAction(showInfoAction);
+    YACReader::addSperator(viewer);
+
+    viewer->addAction(ratingFavoriteController->favoriteAction());
+    viewer->addAction(ratingFavoriteController->ratingMenu()->menuAction());
     YACReader::addSperator(viewer);
 
     viewer->addAction(showShorcutsAction);
@@ -1004,6 +1036,7 @@ void MainWindowViewer::open(QString path, ComicDB &comic, QList<ComicDB> &siblin
 
     viewer->open(path, comic);
     enableActions();
+    ratingFavoriteController->showComic(comic);
     int index = siblings.indexOf(comic);
     updatePrevNextActions(index > 0, index + 1 < siblings.count());
 
@@ -1029,12 +1062,16 @@ void MainWindowViewer::open(QString path, qint64 comicId, qint64 libraryId, YACR
 
     currentComicDB.id = comicId;
     YACReaderLocalClient client;
+    YACReader::ComicInfoAnswer answer;
     int tries = 1;
     bool success = false;
-    while (!(success = client.requestComicInfo(libraryId, currentComicDB, siblingComics, source)) && tries != 0)
+    while (!(success = client.requestComicInfo(libraryId, currentComicDB, source, answer)) && tries != 0)
         tries--;
 
     if (success) {
+        currentComicDB = answer.comic;
+        siblingComics = answer.siblings;
+        ratingFavoriteController->setLibrary(libraryId, source, answer);
         isClient = true;
         open(path + currentComicDB.path, currentComicDB, siblingComics);
     } else {
@@ -1069,6 +1106,7 @@ void MainWindowViewer::openComic(QString pathFile)
     setWindowTitle("YACReader - " + fi.fileName());
 
     enableActions();
+    ratingFavoriteController->showNoComic();
     applySavedReaderMode();
 
     viewer->open(pathFile);
@@ -1096,6 +1134,7 @@ void MainWindowViewer::openFolderFromPath(QString pathDir)
     setWindowTitle("YACReader - " + fi.fileName());
 
     enableActions();
+    ratingFavoriteController->showNoComic();
     applySavedReaderMode();
 
     viewer->open(pathDir);
@@ -1113,6 +1152,7 @@ void MainWindowViewer::openFolderFromPath(QString pathDir, QString atFileName)
     setWindowTitle("YACReader - " + fi.fileName());
 
     enableActions();
+    ratingFavoriteController->showNoComic();
     applySavedReaderMode();
 
     QDir d(pathDir);
@@ -1225,6 +1265,7 @@ void MainWindowViewer::disableActions()
     setMglassActionsEnabled(false);
     setLoadedComicActionsEnabled(false);
     setBookmarkAction->setEnabled(false);
+    ratingFavoriteController->showNoComic();
 }
 
 void MainWindowViewer::disablePreviousNextComicActions()
@@ -1421,13 +1462,15 @@ void MainWindowViewer::setUpShortcutsManagement()
     const auto &theme = ThemeManager::instance().getCurrentTheme();
 
     editShortcutsDialog->addActionsGroup(tr("Comics"), theme.shortcutsIcons.comicsIcon,
-                                         tmpList = { openAction,
-                                                     openLatestComicAction,
-                                                     openFolderAction,
-                                                     saveImageAction,
-                                                     extractPagesAction,
-                                                     openComicOnTheLeftAction,
-                                                     openComicOnTheRightAction });
+                                         tmpList = QList<QAction *> { openAction,
+                                                                      openLatestComicAction,
+                                                                      openFolderAction,
+                                                                      saveImageAction,
+                                                                      extractPagesAction,
+                                                                      openComicOnTheLeftAction,
+                                                                      openComicOnTheRightAction,
+                                                                      ratingFavoriteController->favoriteAction() } +
+                                                 ratingFavoriteController->ratingActions());
 
     allActions << tmpList;
 
@@ -1593,12 +1636,7 @@ void MainWindowViewer::setUpShortcutsManagement()
 
     ShortcutsManager::getShortcutsManager().registerActions(allActions);
 
-    // a default added after users could customize shortcuts must not take a key already bound to another action
-    for (auto *action : { go5PagesToTheLeftAction, go5PagesToTheRightAction, go10PagesToTheLeftAction, go10PagesToTheRightAction }) {
-        if (ShortcutsManager::getShortcutsManager().checkConflicts(action->shortcut(), action)) {
-            action->setShortcut(QKeySequence());
-        }
-    }
+    ShortcutsManager::getShortcutsManager().clearConflictingDefaults(QList<QAction *> { go5PagesToTheLeftAction, go5PagesToTheRightAction, go10PagesToTheLeftAction, go10PagesToTheRightAction } + ratingFavoriteController->ratingActions());
 }
 
 void MainWindowViewer::doubleMangaPageSwitch()
@@ -1666,6 +1704,7 @@ void MainWindowViewer::newVersion()
 
 void MainWindowViewer::closeEvent(QCloseEvent *event)
 {
+    ratingFavoriteController->sendQueuedChanges();
     if (isClient)
         sendComic();
 
@@ -1877,6 +1916,8 @@ void MainWindowViewer::applyTheme(const Theme &theme)
     setIcon(fitToPageAction, toolbarTheme.fitToPageAction, toolbarTheme.fitToPageAction18x18);
     setIcon(continuousScrollAction, toolbarTheme.continuousScrollAction, toolbarTheme.continuousScrollAction18x18);
     setIcon(showFlowAction, toolbarTheme.showFlowAction, toolbarTheme.showFlowAction18x18);
+    setIcon(ratingFavoriteController->favoriteAction(), toolbarTheme.toggleFavoriteAction, toolbarTheme.toggleFavoriteAction18x18);
+    ratingFavoriteController->setStarIcons(toolbarTheme.ratingStar, toolbarTheme.ratingStar18x18, toolbarTheme.ratingStarEmpty18x18);
 }
 
 void MainWindowViewer::dropEvent(QDropEvent *event)

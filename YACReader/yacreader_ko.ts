@@ -676,6 +676,29 @@ If none is active, Escape does nothing.</source>
     </message>
 </context>
 <context>
+    <name>RatingFavoriteController</name>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="31"/>
+        <source>Favorite</source>
+        <translation>즐겨찾기</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="32"/>
+        <source>Add the comic to the library favorites or remove it</source>
+        <translation>만화를 라이브러리 즐겨찾기에 추가하거나 제거</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="38"/>
+        <source>Rate %1 out of %2</source>
+        <translation>평점 %1점 주기 (%2점 만점)</translation>
+    </message>
+    <message>
+        <location filename="rating_favorite_controller.cpp" line="42"/>
+        <source>Rating</source>
+        <translation>평점</translation>
+    </message>
+</context>
+<context>
     <name>ThemeEditorDialog</name>
     <message>
         <location filename="../common/themes/theme_editor_dialog.cpp" line="59"/>
@@ -1041,6 +1064,11 @@ If none is active, Escape does nothing.</source>
 </context>
 <context>
     <name>YACReader::MainWindowViewer</name>
+    <message>
+        <location filename="main_window_viewer.cpp" line="202"/>
+        <source>The library did not save this change.</source>
+        <translation>라이브러리에 이 변경 사항이 저장되지 않았습니다.</translation>
+    </message>
     <message>
         <location filename="main_window_viewer.cpp" line="332"/>
         <source>&amp;Open</source>

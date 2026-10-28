@@ -247,7 +247,6 @@ void GridComicsView::setModel(ComicModel *model)
     // so no frame shows the reset model at the old scroll position.
     clearFocusedFolder();
     disconnect(modelDataChangedConnection);
-    disconnect(modelFavoritesChangedConnection);
     ComicsView::setModel(model);
 
     modelDataChangedConnection = connect(model, &QAbstractItemModel::dataChanged, this, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight) {
@@ -259,23 +258,9 @@ void GridComicsView::setModel(ComicModel *model)
             if (selectedComicChanged)
                 emit selectedComicsInfoChanged();
         }
-
-        if (!showInfoAction->isChecked() || focusedFolderIndex.isValid())
-            return;
-
-        const auto index = currentIndex();
-        if (index.isValid() && index.row() >= topLeft.row() && index.row() <= bottomRight.row())
-            updateInfoForIndex(index.row());
     });
 
-    modelFavoritesChangedConnection = connect(model, &ComicModel::favoritesChanged, this, [this](const QList<qulonglong> &comicIds) {
-        if (!showInfoAction->isChecked() || focusedFolderIndex.isValid())
-            return;
-
-        const auto index = currentIndex();
-        if (index.isValid() && comicIds.contains(index.data(ComicModel::IdRole).toULongLong()))
-            updateInfoForIndex(index.row());
-    });
+    connectInfoPanelRefresh([this] { return showInfoAction->isChecked() && !focusedFolderIndex.isValid(); });
 
     updateCurrentComicBanner();
 

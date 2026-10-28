@@ -1200,13 +1200,14 @@ void ComicModel::reload(const ComicDB &comic)
             found = true;
             item->setData(ComicModel::ReadColumn, comic.info.read);
             item->setData(ComicModel::CurrentPage, comic.info.currentPage);
+            item->setData(ComicModel::Rating, comic.info.rating);
             item->setData(ComicModel::HasBeenOpened, true);
             break;
         }
         row++;
     }
     if (found)
-        emit dataChanged(index(row, ReadColumn), index(row, HasBeenOpened), QVector<int>() << ReadColumnRole << CurrentPageRole << HasBeenOpenedRole);
+        emit dataChanged(index(row, ReadColumn), index(row, HasBeenOpened), QVector<int>() << ReadColumnRole << CurrentPageRole << RatingRole << HasBeenOpenedRole);
 }
 
 void ComicModel::resetComicRating(const QModelIndex &mi)
@@ -1239,6 +1240,11 @@ void ComicModel::notifyCoverChange(const ComicDB &comic)
     ++coverRevisions[comic.id];
     const auto itemIndex = std::distance(_data.begin(), it);
     emit dataChanged(index(itemIndex, 0), index(itemIndex, columnCount() - 1), { CoverPathRole });
+}
+
+void ComicModel::notifyFavoriteChange(qulonglong comicId)
+{
+    emit favoritesChanged({ comicId });
 }
 
 QUrl ComicModel::getCoverUrlPathForComicHash(const QString &hash) const
