@@ -352,6 +352,16 @@
         <translation>현재 페이지 정보 라벨에 시간 표시</translation>
     </message>
     <message>
+        <location filename="options_dialog.cpp" line="61"/>
+        <source>Briefly show the page number when the page changes</source>
+        <translation>페이지가 바뀌면 페이지 번호를 잠깐 표시</translation>
+    </message>
+    <message>
+        <location filename="options_dialog.cpp" line="62"/>
+        <source>Shows the page and the page count, such as 10/100, in the top left corner. Not shown while Show Info is on.</source>
+        <translation>현재 페이지와 전체 페이지 수를 10/100처럼 왼쪽 위에 표시합니다. 정보 보기가 켜져 있으면 표시하지 않습니다.</translation>
+    </message>
+    <message>
         <location filename="options_dialog.cpp" line="68"/>
         <source>The first page if the comic is finished, otherwise the last page read</source>
         <translation>다 읽은 만화는 첫 페이지, 그 외에는 마지막으로 읽은 페이지</translation>

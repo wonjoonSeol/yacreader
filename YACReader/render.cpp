@@ -2,6 +2,7 @@
 
 #include "comic_db.h"
 #include "configuration.h"
+#include "pages_information.h"
 #include "yacreader_global_gui.h"
 
 #include <QApplication>
@@ -973,17 +974,11 @@ void Render::doubleMangaPageSwitch()
 
 QString Render::getCurrentPagesInformation()
 {
-    QString s = QString::number(currentIndex + 1);
-    if (doublePage && (currentIndex + 1 < (int)comic->numPages())) {
-        if (currentPageIsDoublePage()) {
-            if (doubleMangaPage)
-                s = QString::number(currentIndex + 2) + "-" + s;
-            else
-                s += "-" + QString::number(currentIndex + 2);
-        }
+    auto spread = YACReader::PageSpread::None;
+    if (doublePage && currentPageIsDoublePage()) {
+        spread = doubleMangaPage ? YACReader::PageSpread::RightToLeft : YACReader::PageSpread::LeftToRight;
     }
-    s += "/" + QString::number(comic->numPages());
-    return s;
+    return YACReader::pagesInformation(currentIndex, static_cast<int>(comic->numPages()), spread);
 }
 
 void Render::setBookmark(int page)
