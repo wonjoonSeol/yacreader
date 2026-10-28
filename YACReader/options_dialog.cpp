@@ -3,6 +3,7 @@
 #include "app_language_utils.h"
 #include "appearance_tab_widget.h"
 #include "configuration.h"
+#include "image_adjustment.h"
 #include "theme_factory.h"
 #include "theme_manager.h"
 #include "yacreader_3d_flow_config_widget.h"
@@ -298,11 +299,9 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     auto scalingLayout = new QHBoxLayout();
     scalingLayout->addWidget(new QLabel(tr("Scaling method")));
     scalingMethodCombo = new QComboBox();
-    scalingMethodCombo->addItem(tr("Nearest (fast, low quality)"));
-    scalingMethodCombo->addItem(tr("Bilinear"));
-    scalingMethodCombo->addItem(tr("Lanczos (better quality)"));
-    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this](int index) {
-        Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(index));
+    addScalingMethodItems(scalingMethodCombo);
+    connect(scalingMethodCombo, &QComboBox::currentIndexChanged, this, [this] {
+        Configuration::getConfiguration().setScalingMethod(selectedScalingMethod(scalingMethodCombo));
         emit changedImageOptions();
     });
     scalingLayout->addWidget(scalingMethodCombo);
@@ -430,9 +429,6 @@ void OptionsDialog::saveOptions()
     Configuration::getConfiguration().setEscapeKeyBehavior(
             escapeCancelsModeRadioButton->isChecked() ? EscapeCancelsMode : EscapeQuits);
 
-    Configuration::getConfiguration().setScalingMethod(static_cast<ScaleMethod>(scalingMethodCombo->currentIndex()));
-    emit changedImageOptions();
-
     const auto selectedLanguage = languageCombo->currentData().toString().trimmed();
     if (selectedLanguage.isEmpty())
         settings->remove(UI_LANGUAGE);
@@ -512,7 +508,7 @@ void OptionsDialog::restoreOptions(QSettings *settings)
 
     {
         QSignalBlocker blocker(scalingMethodCombo);
-        scalingMethodCombo->setCurrentIndex(static_cast<int>(Configuration::getConfiguration().getScalingMethod()));
+        selectScalingMethod(scalingMethodCombo, Configuration::getConfiguration().getScalingMethod());
     }
 
     auto mouseMode = Configuration::getConfiguration().getMouseMode();
