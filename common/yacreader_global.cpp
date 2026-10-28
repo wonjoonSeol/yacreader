@@ -140,26 +140,6 @@ QDataStream &YACReader::operator>>(QDataStream &stream, OpenComicSource &source)
     return stream;
 }
 
-QDataStream &YACReader::operator<<(QDataStream &stream, const ComicRatingUpdate &update)
-{
-    return stream << update.libraryId << update.comicId << update.rating;
-}
-
-QDataStream &YACReader::operator>>(QDataStream &stream, ComicRatingUpdate &update)
-{
-    return stream >> update.libraryId >> update.comicId >> update.rating;
-}
-
-QDataStream &YACReader::operator<<(QDataStream &stream, const ComicFavoriteUpdate &update)
-{
-    return stream << update.libraryId << update.comicId << update.favorite;
-}
-
-QDataStream &YACReader::operator>>(QDataStream &stream, ComicFavoriteUpdate &update)
-{
-    return stream >> update.libraryId >> update.comicId >> update.favorite;
-}
-
 void YACReader::iterate(const QModelIndex &index,
                         const QAbstractItemModel *model,
                         const std::function<bool(const QModelIndex &)> &iteration)

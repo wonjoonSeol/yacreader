@@ -3,24 +3,11 @@
 #include "QsLog.h"
 #include "comic_db.h"
 #include "yacreader_global.h"
+#include "yacreader_ipc.h"
 
 #include <QLocalSocket>
 
 using namespace YACReader;
-
-namespace {
-template<typename Update>
-QByteArray framedMessage(YACReaderIPCMessages type, const Update &update)
-{
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_8);
-    out << (quint32)0 << (quint8)type << update;
-    out.device()->seek(0);
-    out << (quint32)(block.size() - sizeof(quint32));
-    return block;
-}
-}
 
 YACReaderLocalClient::YACReaderLocalClient(QObject *parent)
     : QObject(parent)
@@ -42,20 +29,11 @@ void YACReaderLocalClient::readMessage()
 }
 #include <QMessageBox>
 
-bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, std::optional<QSet<qulonglong>> &favoriteComicIds, OpenComicSource source)
+bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, const ComicDB &comic, OpenComicSource source, ComicInfoAnswer &answer)
 {
     localSocket->connectToServer(YACREADERLIBRARY_GUID);
     if (localSocket->isOpen()) {
-        QByteArray block;
-        QDataStream out(&block, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_4_8);
-        out << (quint32)0;
-        out << (quint8)YACReader::RequestComicInfo;
-        out << libraryId;
-        out << source;
-        out << comic;
-        out.device()->seek(0);
-        out << (quint32)(block.size() - sizeof(quint32));
+        const QByteArray block = comicInfoRequest(libraryId, source, comic);
 
         int written = 0;
         int previousWritten = 0;
@@ -120,11 +98,7 @@ bool YACReaderLocalClient::requestComicInfo(quint64 libraryId, ComicDB &comic, Q
 
         QDataStream dataStream(data);
         dataStream.setVersion(QDataStream::Qt_4_8);
-        ComicInfoAnswer answer;
         dataStream >> answer;
-        comic = answer.comic;
-        siblings = answer.siblings;
-        favoriteComicIds = answer.favoriteComicIds;
         localSocket->close();
         return true;
     } else {
@@ -214,37 +188,4 @@ bool YACReaderLocalClient::sendComicInfo(quint64 libraryId, ComicDB &comic, qulo
     emit finished();
     QLOG_ERROR() << "Sending Comic Info : unable to connect to the server";
     return false;
-}
-
-bool YACReaderLocalClient::sendComicRating(const ComicRatingUpdate &update)
-{
-    return send(framedMessage(SendComicRating, update));
-}
-
-bool YACReaderLocalClient::sendComicFavorite(const ComicFavoriteUpdate &update)
-{
-    return send(framedMessage(SendComicFavorite, update));
-}
-
-// Waits for the library to confirm that it saved the change, which also keeps quick changes in order
-bool YACReaderLocalClient::send(const QByteArray &message)
-{
-    localSocket->connectToServer(YACREADERLIBRARY_GUID);
-    if (!localSocket->isOpen()) {
-        QLOG_ERROR() << "Sending message : unable to connect to the server";
-        return false;
-    }
-
-    localSocket->write(message);
-    localSocket->waitForBytesWritten(2000);
-    char reply = ChangeNotSaved;
-    if (localSocket->bytesAvailable() > 0 || localSocket->waitForReadyRead(3000))
-        localSocket->getChar(&reply);
-    localSocket->close();
-
-    if (reply != ChangeSaved) {
-        QLOG_ERROR() << "Sending message : the library did not save the change";
-        return false;
-    }
-    return true;
 }

@@ -8,7 +8,6 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QScrollArea>
-#include <QSet>
 #include <QSettings>
 #include <QToolBar>
 #include <QToolButton>
@@ -19,10 +18,7 @@
 
 #include "comic_db.h"
 
-#include <optional>
-
 class Comic;
-class QMenu;
 class Viewer;
 class OptionsDialog;
 class HelpAboutDialog;
@@ -31,6 +27,7 @@ class ShortcutsDialog;
 class YACReaderSliderAction;
 class YACReaderSlider;
 class EditShortcutsDialog;
+class RatingFavoriteController;
 
 namespace YACReader {
 
@@ -140,10 +137,7 @@ private:
     QAction *showMagnifyingGlassAction;
     QAction *setBookmarkAction;
     QAction *showBookmarksAction;
-    QAction *toggleFavoriteAction;
-    QList<QAction *> rateComicActions;
-    QList<QAction *> rateComicToolbarActions;
-    QMenu *ratingMenu;
+    RatingFavoriteController *ratingFavoriteController;
     QAction *leftRotationAction;
     QAction *rightRotationAction;
     QAction *showInfoAction;
@@ -192,11 +186,8 @@ private:
     void syncModeActions(bool manga, bool continuousScroll);
     void applySavedReaderMode();
     void applyLibraryReaderMode(YACReader::FileType type);
-    void updateRatingAndFavoriteActions(const ComicDB *comic);
-    void updateRatingIcons();
-    void rateComic(int rating);
-    void setComicFavorite(bool favorite);
-    void showLibraryNotUpdated(const QString &title);
+    void keepComicRating(qulonglong comicId, int rating);
+    void showChangeNotSaved(const QString &title);
 
     //! Manejadores de evento:
     // void resizeEvent(QResizeEvent * event);
@@ -208,9 +199,6 @@ private:
 
     ComicDB currentComicDB;
     QList<ComicDB> siblingComics;
-    // the favorites of the library the comic was opened from; missing for libraries without rating and favorite messages
-    std::optional<QSet<qulonglong>> favoriteComicIds;
-    int shownRating = 0;
     bool isClient;
     QString startComicPath;
     quint64 libraryId;

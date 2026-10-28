@@ -3,11 +3,9 @@
 
 #include "comic_db.h"
 #include "yacreader_global.h"
+#include "yacreader_ipc.h"
 
 #include <QObject>
-#include <QSet>
-
-#include <optional>
 
 class QLocalSocket;
 
@@ -21,15 +19,11 @@ signals:
     void finished();
 public slots:
     void readMessage();
-    bool requestComicInfo(quint64 libraryId, ComicDB &comic, QList<ComicDB> &siblings, std::optional<QSet<qulonglong>> &favoriteComicIds, YACReader::OpenComicSource source);
+    bool requestComicInfo(quint64 libraryId, const ComicDB &comic, YACReader::OpenComicSource source, YACReader::ComicInfoAnswer &answer);
     bool sendComicInfo(quint64 libraryId, ComicDB &comic);
     bool sendComicInfo(quint64 libraryId, ComicDB &comic, qulonglong nextComicId);
-    bool sendComicRating(const YACReader::ComicRatingUpdate &update);
-    bool sendComicFavorite(const YACReader::ComicFavoriteUpdate &update);
 
 private:
-    bool send(const QByteArray &message);
-
     QLocalSocket *localSocket;
 };
 
