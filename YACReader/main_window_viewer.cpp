@@ -7,6 +7,7 @@
 #include "configuration.h"
 #include "edit_shortcuts_dialog.h"
 #include "help_about_dialog.h"
+#include "image_adjustment_menu.h"
 #include "options_dialog.h"
 #include "qnaturalsorting.h"
 #include "shortcuts_manager.h"
@@ -295,10 +296,15 @@ void MainWindowViewer::setupUI()
     optionsDialog = new OptionsDialog(this);
     connect(optionsDialog, &QDialog::accepted, viewer, &Viewer::updateOptions);
     connect(optionsDialog, &YACReaderOptionsDialog::optionsChanged, this, &MainWindowViewer::reloadOptions);
-    connect(optionsDialog, &OptionsDialog::changedFilters, viewer, &Viewer::updateFilters);
     connect(optionsDialog, &OptionsDialog::changedImageOptions, viewer, &Viewer::onImageOptionsChanged);
+    // Options and the image adjustment menu store these, and both show them as they change
+    connect(&conf, &Configuration::filtersChanged, viewer, &Viewer::updateFilters);
+    connect(&conf, &Configuration::imageOptionsChanged, viewer, &Viewer::onImageOptionsChanged);
 
     optionsDialog->restoreOptions(settings);
+
+    imageAdjustmentMenu = new ImageAdjustmentMenu(this);
+
     // shortcutsDialog = new ShortcutsDialog(this);
     editShortcutsDialog = new EditShortcutsDialog(this);
     connect(optionsDialog, &YACReaderOptionsDialog::editShortcuts, editShortcutsDialog, &QWidget::show);
@@ -725,7 +731,16 @@ void MainWindowViewer::createToolBars()
 #endif
 
     comicToolBar->addAction(wrappedToolbarAction(showShorcutsAction));
+#ifdef Y_MAC_UI
     comicToolBar->addAction(wrappedToolbarAction(optionsAction));
+#else
+    // the arrow next to Options opens the image adjustment menu
+    auto optionsToolButton = new QToolButton();
+    optionsToolButton->setDefaultAction(wrappedToolbarAction(optionsAction));
+    optionsToolButton->setMenu(imageAdjustmentMenu);
+    optionsToolButton->setPopupMode(QToolButton::MenuButtonPopup);
+    comicToolBar->addWidget(optionsToolButton);
+#endif
     comicToolBar->addAction(wrappedToolbarAction(helpAboutAction));
 
 #ifndef Y_MAC_UI
@@ -761,6 +776,7 @@ void MainWindowViewer::createToolBars()
     viewer->addAction(adjustToFullSizeAction);
     viewer->addAction(fitToPageAction);
     viewer->addAction(continuousScrollAction);
+    viewer->addAction(imageAdjustmentMenu->menuAction());
     YACReader::addSperator(viewer);
     viewer->addAction(leftRotationAction);
     viewer->addAction(rightRotationAction);
@@ -991,7 +1007,15 @@ void MainWindowViewer::open(QString path, ComicDB &comic, QList<ComicDB> &siblin
     int index = siblings.indexOf(comic);
     updatePrevNextActions(index > 0, index + 1 < siblings.count());
 
-    optionsDialog->setFilters(currentComicDB.info.brightness, currentComicDB.info.contrast, currentComicDB.info.gamma);
+    applyComicFilterLevels();
+}
+
+void MainWindowViewer::applyComicFilterLevels()
+{
+    const auto &info = currentComicDB.info;
+    Configuration::getConfiguration().setFilterLevels(brightnessSpec.levelOrDefault(info.brightness),
+                                                      contrastSpec.levelOrDefault(info.contrast),
+                                                      gammaSpec.levelOrDefault(info.gamma));
 }
 
 void MainWindowViewer::open(QString path, qint64 comicId, qint64 libraryId, YACReader::OpenComicSource source)
@@ -1019,7 +1043,7 @@ void MainWindowViewer::open(QString path, qint64 comicId, qint64 libraryId, YACR
         // error
     }
 
-    optionsDialog->setFilters(currentComicDB.info.brightness, currentComicDB.info.contrast, currentComicDB.info.gamma);
+    applyComicFilterLevels();
 }
 
 void MainWindowViewer::openComicFromPath(QString pathFile)
