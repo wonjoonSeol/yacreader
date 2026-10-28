@@ -1,8 +1,13 @@
 #include "comic.h"
+#include "comic_db.h"
 #include "data_base_management.h"
+#include "db_helper.h"
+#include "folder.h"
 #include "library_creator.h"
+#include "library_entry.h"
 #include "yacreader_global.h"
 
+#include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
 #include <QImage>
@@ -19,6 +24,7 @@
 #include <filesystem>
 #include <utility>
 
+using YACReader::LibraryEntry;
 using YACReader::LibraryPaths;
 
 class LibraryImageFoldersTest : public QObject
@@ -33,8 +39,11 @@ private slots:
     void updateFollowsTheFoldersOfImages();
     void modifiedDatesFollowThePages();
     void hashesFollowThePages();
+    void hashesThePagesInAnOrderOfTheirOwn();
+    void leavesTheLibraryDataFolderOut();
     void folderUpdateOfAFolderThatBecameAComic();
     void sortsPagesWithoutTies();
+    void keepsTheComicsOfFoldersNamedLikeMetadataFolders();
 };
 
 namespace {
@@ -183,7 +192,8 @@ bool buildLibrary(const QString &source)
         { "/Mixed", 2, 4 },
         { "/Mixed/Extras", 5, 5 },
         { "/With archive", 1, 6 },
-        { "/.hidden", 2, 7 },
+        // a user's folder, not a metadata one, whatever its first character
+        { "/@Scans", 2, 7 },
         { "/Vol 2/Part", 1, 10 },
         { "/Vol 10/Part", 2, 11 },
     };
@@ -233,8 +243,17 @@ void LibraryImageFoldersTest::tellsComicFoldersApart_data()
     QTest::newRow("images and an archive") << "Chapter" << QStringList { "1.png", "Book.cbz" } << false;
     QTest::newRow("images and a PDF") << "Chapter" << QStringList { "1.png", "Book.pdf" } << false;
     QTest::newRow("folder named like an archive") << "Book.cbz" << QStringList { "1.png" } << true;
-    QTest::newRow("dot folder") << ".thumbnails" << QStringList { "1.png" } << false;
+    QTest::newRow("thumbnails folder") << ".thumbnails" << QStringList { "1.png" } << false;
     QTest::newRow("NAS metadata folder") << "@eaDir" << QStringList { "1.png" } << false;
+    // Synology keeps the thumbnails of each image in a folder named after it
+    QTest::newRow("folder in a NAS metadata folder") << "@eaDir/1.png" << QStringList { "SYNOPHOTO_THUMB_M.jpg" } << false;
+    // only exact names are metadata, a user's own folders can start with @ or a dot
+    QTest::newRow("folder starting with @") << "@Comics" << QStringList { "1.png" } << true;
+    QTest::newRow("images and a subfolder starting with @") << "Chapter" << QStringList { "1.png", "@Extras/1.png" } << false;
+    QTest::newRow("images and a dot subfolder") << "Chapter" << QStringList { "1.png", ".Archive/Book.cbz" } << false;
+    // a fixed list, so the image plugins of the app do not decide; Qt reads PPM without a plugin
+    QTest::newRow("WebP images") << "Chapter" << QStringList { "1.webp" } << true;
+    QTest::newRow("only images outside the list") << "Chapter" << QStringList { "1.ppm", "2.xpm" } << false;
 }
 
 void LibraryImageFoldersTest::tellsComicFoldersApart()
@@ -249,6 +268,14 @@ void LibraryImageFoldersTest::tellsComicFoldersApart()
     QVERIFY(QDir().mkpath(folder));
     for (const auto &file : files) {
         QVERIFY(writeFile(QDir(folder).filePath(file), "data"));
+    }
+    // dot files are hidden on Linux and macOS, so there the rule never sees them
+    const QStringList listed = QDir(folder).entryList(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+    for (const auto &file : files) {
+        const QString entry = file.section('/', 0, 0);
+        if (entry.startsWith('.') && !listed.contains(entry)) {
+            QSKIP("this system hides dot files, so the listing never shows them");
+        }
     }
 
     QCOMPARE(Comic::folderIsComic(folder), isComic);
@@ -273,6 +300,7 @@ void LibraryImageFoldersTest::importsFoldersOfImagesAsComics()
         { "/Series/Chapter 10", 6 },
         { "/Reprint", 2 },
         { "/Mixed/Extras", 5 },
+        { "/@Scans", 2 },
         { "/Vol 2/Part", 1 },
         { "/Vol 10/Part", 2 },
     };
@@ -312,6 +340,7 @@ void LibraryImageFoldersTest::updateFollowsTheFoldersOfImages()
         { "/Series/Chapter 10", 6 },
         { "/Reprint", 1 },
         { "/Mixed", 2 },
+        { "/@Scans", 2 },
         { "/Vol 2/Part", 1 },
         { "/Vol 3/Part", 3 },
         { "/Vol 10/Part", 2 },
@@ -375,6 +404,46 @@ void LibraryImageFoldersTest::hashesFollowThePages()
     QCOMPARE(comics.value("/Composed").hash, comics.value("/Decomposed").hash);
 }
 
+void LibraryImageFoldersTest::hashesThePagesInAnOrderOfTheirOwn()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    QVERIFY(writeFile(root.filePath("Chapter/1.png"), QByteArray(10, 'a')));
+    QVERIFY(writeFile(root.filePath("Chapter/2.png"), QByteArray(20, 'b')));
+    QVERIFY(writeFile(root.filePath("Chapter/10.png"), QByteArray(30, 'c')));
+
+    const auto entries = LibraryEntry::entriesIn(FolderComic::listing(root.path()));
+    QCOMPARE(entries.size(), 1);
+    QStringList readingOrder;
+    for (const QFileInfo &page : entries.first().folderComic->pages) {
+        readingOrder.append(page.fileName());
+    }
+    QCOMPARE(readingOrder, QStringList({ "1.png", "2.png", "10.png" }));
+
+    // the hash takes the pages in the UTF-16 order of their names, which no locale changes
+    QCryptographicHash expected(QCryptographicHash::Sha1);
+    expected.addData(QByteArray(10, 'a'));
+    expected.addData(QByteArray(20, 'b'));
+    expected.addData("1.png/10\n10.png/30\n2.png/20\n");
+    QCOMPARE(entries.first().pseudoHash(), QString(expected.result().toHex()) + "60");
+}
+
+void LibraryImageFoldersTest::leavesTheLibraryDataFolderOut()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    QVERIFY(writePages(root.filePath("Chapter"), 1, 1));
+    QVERIFY(writePages(LibraryPaths::libraryCoversFolderPath(root.path()), 2, 2));
+    QVERIFY(writeFile(QDir(LibraryPaths::libraryDataPath(root.path())).filePath("Backup.cbz"), "data"));
+
+    QStringList names;
+    for (const LibraryEntry &entry : LibraryEntry::entriesIn(FolderComic::listing(root.path()))) {
+        names.append(entry.info.fileName());
+    }
+
+    QCOMPARE(names, QStringList { "Chapter" });
+}
+
 void LibraryImageFoldersTest::folderUpdateOfAFolderThatBecameAComic()
 {
     QTemporaryDir root;
@@ -414,6 +483,56 @@ void LibraryImageFoldersTest::sortsPagesWithoutTies()
 
     // "01" and "1" are equal for the collator, the strict order keeps them in a fixed order
     QCOMPARE(names, QStringList({ "01.png", "1.png", "2.PNG", "10.png" }));
+}
+
+void LibraryImageFoldersTest::keepsTheComicsOfFoldersNamedLikeMetadataFolders()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    const auto source = root.path();
+    QVERIFY(writePages(source + "/Solo", 2, 1));
+    QSettings settings(root.filePath("settings.ini"), QSettings::IniFormat);
+    QVERIFY(createLibrary(source, settings));
+
+    // what an earlier scan imported from the user's own @ and dot folders, the archives only need
+    // their size here because an update does not open an archive whose size did not change
+    QStringList archives { "/@Comics/Book.cbz" };
+    QVERIFY(writeFile(source + "/@Comics/Book.cbz", QByteArray(4096, 'x')));
+    QVERIFY(writeFile(source + "/.Archive/Old.cbz", QByteArray(4096, 'y')));
+    // dot folders are hidden on Linux and macOS, and so never part of the library there
+    if (QDir(source).entryList(QDir::Dirs | QDir::NoDotAndDotDot).contains(".Archive")) {
+        archives.append("/.Archive/Old.cbz");
+    }
+    QString connectionName;
+    {
+        auto db = DataBaseManagement::loadDatabase(LibraryPaths::libraryDataPath(source));
+        connectionName = db.connectionName();
+        for (const QString &path : std::as_const(archives)) {
+            Folder folder(QFileInfo(path).path().mid(1), QFileInfo(path).path());
+            folder.setFather(1);
+            ComicDB comic;
+            comic.name = QFileInfo(path).fileName();
+            comic.path = path;
+            comic.parentId = DBHelper::insert(&folder, db);
+            // a hash of its own for each, hashes are unique in comic_info
+            comic.info.hash = QString::number(archives.indexOf(path)).repeated(40) + "4096";
+            comic.info.numPages = 10;
+            DBHelper::insert(&comic, db, false);
+        }
+    }
+    QSqlDatabase::removeDatabase(connectionName);
+    const auto before = comicsByPath(source);
+    QCOMPARE(before.size(), archives.size() + 1);
+
+    QVERIFY(writePages(source + "/@Comics/Chapter", 2, 2));
+    QVERIFY(updateLibrary(source, settings));
+
+    const auto comics = comicsByPath(source);
+    for (const QString &path : std::as_const(archives)) {
+        QVERIFY2(comics.contains(path), qPrintable(path));
+        QCOMPARE(comics.value(path).id, before.value(path).id);
+    }
+    QCOMPARE(comics.value("/@Comics/Chapter").numPages, 2);
 }
 
 QTEST_GUILESS_MAIN(LibraryImageFoldersTest)

@@ -172,10 +172,14 @@ void NaturalSortingTest::comicsWithoutANumberGoLast()
 
 void NaturalSortingTest::strictOrderTellsEquivalentNamesApart()
 {
-    // goes through the collator on machines with ICU, where "01" and "1" compare equal
-    for (const auto &[left, right] : { std::pair { "01.jpg", "1.jpg" }, std::pair { "Page.jpg", "page.jpg" } }) {
+    // goes through the collator on machines with ICU, where "01" and "1" compare equal, and a name in
+    // its composed and its decomposed form can be equal for localeAwareCompare as well
+    const QString composed = QString::fromUtf8("café.jpg").normalized(QString::NormalizationForm_C);
+    const QString decomposed = composed.normalized(QString::NormalizationForm_D);
+    const QList<std::pair<QString, QString>> pairs { { "01.jpg", "1.jpg" }, { "Page.jpg", "page.jpg" }, { composed, decomposed } };
+    for (const auto &[left, right] : pairs) {
         const int forward = naturalCompareStrict(left, right);
-        QVERIFY2(forward != 0, left);
+        QVERIFY2(forward != 0, qPrintable(left));
         QCOMPARE(naturalCompareStrict(right, left) < 0, forward > 0);
     }
     QVERIFY(naturalCompareStrict("Chapter 2", "Chapter 10") < 0);

@@ -48,9 +48,12 @@ protected:
     bool _errorOpening;
 
     void resolveStartPage();
+    // how a comic opened from the library starts, at the bookmarks and the page saved there
+    bool loadFromLibrary(const QString &path, const ComicDB &comic, bool found);
 
 public:
-    static const QStringList imageExtensions;
+    // the images a folder comic is made of, a fixed list so that every app that shares a library, whatever
+    // image plugins it has, agrees on which folders are comics and on their pages
     static const QStringList literalImageExtensions;
     static const QStringList comicExtensions;
     static const QStringList literalComicExtensions;
@@ -92,7 +95,8 @@ public:
     static bool fileIsComic(const QString &path);
     // a folder with images and no comic files or subfolders other than metadata ones, the library reads it as one comic
     static bool folderIsComic(const QString &path);
-    // folders that tools keep their own data in, like .thumbnails, @eaDir or __MACOSX, on every platform
+    // folders that tools keep their own data in, like @eaDir or __MACOSX, which do not stop the folder they are
+    // in from being a comic and are never comics themselves; exact names only, users have folders like @Comics
     static bool isMetadataFolder(const QString &folderName);
     static bool fileIsEpub(const QString &path);
     static QList<QString> findValidComicFiles(const QList<QUrl> &list);
@@ -174,8 +178,12 @@ public:
     bool load(const QString &path, const ComicDB &comic);
     // every image in the folder in reading order, the pages the reader shows
     static QFileInfoList pageFiles(const QString &path);
-    // nothing when the folder is not a comic, the listing stops at the first entry that rules it out
+    // nothing when the folder is not a comic
     static std::optional<FolderComicContents> comicContents(const QString &path);
+    // the same from the listing() of the folder, for a caller that already has it
+    static std::optional<FolderComicContents> comicContents(const QString &path, const QFileInfoList &entries);
+    // the files and folders in a folder, without the hidden ones
+    static QFileInfoList listing(const QString &path);
 
 public slots:
 

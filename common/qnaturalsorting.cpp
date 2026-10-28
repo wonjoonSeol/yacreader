@@ -188,7 +188,11 @@ int naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cas
 int naturalCompareStrict(const QString &s1, const QString &s2)
 {
     const int natural = naturalCompare(s1, s2, Qt::CaseInsensitive);
-    return natural != 0 ? natural : QString::localeAwareCompare(s1, s2);
+    if (natural != 0) {
+        return natural;
+    }
+    const int locale = QString::localeAwareCompare(s1, s2);
+    return locale != 0 ? locale : QString::compare(s1, s2, Qt::CaseSensitive);
 }
 
 bool naturalSortLessThanCS(const QString &left, const QString &right)
@@ -211,9 +215,4 @@ bool comicNumberLessThan(const QVariant &leftNumber, const QString &leftName,
         return naturalSortLessThanCI(leftNumber.toString(), rightNumber.toString());
 
     return rightNumber.isNull();
-}
-
-bool naturalSortLessThanCIFileInfo(const QFileInfo &left, const QFileInfo &right)
-{
-    return naturalSortLessThanCI(left.fileName(), right.fileName());
 }

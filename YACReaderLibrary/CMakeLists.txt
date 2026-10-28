@@ -4,6 +4,8 @@
 add_library(library_common STATIC
     library_creator.h
     library_creator.cpp
+    library_entry.h
+    library_entry.cpp
     package_manager.h
     package_manager.cpp
     bundle_creator.h

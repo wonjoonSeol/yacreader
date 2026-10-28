@@ -1073,23 +1073,10 @@ void MainWindowViewer::openFolderFromPath(QString pathDir, QString atFileName)
     enableActions();
     applySavedReaderMode();
 
-    QDir d(pathDir);
-    d.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    d.setNameFilters(Comic::getSupportedImageFormats());
-    d.setSorting(QDir::Name | QDir::IgnoreCase | QDir::LocaleAware);
-    QStringList list = d.entryList();
-
-    std::sort(list.begin(), list.end(), naturalSortLessThanCI);
-    int i = 0;
-    for (const QString &path : std::as_const(list)) {
-        if (path.endsWith(atFileName))
-            break;
-        i++;
-    }
-
-    int index = 0;
-    if (i < list.count())
-        index = i;
+    // the pages in the order FolderComic shows them, so that the dropped image is the one opened
+    const QFileInfoList pages = FolderComic::pageFiles(pathDir);
+    const auto dropped = std::find_if(pages.cbegin(), pages.cend(), [&atFileName](const QFileInfo &page) { return page.fileName() == atFileName; });
+    const int index = dropped != pages.cend() ? int(dropped - pages.cbegin()) : 0;
 
     viewer->open(pathDir, index);
 }

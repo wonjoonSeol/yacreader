@@ -26,8 +26,7 @@ private slots:
     void choosesTheStartPageOfLibraryComics();
     void opensLibraryFolderComicsAtTheSavedPage_data();
     void opensLibraryFolderComicsAtTheSavedPage();
-    void keepsTheLastPageOfLibraryFolderComicsInRange_data();
-    void keepsTheLastPageOfLibraryFolderComicsInRange();
+    void reportsALibraryFolderComicThatIsGone();
     void reopenedComicStartsFromTheSavedProgress_data();
     void reopenedComicStartsFromTheSavedProgress();
     void saveBookmarksRecordsTheLastReadPageAndItsImage();
@@ -194,28 +193,12 @@ void ComicStartPageTest::opensLibraryFolderComicsAtTheSavedPage()
     QCOMPARE(comic.numPages(), static_cast<unsigned int>(pageCount));
 }
 
-void ComicStartPageTest::keepsTheLastPageOfLibraryFolderComicsInRange_data()
+void ComicStartPageTest::reportsALibraryFolderComicThatIsGone()
 {
-    QTest::addColumn<int>("currentPage");
-    QTest::addColumn<int>("expectedLastPage");
-
-    QTest::newRow("never opened") << 0 << 0;
-    QTest::newRow("below zero") << -5 << 0;
-    QTest::newRow("on a middle page") << 3 << 2;
-}
-
-void ComicStartPageTest::keepsTheLastPageOfLibraryFolderComicsInRange()
-{
-    QFETCH(int, currentPage);
-    QFETCH(int, expectedLastPage);
-
-    ComicDB comicDB;
-    comicDB.info.currentPage = currentPage;
-
+    // like a comic file, a folder that is no longer there is an error at once
     FolderComic comic;
-    QVERIFY(comic.load(comicFolder.path(), comicDB));
-
-    QCOMPARE(comic.bm->getLastPage(), expectedLastPage);
+    QVERIFY(!comic.load(comicFolder.filePath("Missing"), ComicDB()));
+    QVERIFY(comic.hasBeenAnErrorOpening());
 }
 
 void ComicStartPageTest::reopenedComicStartsFromTheSavedProgress_data()
