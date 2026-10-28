@@ -6,17 +6,14 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-#include <algorithm>
-
 class ImageAdjustmentTest : public QObject
 {
     Q_OBJECT
 
 private slots:
-    void offersEachScalingMethodOnce();
+    void offersEachMethodASettingCanHoldOnce();
     void listsTheScalingMethodsInOrder_data();
     void listsTheScalingMethodsInOrder();
-    void offersEveryMethodASettingCanHold();
     void selectsTheItemOfTheStoredMethod_data();
     void selectsTheItemOfTheStoredMethod();
     void storesTheMethodOfTheChosenItem_data();
@@ -28,8 +25,6 @@ private slots:
 };
 
 namespace {
-
-const QList<ScaleMethod> allMethods { ScaleMethod::Nearest, ScaleMethod::Bilinear, ScaleMethod::Lanczos, ScaleMethod::Lanczos3, ScaleMethod::Lanczos2 };
 
 void addMethodRows()
 {
@@ -59,15 +54,20 @@ ScaleMethod readScalingMethod(const QVariant &stored)
 
 }
 
-void ImageAdjustmentTest::offersEachScalingMethodOnce()
+// A value with no item would leave the Options combo empty when it is restored
+void ImageAdjustmentTest::offersEachMethodASettingCanHoldOnce()
 {
-    const auto &choices = scalingMethodChoices();
+    QComboBox combo;
+    addScalingMethodItems(&combo);
 
-    QCOMPARE(choices.size(), allMethods.size());
-    for (const auto method : allMethods) {
-        const auto offers = [method](const ScalingMethodChoice &choice) { return choice.method == method; };
-        QCOMPARE(std::count_if(choices.cbegin(), choices.cend(), offers), 1);
+    int methods = 0;
+    for (int value = -1; value <= 16; ++value) {
+        if (scaleMethodFromInt(value)) {
+            ++methods;
+            QCOMPARE_GE(combo.findData(value), 0);
+        }
     }
+    QCOMPARE(combo.count(), methods);
 }
 
 void ImageAdjustmentTest::listsTheScalingMethodsInOrder_data()
@@ -81,18 +81,6 @@ void ImageAdjustmentTest::listsTheScalingMethodsInOrder()
     QFETCH(int, position);
 
     QCOMPARE(scalingMethodChoices().at(position).method, method);
-}
-
-// Restoring a setting with no item would leave the Options combo empty
-void ImageAdjustmentTest::offersEveryMethodASettingCanHold()
-{
-    QComboBox combo;
-    addScalingMethodItems(&combo);
-
-    for (int value = -1; value <= 16; ++value) {
-        if (scaleMethodFromInt(value))
-            QCOMPARE_GE(combo.findData(value), 0);
-    }
 }
 
 void ImageAdjustmentTest::selectsTheItemOfTheStoredMethod_data()

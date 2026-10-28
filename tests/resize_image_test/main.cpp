@@ -12,8 +12,6 @@ class ResizeImageTest : public QObject
     Q_OBJECT
 
 private slots:
-    void scalesToTheRequestedSize_data();
-    void scalesToTheRequestedSize();
     void scalesEveryPixelFormat_data();
     void scalesEveryPixelFormat();
     void keepsTheAlpha_data();
@@ -46,6 +44,8 @@ constexpr Method methods[] = {
 
 constexpr int dark = 64;
 constexpr int light = 192;
+
+const QColor orange(200, 100, 50);
 
 QImage filled(QSize size, QImage::Format format, const QColor &color)
 {
@@ -115,32 +115,12 @@ int spread(const QImage &image)
 
 }
 
-void ResizeImageTest::scalesToTheRequestedSize_data()
-{
-    QTest::addColumn<ScaleMethod>("method");
-    QTest::addColumn<QSize>("size");
-
-    for (const auto &entry : methods) {
-        QTest::addRow("%s enlarging", entry.name) << entry.method << QSize(70, 50);
-        QTest::addRow("%s shrinking", entry.name) << entry.method << QSize(25, 15);
-    }
-}
-
-void ResizeImageTest::scalesToTheRequestedSize()
-{
-    QFETCH(ScaleMethod, method);
-    QFETCH(QSize, size);
-
-    QCOMPARE(scaleImage(edge(QSize(40, 30)), size.width(), size.height(), method).size(), size);
-}
-
 void ResizeImageTest::scalesEveryPixelFormat_data()
 {
     QTest::addColumn<ScaleMethod>("method");
     QTest::addColumn<QImage::Format>("format");
     QTest::addColumn<QColor>("color");
 
-    const QColor orange(200, 100, 50);
     for (const auto &entry : methods) {
         QTest::addRow("%s RGB32", entry.name) << entry.method << QImage::Format_RGB32 << orange;
         QTest::addRow("%s ARGB32", entry.name) << entry.method << QImage::Format_ARGB32 << orange;
@@ -180,9 +160,13 @@ void ResizeImageTest::keepsTheAlpha()
 
     const QImage page = filled(QSize(30, 20), QImage::Format_ARGB32, color);
 
-    // Qt's smooth scaling goes through premultiplied alpha, which rounds the colour by up to 1
-    QCOMPARE_LE(largestDifference(scaleImage(page, 70, 50, method), color), 1);
-    QCOMPARE_LE(largestDifference(scaleImage(page, 12, 8, method), color), 1);
+    for (const QSize size : { QSize(70, 50), QSize(12, 8) }) {
+        const QImage scaled = scaleImage(page, size.width(), size.height(), method);
+
+        QCOMPARE(scaled.size(), size);
+        // Qt's smooth scaling goes through premultiplied alpha, which rounds the colour by up to 1
+        QCOMPARE_LE(largestDifference(scaled, color), 1);
+    }
 }
 
 void ResizeImageTest::scalesFromAndToOnePixel_data()
@@ -203,7 +187,6 @@ void ResizeImageTest::scalesFromAndToOnePixel()
     QFETCH(QSize, from);
     QFETCH(QSize, to);
 
-    const QColor orange(200, 100, 50);
     const QImage scaled = scaleImage(filled(from, QImage::Format_ARGB32, orange), to.width(), to.height(), method);
 
     QCOMPARE(scaled.size(), to);
